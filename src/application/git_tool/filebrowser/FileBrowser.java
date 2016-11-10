@@ -1,17 +1,12 @@
+//!important!
 package application.git_tool.filebrowser;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreePath;
+import javax.swing.*;
 
 public class FileBrowser extends JPanel {
 
