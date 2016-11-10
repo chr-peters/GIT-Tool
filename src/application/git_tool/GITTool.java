@@ -1,6 +1,7 @@
 package application.git_tool;
 
 import application.git_tool.filebrowser.*;
+import application.git_tool.commandmenu.*;
 
 import net.miginfocom.layout.*;
 import net.miginfocom.swing.*;
@@ -18,8 +19,9 @@ public class GITTool {
         JPanel rootContainer = new JPanel(layout);
         
         FileBrowser fileBrowser = new FileBrowser(new File("/home/ikp1/peters"));
+        CommandMenu commandMenu = new CommandMenu();
         
-        rootContainer.add(new JLabel("Git Commands"), "width 25%, height 75%");
+        rootContainer.add(commandMenu, "width 25%, height 75%");
         rootContainer.add(fileBrowser, "width 50%, spany 2, growx, growy, height 100%");
         rootContainer.add(new JLabel("Info"), "width 25%, spany 3, growx, growy, wrap");
         rootContainer.add(new JLabel("History"), "spany 2, growx, growy, height 25%,wrap");
@@ -27,7 +29,7 @@ public class GITTool {
         
         frame.getContentPane().add(rootContainer);
         
-        frame.setSize(1280, 720);
+        frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
