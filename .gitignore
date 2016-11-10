@@ -1,0 +1,10 @@
+# ausgeschlossene Dateien
+
+# ausgeschlossene Verzeichnisse (mit / beenden)
+build/
+dist/
+
+# Dateien, die durch ein Muster (*, ?, [...]) identifiziert werden
+.ant-targets-build.xml
+
+# Dateien, die entgegen dem Muster eingeschlossen werden (durch ! gekennzeichnet)
