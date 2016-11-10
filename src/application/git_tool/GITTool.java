@@ -1,3 +1,7 @@
+package application.git_tool;
+
+import application.git_tool.filebrowser.*;
+
 import net.miginfocom.layout.*;
 import net.miginfocom.swing.*;
 
