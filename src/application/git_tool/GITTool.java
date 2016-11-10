@@ -17,7 +17,7 @@ public class GITTool {
         MigLayout layout = new MigLayout("debug");
         JPanel rootContainer = new JPanel(layout);
         
-        FileBrowser fileBrowser = new FileBrowser(new File("/"));
+        FileBrowser fileBrowser = new FileBrowser(new File("/home/ikp1/peters"));
         
         rootContainer.add(new JLabel("Git Commands"), "width 25%, height 75%");
         rootContainer.add(fileBrowser, "width 50%, spany 2, growx, growy, height 100%");
