@@ -1,6 +1,5 @@
 package application.git_tool.filebrowser;
 
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.io.File;
@@ -12,6 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 
 public class FileBrowser extends JPanel {
 
@@ -19,10 +19,10 @@ public class FileBrowser extends JPanel {
 		private File f;
 		private boolean loaded;
 
-		public TreeNode(File path) {
+		private TreeNode(File path) {
 			this.f = path;
 			this.loaded = false;
-			this.setUserObject(f.getName());
+			this.setUserObject(this.f.getName());
 		}
 
 		private void lazyLoad() {
@@ -35,9 +35,6 @@ public class FileBrowser extends JPanel {
 						int i=0;
 						for(String s: content) {
 							File file = new File(this.f.getAbsoluteFile()+"/"+s);
-							if(file.isHidden()) {
-								continue;
-							}
 							if(file.isDirectory()) {
 								this.insert(new TreeNode(file), i++);
 							} else {
@@ -66,14 +63,30 @@ public class FileBrowser extends JPanel {
 
 	public FileBrowser(File path) {
 		this.setLayout(new BorderLayout());
-		JTree tree = new JTree(addNodes(path));
+		JTree tree = new JTree(new TreeNode(new File("/")));
+		this.openStartPath(tree, path);
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.getViewport().add(tree);
-		this.add(BorderLayout.CENTER, scrollPane);
+		this.add(BorderLayout.WEST, scrollPane);
 	}
-
-	TreeNode addNodes(File path) {
-		TreeNode node = new TreeNode(path);
-		return node;
+	
+	private void openStartPath(JTree tree, File path) {
+		if(!path.exists() || path.getAbsolutePath().equals("/")) {
+			return;
+		}
+		if(!path.isDirectory()) {
+			path = path.getParentFile();
+		}
+		String[] pathParts = path.getAbsolutePath().substring(1).split(File.separator);
+		TreeNode startNode = (TreeNode) tree.getModel().getRoot();
+		for(String s: pathParts) {
+			for(int i=0; i<startNode.getChildCount(); i++) {
+				if(((TreeNode) startNode.getChildAt(i)).getUserObject().equals(s)) {
+					startNode = (TreeNode) startNode.getChildAt(i);
+					break;
+				}
+			}
+		}
+		tree.expandPath(new TreePath(startNode.getPath()));
 	}
 }

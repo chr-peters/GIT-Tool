@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+
+<project name="git_tool" default="compile">
+    <!-- initializes folders for class files -->
+    <target name="init-dirs">
+        <mkdir dir="build/classes" />
+        <mkdir dir="dist" />
+    </target>
+    
+    <!-- tests if links to libraries are set -->
+    <target name="test-link-libraries" depends="init-dirs">
+        <condition property="libraryLinksNotExist">
+            <not>
+                <available file="./build/classes/net" type="dir" />
+            </not>
+        </condition>
+    </target>
+    
+    <!-- link external libraries -->
+    <target name="link-libraries" depends="test-link-libraries" if="libraryLinksNotExist">
+        <exec executable="ln" error="/dev/null" os="Linux">
+            <arg line="-sn" />
+            <arg file="./src/net" />
+            <arg file="./build/classes/net" />
+        </exec>
+    </target>
+    
+    <!-- compiles all source files in the project -->
+    <target name="compile" depends="link-libraries">
+        <javac includeantruntime="true"
+               srcdir="src" destdir="build/classes">
+        </javac>
+    </target>
+    
+    <!-- executes the project -->
+    <target name="execute" depends="compile">
+        <java classpath="build/classes" classname="application.git_tool.GITTool" fork="true" />
+    </target>
+    
+    <!-- tests if links to libraries exist for deletion purposes -->
+    <target name="test-link-libraries-deletion">
+        <condition property="libraryLinksExist">
+            <available file="./build/classes/net" type="dir" />
+        </condition>
+    </target>
+    
+    <!-- carefully removes the links without deleting the libraries -->
+    <target name="delete-library-links" depends="test-link-libraries-deletion" if="libraryLinksExist">
+        <exec executable="rm" error="/dev/null" os="Linux">
+            <arg file="./build/classes/net" />
+        </exec>
+    </target>
+    
+    <!-- deletes all binary files -->
+    <target name="clean" depends="delete-library-links">
+        <delete dir="build" />
+        <delete dir="dist" />
+    </target>
+</project>
