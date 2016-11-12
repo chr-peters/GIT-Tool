@@ -59,9 +59,9 @@ public class FileBrowser extends JPanel {
     public FileBrowser(File path) {
         this.setLayout(new BorderLayout());
         JTree tree = new JTree(new TreeNode(new File("/")));
-        this.openStartPath(tree, path);
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.getViewport().add(tree);
+        this.openStartPath(tree, path);
         this.add(BorderLayout.WEST, scrollPane);
     }
 
@@ -82,6 +82,8 @@ public class FileBrowser extends JPanel {
                 }
             }
         }
-        tree.expandPath(new TreePath(startNode.getPath()));
+        TreePath startPath = new TreePath(startNode.getPath());
+        tree.expandPath(startPath);
+        tree.scrollPathToVisible(startPath);
     }
 }

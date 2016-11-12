@@ -18,7 +18,7 @@ public class GITTool {
         MigLayout layout = new MigLayout("debug");
         JPanel rootContainer = new JPanel(layout);
         
-        FileBrowser fileBrowser = new FileBrowser(new File("/home/ikp1/peters"));
+        FileBrowser fileBrowser = new FileBrowser(new File("."));
         CommandMenu commandMenu = new CommandMenu();
         
         rootContainer.add(commandMenu, "width 25%, height 75%");
