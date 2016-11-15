@@ -33,15 +33,15 @@ public class GITCommandExecutor {
             //read the output
             InputStream output = p.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(output));
-            String res = "";
+            StringBuilder res = new StringBuilder();
             String line = "";
             //TODO use StringBuilder
             while ((line=reader.readLine()) != null){
-                res += line;
+                res.append(line);
             }
             
             //if any errors or warnings occured, the output is returned
-            return res;
+            return res.toString();
         }
         catch (IOException e){
             return e.getMessage();
