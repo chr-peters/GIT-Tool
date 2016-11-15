@@ -9,7 +9,7 @@ public class InfoMenu extends JPanel {
 
     private GITTool gitTool;
     
-    public CommandLine (GITTool gitTool){
+    public InfoMenu (GITTool gitTool){
         this.gitTool = gitTool;
     }
     

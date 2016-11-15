@@ -9,7 +9,7 @@ public class History extends JPanel {
 
     private GITTool gitTool;
     
-    public CommandLine (GITTool gitTool){
+    public History (GITTool gitTool){
         this.gitTool = gitTool;
     }
     
