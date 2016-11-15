@@ -1,6 +1,8 @@
 //!important!
 package application.git_tool.filebrowser;
 
+import application.git_tool.GITTool;
+
 import java.awt.Component;
 import java.io.File;
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import javax.swing.filechooser.*;
 import javax.swing.tree.*;
 
 public class FileBrowser extends JPanel {
+    private GITTool gitTool;
     private File curPath;
 
     private class TreeNode extends DefaultMutableTreeNode {
@@ -74,7 +77,8 @@ public class FileBrowser extends JPanel {
         }
     }
 
-    public FileBrowser(File path) {
+    public FileBrowser(GITTool gitTool, File path) {
+        this.gitTool = gitTool;
         this.setLayout(new MigLayout());
         if(!path.exists()) {
             this.curPath = new File("/");
@@ -140,5 +144,9 @@ public class FileBrowser extends JPanel {
         TreePath startPath = new TreePath(startNode.getPath());
         tree.expandPath(startPath);
         tree.scrollPathToVisible(startPath);
+    }
+    
+    public void refresh() {
+        
     }
 }
