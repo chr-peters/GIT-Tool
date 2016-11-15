@@ -53,6 +53,8 @@ public class GITTool {
         
         //set up process builder in the current directory
         this.processBuilder = new ProcessBuilder();
+        //this way error output and standard output are merged together in the subprocesses
+        this.processBuilder.redirectErrorStream(true);
         this.processBuilder.directory(new File("."));
     }
 
