@@ -2,6 +2,7 @@ package application.git_tool;
 
 import application.git_tool.filebrowser.*;
 import application.git_tool.commandmenu.*;
+import application.git_tool.commandline.*;
 
 import net.miginfocom.layout.*;
 import net.miginfocom.swing.*;
@@ -20,11 +21,19 @@ public class GITTool {
     //components
     private FileBrowser fileBrowser;
     private CommandMenu commandMenu;
+    private CommandLine commandLine;
     
     //central instance of the process-builder to perform tasks within the system
     private ProcessBuilder processBuilder;
 
     public GITTool (){
+    
+        //set up process builder in the current directory
+        this.processBuilder = new ProcessBuilder();
+        //this way error output and standard output are merged together in the subprocesses
+        this.processBuilder.redirectErrorStream(true);
+        this.processBuilder.directory(new File("."));
+    
         //create JFrame
         this.frame = new JFrame("GIT Tool");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -36,13 +45,14 @@ public class GITTool {
         //create components
         this.fileBrowser = new FileBrowser(this, new File("."));
         this.commandMenu = new CommandMenu();
+        this.commandLine = new CommandLine(this);
         
         //set up layout
         rootContainer.add(commandMenu, "width 25%, height 75%");
         rootContainer.add(fileBrowser, "width 50%, spany 2, growx, growy, height 100%");
         rootContainer.add(new JLabel("Info"), "width 25%, spany 3, growx, growy, wrap");
         rootContainer.add(new JLabel("History"), "spany 2, growx, growy, height 25%,wrap");
-        rootContainer.add(new JLabel("Terminal"), "growx, growy, skip, skip, skip");
+        rootContainer.add(commandLine, "growx, growy, skip, skip, skip");
         
         //set up JFrame
         frame.getContentPane().add(rootContainer);
@@ -50,12 +60,6 @@ public class GITTool {
         frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-        
-        //set up process builder in the current directory
-        this.processBuilder = new ProcessBuilder();
-        //this way error output and standard output are merged together in the subprocesses
-        this.processBuilder.redirectErrorStream(true);
-        this.processBuilder.directory(new File("."));
     }
 
     public static void main (String args []){
