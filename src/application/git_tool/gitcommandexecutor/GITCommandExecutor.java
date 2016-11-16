@@ -38,26 +38,16 @@ public class GITCommandExecutor {
         command.add("--quiet");
         
         //execute the command
-        try {
-            this.processBuilder.command(command);
-            Process p = this.processBuilder.start();
-            
-            //read the output
-            return getProcessOutput(p);
-
-        }
-        catch (IOException e){
-            return e.getMessage();
-        }
+        return executeCommand(command);
     }
     
     /**
-    * Performs the "git add" command with the given options in the current directory of the processBuilder
+    * Performs the "git add" command with the given options in the current directory of the processBuilder.
     *
-    * @param force true, if the --force option is to be added
-    * @param update true, if the --update option is to be added
-    * @param all true, if the --all option is to be added
-    * @param ignore_errors true, if the --ignore-errors option is to be added
+    * @param force allow adding otherwise ignored files
+    * @param update updates changes made to files that already existed but does not add new files
+    * @param all add, modify or remove every index entry that does not match the working tree
+    * @param ignore_errors proceed adding subsequent files even if errors occured
     * @param pathspec files to add content from. See Git-Documentation for more details
     * @return Any output of the command
     */
@@ -74,12 +64,47 @@ public class GITCommandExecutor {
             command.add("--all");
         if(ignore_errors)
             command.add("--ignore-errors");
+        //separate file names from option names
         command.add("--");
         command.add(pathspec);
         
         //execute the command
+        return executeCommand(command);
+    }
+    
+    /**
+    * Performs the "git rm --quiet" command with the given options in the current directory of the processBuilder.
+    * --quiet ensures that only error and warning messages are printed
+    *
+    * @param force don't check if the files in the working tree are up-to-date with the tip of the branch and just delete them
+    * @param r allow recursive removal when a leading directory name is given
+    * @param cached only remove the files from the index but not from the working tree
+    * @return Any output of the command
+    */
+    public String rm(boolean force, boolean r, boolean cached, String file) {
+        //generate the command from the options
+        List<String> command = new ArrayList<String>(8);
+        command.add("git");
+        command.add("rm");
+        if(force)
+            command.add("--force");
+        if(r)
+            command.add("-r");
+        if(cached)
+            command.add("--cached");
+        command.add("--quiet");
+        //separate file names from option names
+        command.add("--");
+        command.add(file);
+        
+        //execute the command
+        return executeCommand(command);
+    }
+    
+    //executes a given command in the local processBuilder
+    private String executeCommand(List<String> params) {
         try {
-            this.processBuilder.command(command);
+            this.processBuilder.command(params);
             Process p = this.processBuilder.start();
             
             //read the output
