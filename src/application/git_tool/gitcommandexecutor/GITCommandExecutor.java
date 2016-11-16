@@ -17,20 +17,29 @@ public class GITCommandExecutor {
         ProcessBuilder p = new ProcessBuilder();
         p.directory(new File("../TestRepository"));
         GITCommandExecutor commandExecutor = new GITCommandExecutor(p);
-        System.out.println(commandExecutor.init());
+        System.out.println(commandExecutor.init(false));
         System.out.println(commandExecutor.add(false, false, false, false, "addtest.txt"));
     }
     
     /**
-    * Performs the "git init -q" command in the current directory of the processBuilder.
-    * -q ensures that only error and warning messages are printed
+    * Performs the "git init --quiet" command in the current directory of the processBuilder.
+    * --quiet ensures that only error and warning messages are printed
     * 
+    * @param bare true, if the --bare option is to be added
     * @return Error or warning-message
     */
-    public String init(){
+    public String init(boolean bare){
+        //generate the command from the options
+        List<String> command = new ArrayList<String>(8);
+        command.add("git");
+        command.add("init");
+        if(bare)
+            command.add("--bare");
+        command.add("--quiet");
+        
+        //execute the command
         try {
-            //perform the command
-            this.processBuilder.command("git", "init", "-q");
+            this.processBuilder.command(command);
             Process p = this.processBuilder.start();
             
             //read the output
