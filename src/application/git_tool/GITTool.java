@@ -43,7 +43,7 @@ public class GITTool {
         this.rootContainer = new JPanel(layout);
         
         //create components
-        this.fileBrowser = new FileBrowser(this, new File("."));
+        this.fileBrowser = new FileBrowser(this);
         this.commandMenu = new CommandMenu();
         this.commandLine = new CommandLine(this);
         
