@@ -79,6 +79,7 @@ public class GITCommandExecutor {
     * @param force don't check if the files in the working tree are up-to-date with the tip of the branch and just delete them
     * @param r allow recursive removal when a leading directory name is given
     * @param cached only remove the files from the index but not from the working tree
+    * @param file files to remove
     * @return Any output of the command
     */
     public String rm(boolean force, boolean r, boolean cached, String file) {
@@ -96,6 +97,24 @@ public class GITCommandExecutor {
         //separate file names from option names
         command.add("--");
         command.add(file);
+        
+        //execute the command
+        return executeCommand(command);
+    }
+    
+    /**
+    * Performs the "git checkout --quiet" command to switch to the given branch or the given commit
+    *
+    * @param branchOrcommit the branch or commit that is checked out
+    * @return any output of the command
+    */
+    public String checkout(String branchOrCommit) {
+        //generate the command from the options
+        List<String> command = new ArrayList<String>(8);
+        command.add("git");
+        command.add("checkout");
+        command.add("--quiet");
+        command.add(branchOrCommit);
         
         //execute the command
         return executeCommand(command);
