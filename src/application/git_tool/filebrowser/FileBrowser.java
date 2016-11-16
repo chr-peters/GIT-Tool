@@ -12,11 +12,20 @@ import net.miginfocom.layout.*;
 import net.miginfocom.swing.*;
 
 import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.filechooser.*;
 import javax.swing.tree.*;
 
 public class FileBrowser extends JPanel {
     private GITTool gitTool;
+    
+    private class TreeExpansionHandler implements TreeExpansionListener {
+        public void treeExpanded(TreeExpansionEvent e) {
+        }
+        
+        public void treeCollapsed(TreeExpansionEvent e) {
+        }
+    }
 
     private class TreeNode extends DefaultMutableTreeNode {
         private File f;
@@ -30,7 +39,7 @@ public class FileBrowser extends JPanel {
 
         private void lazyLoad() {
             if(!this.loaded) {
-                try {
+                /*try {
                     String[] content = this.f.list();
                     Arrays.sort(content, String.CASE_INSENSITIVE_ORDER);
                     ArrayList<File> files = new ArrayList<File>();
@@ -47,6 +56,13 @@ public class FileBrowser extends JPanel {
                         this.insert(new TreeNode(file), i++);
                     }
                 } catch(NullPointerException e) {
+                }*/
+                File tmp = FileBrowser.this.gitTool.getProcessBuilder().directory();
+                FileBrowser.this.gitTool.getProcessBuilder().directory(this.f.getAbsoluteFile());
+                File[] content = FileBrowser.this.getContent();
+                FileBrowser.this.gitTool.getProcessBuilder().directory(tmp.getAbsoluteFile());
+                for(int i=0; i<content.length; i++) {
+                    this.insert(new TreeNode(content[i]), i);
                 }
                 loaded = true;
             }
@@ -84,6 +100,7 @@ public class FileBrowser extends JPanel {
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.getViewport().add(tree);
         this.openStartPath(tree);
+        tree.addTreeExpansionListener(new TreeExpansionHandler());
         this.add(scrollPane, "width 40%, height 100%");
         
         JList<File> fileList = new JList<File>(this.getContent());
