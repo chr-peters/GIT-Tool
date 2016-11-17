@@ -19,6 +19,7 @@ public class GITCommandExecutor {
         GITCommandExecutor commandExecutor = new GITCommandExecutor(p);
         System.out.println(commandExecutor.init(false));
         System.out.println(commandExecutor.add(false, false, false, false, "addtest.txt"));
+        System.out.println(commandExecutor.commit(false, false, "", ""));
     }
     
     /**
@@ -163,6 +164,8 @@ public class GITCommandExecutor {
         if(amend)
             command.add("--amend");
         command.add("-m");
+        if(commitMessage.equals(""))
+            return "No commit-message specified!";
         command.add(commitMessage);
         if(!file.equals("")){
             command.add("--");
