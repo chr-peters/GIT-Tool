@@ -117,6 +117,9 @@ public class FileBrowser extends JPanel {
                     } catch(IOException exception) {
                     }
                 } else {
+                    if(FileBrowser.this.tree.isCollapsed(new TreePath(((MyTreeNode) FileBrowser.this.tree.getModel().getRoot()).getPath()))) {
+                        FileBrowser.this.openPath(new File("/"));
+                    }
                     FileBrowser.this.openPath(clicked);
                 }
             }
