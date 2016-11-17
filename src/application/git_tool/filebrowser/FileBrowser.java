@@ -177,7 +177,7 @@ public class FileBrowser extends JPanel {
                 continue;
             }
             TreePath path = this.tree.getNextMatch(s, currentRow, Position.Bias.Forward);
-            currentRow = this.tree.getRowForPath(path);
+            currentRow = this.tree.getRowForPath(path)+1;
             this.tree.expandPath(path);
             this.tree.scrollPathToVisible(path);
         }
