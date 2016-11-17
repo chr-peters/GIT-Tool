@@ -120,6 +120,28 @@ public class GITCommandExecutor {
         return executeCommand(command);
     }
     
+    /**
+    * Performs the "git clone --quiet" command to clone an existing repository into a directory
+    *
+    * @param repository the (possibly remote) and correctly specified repository to clone from
+    * @param diretory the name of a new directory to clone into. If the repository is to be cloned
+    *                 into the current directory, just leave the string empty
+    * @return any output of the command, "" if the execution was successful
+    */
+    public String clone(String repository, String directory){
+        //generate the command from the options
+        List<String> command = new ArrayList<String>(5);
+        command.add("git");
+        command.add("clone");
+        command.add("--quiet");
+        command.add(repository);
+        if (!directory.equals(""))
+            command.add(directory);
+        
+        //execute the command
+        return executeCommand(command);
+    }
+    
     //executes a given command in the local processBuilder
     private String executeCommand(List<String> params) {
         try {
