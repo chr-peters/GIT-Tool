@@ -37,6 +37,11 @@
         <java classpath="build/classes" classname="application.git_tool.GITTool" fork="true" />
     </target>
     
+    <!-- test the command-executor -->
+    <target name="test-executor" depends="compile">
+        <java classpath="build/classes" classname="application.git_tool.gitcommandexecutor.GITCommandExecutor" fork="true" />
+    </target>
+    
     <!-- tests if links to libraries exist for deletion purposes -->
     <target name="test-link-libraries-deletion">
         <condition property="libraryLinksExist">
