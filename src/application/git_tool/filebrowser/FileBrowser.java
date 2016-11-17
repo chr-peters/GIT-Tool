@@ -4,6 +4,8 @@ package application.git_tool.filebrowser;
 import application.git_tool.GITTool;
 
 import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.*;
 
@@ -13,6 +15,7 @@ import net.miginfocom.swing.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.filechooser.*;
+import javax.swing.text.*;
 import javax.swing.tree.*;
 
 public class FileBrowser extends JPanel {
@@ -58,18 +61,36 @@ public class FileBrowser extends JPanel {
     private class MyTreeWillExpandListener implements TreeWillExpandListener {
         @Override
         public void treeWillExpand(TreeExpansionEvent e) {
-            ((MyTreeNode) e.getPath().getLastPathComponent()).load();
-            FileBrowser.this.gitTool.getProcessBuilder().directory(((MyTreeNode) e.getPath().getLastPathComponent()).path);
+            MyTreeNode node = (MyTreeNode) e.getPath().getLastPathComponent();
+            node.load();
+            MyTreeNode parent = (MyTreeNode) node.getParent();
+            if(parent!=null) {
+                for(int i=0; i<parent.getChildCount(); i++) {
+                    TreePath tmp = new TreePath(((MyTreeNode) parent.getChildAt(i)).getPath());
+                    if(FileBrowser.this.tree.isExpanded(tmp)) {
+                        FileBrowser.this.tree.collapsePath(tmp);
+                    }
+                }
+            }
+            FileBrowser.this.gitTool.getProcessBuilder().directory(node.path);
+            FileBrowser.this.list.setListData(FileBrowser.this.getContent(FileBrowser.this.gitTool.getProcessBuilder().directory()));
         }
         
         @Override
         public void treeWillCollapse(TreeExpansionEvent e) {
             MyTreeNode node = (MyTreeNode) e.getPath().getLastPathComponent();
+            for(int i=0; i<node.getChildCount(); i++) {
+                TreePath tmp = new TreePath(((MyTreeNode) node.getChildAt(i)).getPath());
+                if(FileBrowser.this.tree.isExpanded(tmp)) {
+                    FileBrowser.this.tree.collapsePath(tmp);
+                }
+            }
             if(node.getParent()!=null) {
                 FileBrowser.this.gitTool.getProcessBuilder().directory(((MyTreeNode) node.getParent()).path);
             } else {
                 FileBrowser.this.gitTool.getProcessBuilder().directory(((MyTreeNode) node.getRoot()).path);
             }
+            FileBrowser.this.list.setListData(FileBrowser.this.getContent(FileBrowser.this.gitTool.getProcessBuilder().directory()));
         }
     }
     
@@ -85,32 +106,44 @@ public class FileBrowser extends JPanel {
         }
     }
     
-    public FileBrowser(GITTool gitTool) {
-        this.gitTool = gitTool;
-        String[] startPath = this.gitTool.getProcessBuilder().directory().getAbsolutePath().substring(1).split(File.separator);
-        this.setLayout(new MigLayout());
-        
-        this.tree = new JTree(new MyTreeModel(new MyTreeNode(new File("/"))));
-        this.tree.addTreeWillExpandListener(new MyTreeWillExpandListener());
-        MyTreeNode startNode = (MyTreeNode) this.tree.getModel().getRoot();
-        for(String s: startPath) {
-            for(int i=0; i<startNode.getChildCount(); i++) {
-                if(((MyTreeNode) startNode.getChildAt(i)).getUserObject().equals(s)) {
-                    startNode = (MyTreeNode) startNode.getChildAt(i);
-                    this.tree.expandPath(new TreePath(startNode.getPath()));
-                    break;
-                }
+    private class MyMouseAdapter extends MouseAdapter {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if(e.getButton()==MouseEvent.BUTTON1 && e.getClickCount()==2) {
+                File clicked = FileBrowser.this.list.getModel().getElementAt(FileBrowser.this.list.locationToIndex(e.getPoint()));
+                TreePath path = FileBrowser.this.tree.getNextMatch(clicked.getName(), 0, Position.Bias.Forward);
+                FileBrowser.this.tree.expandPath(path);
+                FileBrowser.this.tree.scrollPathToVisible(path);
             }
         }
+    }
+    
+    public FileBrowser(GITTool gitTool) {
+        this.gitTool = gitTool;
+        this.tree = new JTree(new MyTreeModel(new MyTreeNode(new File("/"))));
+        this.list = new JList<File>();
+        this.setLayout(new MigLayout());
+        
+        this.tree.addTreeWillExpandListener(new MyTreeWillExpandListener());
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.getViewport().add(this.tree);
         this.add(scrollPane, "width 40%, height 100%");
-        this.tree.scrollPathToVisible(new TreePath(startNode.getPath()));
+        String[] startPath = this.gitTool.getProcessBuilder().directory().getAbsolutePath().substring(1).split(File.separator);
+        int currentRow = 0;
+        for(String s: startPath) {
+            if(s.equals(".")) {
+                continue;
+            }
+            TreePath path = this.tree.getNextMatch(s, currentRow, Position.Bias.Forward);
+            currentRow = this.tree.getRowForPath(path);
+            this.tree.expandPath(path);
+            this.tree.scrollPathToVisible(path);
+        }
         
-        this.list = new JList<File>(this.getContent(this.gitTool.getProcessBuilder().directory()));
         this.list.setCellRenderer(new MyListCellRenderer());
         this.list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
         this.list.setVisibleRowCount(0);
+        this.list.addMouseListener(new MyMouseAdapter());
         JScrollPane scrollPane2 = new JScrollPane();
         scrollPane2.getViewport().add(this.list);
         this.add(scrollPane2, "width 60%, height 100%");
