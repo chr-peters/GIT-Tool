@@ -117,6 +117,9 @@ public class FileBrowser extends JPanel {
                     } catch(IOException exception) {
                     }
                 } else {
+                    if(FileBrowser.this.tree.isCollapsed(new TreePath(((MyTreeNode) FileBrowser.this.tree.getModel().getRoot()).getPath()))) {
+                        FileBrowser.this.openPath(new File("/"));
+                    }
                     FileBrowser.this.openPath(clicked);
                 }
             }
@@ -177,7 +180,7 @@ public class FileBrowser extends JPanel {
                 continue;
             }
             TreePath path = this.tree.getNextMatch(s, currentRow, Position.Bias.Forward);
-            currentRow = this.tree.getRowForPath(path);
+            currentRow = this.tree.getRowForPath(path)+1;
             this.tree.expandPath(path);
             this.tree.scrollPathToVisible(path);
         }
