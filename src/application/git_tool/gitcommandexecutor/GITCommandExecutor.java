@@ -19,6 +19,7 @@ public class GITCommandExecutor {
         GITCommandExecutor commandExecutor = new GITCommandExecutor(p);
         System.out.println(commandExecutor.init(false));
         System.out.println(commandExecutor.add(false, false, false, false, "addtest.txt"));
+        System.out.println(commandExecutor.commit(false, false, "", ""));
     }
     
     /**
@@ -128,7 +129,7 @@ public class GITCommandExecutor {
     *                 into the current directory, just leave the string empty
     * @return any output of the command, "" if the execution was successful
     */
-    public String clone(String repository, String directory){
+    public String clone(String repository, String directory) {
         //generate the command from the options
         List<String> command = new ArrayList<String>(6);
         command.add("git");
@@ -138,6 +139,38 @@ public class GITCommandExecutor {
         command.add(repository);
         if (!directory.equals(""))
             command.add(directory);
+        
+        //execute the command
+        return executeCommand(command);
+    }
+    
+    /**
+    * Performs the "git commit --quiet" command to store the current contents of the index in a new commit with a log message
+    *
+    * @param all automatically stage all files that have been modified or deleted
+    * @param amend amend new changes to the last commit instead of creating a new one
+    * @param commitMessage the corresponding log message
+    * @param file (optional, just enter "" if not desired) only commit and stage the most recent contents of the specified files
+    * @return any output of the command, "" if the execution was successful
+    */
+    public String commit(boolean all, boolean amend, String commitMessage, String file) {
+        //generate the command from the options
+        List<String> command = new ArrayList<String>(9);
+        command.add("git");
+        command.add("commit");
+        command.add("--quiet");
+        if(all)
+            command.add("--all");
+        if(amend)
+            command.add("--amend");
+        command.add("-m");
+        if(commitMessage.equals(""))
+            return "No commit-message specified!";
+        command.add(commitMessage);
+        if(!file.equals("")){
+            command.add("--");
+            command.add(file);
+        }
         
         //execute the command
         return executeCommand(command);
