@@ -28,6 +28,7 @@ public class FileBrowser extends JPanel {
             super(node);
         }
         
+        //check if node is a leaf, true only if node is a file
         @Override
         public boolean isLeaf(Object node) {
             return ((MyTreeNode) node).path.isFile();
@@ -47,6 +48,7 @@ public class FileBrowser extends JPanel {
             }
         }
         
+        //method for lazy loading the tree nodes
         private void load() {
             if(!this.loaded) {
                 File[] content = FileBrowser.this.getContent(this.path);
@@ -58,7 +60,9 @@ public class FileBrowser extends JPanel {
         }
     }
     
+    //class for handling the tree events and updating the current working directory
     private class MyTreeWillExpandListener implements TreeWillExpandListener {
+        //collapses all siblings of the newly expanding node
         @Override
         public void treeWillExpand(TreeExpansionEvent e) {
             MyTreeNode node = (MyTreeNode) e.getPath().getLastPathComponent();
@@ -76,6 +80,7 @@ public class FileBrowser extends JPanel {
             FileBrowser.this.list.setListData(FileBrowser.this.getContent(FileBrowser.this.gitTool.getProcessBuilder().directory()));
         }
         
+        //collapses all child nodes of the newly collapsed node
         @Override
         public void treeWillCollapse(TreeExpansionEvent e) {
             MyTreeNode node = (MyTreeNode) e.getPath().getLastPathComponent();
@@ -94,6 +99,7 @@ public class FileBrowser extends JPanel {
         }
     }
     
+    //class for editing each list element, so that list elements display an icon and the file name
     private class MyListCellRenderer extends DefaultListCellRenderer {
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -106,7 +112,9 @@ public class FileBrowser extends JPanel {
         }
     }
     
+    //class for handling the list left click event
     private class MyMouseAdapter extends MouseAdapter {
+        //if double clicked with button1 expands the directory or on files open them
         @Override
         public void mouseClicked(MouseEvent e) {
             if(e.getButton()==MouseEvent.BUTTON1 && e.getClickCount()==2) {
@@ -126,6 +134,7 @@ public class FileBrowser extends JPanel {
         }
     }
     
+    //setting private attributes, placing tree and list in scrollpane and open current working directory
     public FileBrowser(GITTool gitTool) {
         this.gitTool = gitTool;
         this.desktop = Desktop.getDesktop();
@@ -148,6 +157,7 @@ public class FileBrowser extends JPanel {
         this.add(scrollPane2, "width 60%, height 100%");
     }
     
+    //returns the content of the directory denoted by path or an empty array if path is not a directory
     private File[] getContent(File path) {
         try{
             String[] contentString = path.getAbsoluteFile().list();
@@ -172,6 +182,7 @@ public class FileBrowser extends JPanel {
         }
     }
     
+    //expands the tree path to the openPath file
     private void openPath(File openPath) {
         String[] openPathParts = openPath.getAbsolutePath().substring(1).split(File.separator);
         int currentRow = 0;
