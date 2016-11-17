@@ -190,8 +190,11 @@ public class FileBrowser extends JPanel {
             if(s.equals(".")) {
                 continue;
             }
-            TreePath path = this.tree.getNextMatch(s, currentRow, Position.Bias.Forward);
-            currentRow = this.tree.getRowForPath(path)+1;
+            TreePath path;
+            do {
+                path = this.tree.getNextMatch(s, currentRow, Position.Bias.Forward);
+                currentRow = this.tree.getRowForPath(path)+1;
+            } while(!((MyTreeNode) path.getLastPathComponent()).getUserObject().equals(s));
             this.tree.expandPath(path);
             this.tree.scrollPathToVisible(path);
         }
