@@ -19,7 +19,8 @@ public class GITCommandExecutor {
         GITCommandExecutor commandExecutor = new GITCommandExecutor(p);
         System.out.println(commandExecutor.init(false));
         System.out.println(commandExecutor.add(false, false, false, false, "addtest.txt"));
-        System.out.println(commandExecutor.commit(false, false, "", ""));
+        System.out.println(commandExecutor.reset("", ""));
+        //System.out.println(commandExecutor.commit(false, false, "", ""));
     }
     
     /**
@@ -170,6 +171,31 @@ public class GITCommandExecutor {
         if(!file.equals("")){
             command.add("--");
             command.add(file);
+        }
+        
+        //execute the command
+        return executeCommand(command);
+    }
+    
+    /**
+    * Performs the "git reset --quiet" command to reset the current HEAD to the specified state
+    *
+    * @param treeish something treeish, even a commit works fine. Leave at "" for HEAD
+    * @param paths all directories which will be affected by the reset. Leave at "" for every directory. But be careful:
+    *              specifying this option together with a commit will most likely lead to errors.
+    * @return any output of the command, "" if the execution was successful
+    */
+    public String reset(String treeish, String paths) {
+        //generate the command from the options
+        List<String> command = new ArrayList<String>(6);
+        command.add("git");
+        command.add("reset");
+        command.add("--quiet");
+        if(!treeish.equals(""))
+            command.add(treeish);
+        if(!paths.equals("")){
+            command.add("--");
+            command.add(paths);
         }
         
         //execute the command
