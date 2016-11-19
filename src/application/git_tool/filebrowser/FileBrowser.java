@@ -108,17 +108,39 @@ public class FileBrowser extends JPanel {
             File f = (File) value;
             l.setText(f.getName());
             l.setIcon(FileSystemView.getFileSystemView().getSystemIcon(f));
+            l.setBorder(BorderFactory.createEmptyBorder());
             return l;
         }
     }
     
-    //class for handling the list left click event
+    //class for handling the list click events
     private class MyMouseAdapter extends MouseAdapter {
-        //if double clicked with button1 expands the directory or on files open them
+        //mouse pressed over no element removes any selection
+        @Override
+        public void mousePressed(MouseEvent e) {
+            int index = FileBrowser.this.list.locationToIndex(e.getPoint());
+            if(!FileBrowser.this.list.getCellBounds(index, index).contains(e.getPoint())) {
+                FileBrowser.this.list.clearSelection();
+            }
+        }
+        
         @Override
         public void mouseClicked(MouseEvent e) {
-            if(e.getButton()==MouseEvent.BUTTON1 && e.getClickCount()==2) {
-                File clicked = FileBrowser.this.list.getModel().getElementAt(FileBrowser.this.list.locationToIndex(e.getPoint()));
+            boolean hit = true;
+            int index = FileBrowser.this.list.locationToIndex(e.getPoint());
+            //removes any selection if no element is hit
+            if(!FileBrowser.this.list.getCellBounds(index, index).contains(e.getPoint())) {
+                hit = false;
+                FileBrowser.this.list.clearSelection();
+            }
+            //if clicked on a non selected element with not the button1 removes any selection and selects only this element
+            if(hit && e.getButton()!=MouseEvent.BUTTON1 && !FileBrowser.this.list.isSelectedIndex(index)) {
+                FileBrowser.this.list.clearSelection();
+                FileBrowser.this.list.setSelectedIndex(index);
+            }
+            //if double clicked with button1 tries to opens directory or file
+            if(hit && e.getButton()==MouseEvent.BUTTON1 && e.getClickCount()==2) {
+                File clicked = FileBrowser.this.list.getModel().getElementAt(index);
                 if(clicked.isFile()) {
                     try {
                         FileBrowser.this.desktop.open(clicked);
