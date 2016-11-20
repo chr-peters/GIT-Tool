@@ -22,6 +22,7 @@ public class FileBrowser extends JPanel {
     private Desktop desktop;
     private JTree tree;
     private JList<File> list;
+    private JPopupMenu menu;
     
     private class MyTreeModel extends DefaultTreeModel {
         private MyTreeModel(MyTreeNode node) {
@@ -153,6 +154,39 @@ public class FileBrowser extends JPanel {
                     FileBrowser.this.openPath(clicked);
                 }
             }
+            //show popup menu
+            if(e.getButton()!=MouseEvent.BUTTON1) {
+                if(!hit) {
+                    FileBrowser.this.menu.getComponent(0).setEnabled(false);
+                    FileBrowser.this.menu.getComponent(1).setEnabled(false);
+                    FileBrowser.this.menu.getComponent(2).setEnabled(true);
+                    FileBrowser.this.menu.getComponent(3).setEnabled(true);
+                    FileBrowser.this.menu.getComponent(4).setEnabled(false);
+                    FileBrowser.this.menu.getComponent(5).setEnabled(false);
+                    FileBrowser.this.menu.getComponent(6).setEnabled(false);
+                    FileBrowser.this.menu.getComponent(7).setEnabled(false);
+                    FileBrowser.this.menu.getComponent(8).setEnabled(true);
+                    FileBrowser.this.menu.getComponent(9).setEnabled(true);
+                } else {
+                    FileBrowser.this.menu.getComponent(0).setEnabled(true);
+                    FileBrowser.this.menu.getComponent(1).setEnabled(true);
+                    FileBrowser.this.menu.getComponent(2).setEnabled(false);
+                    FileBrowser.this.menu.getComponent(3).setEnabled(false);
+                    FileBrowser.this.menu.getComponent(4).setEnabled(true);
+                    FileBrowser.this.menu.getComponent(5).setEnabled(true);
+                    FileBrowser.this.menu.getComponent(6).setEnabled(true);
+                    for(File selected: FileBrowser.this.list.getSelectedValuesList()) {
+                        if(!selected.isDirectory()) {
+                            FileBrowser.this.menu.getComponent(6).setEnabled(false);
+                            break;
+                        }
+                    }
+                    FileBrowser.this.menu.getComponent(7).setEnabled(true);
+                    FileBrowser.this.menu.getComponent(8).setEnabled(false);
+                    FileBrowser.this.menu.getComponent(9).setEnabled(false);
+                }
+                FileBrowser.this.menu.show(e.getComponent(), e.getX(), e.getY());
+            }
         }
     }
     
@@ -162,6 +196,7 @@ public class FileBrowser extends JPanel {
         this.desktop = Desktop.getDesktop();
         this.tree = new JTree(new MyTreeModel(new MyTreeNode(new File("/"))));
         this.list = new JList<File>();
+        this.menu = new JPopupMenu();
         this.setLayout(new MigLayout());
         
         this.tree.addTreeWillExpandListener(new MyTreeWillExpandListener());
@@ -177,6 +212,61 @@ public class FileBrowser extends JPanel {
         JScrollPane scrollPane2 = new JScrollPane();
         scrollPane2.getViewport().add(this.list);
         this.add(scrollPane2, "width 60%, height 100%");
+        this.createPopupMenu();
+    }
+    
+    //creates the popup menu
+    private void createPopupMenu() {
+        this.menu.add(new AbstractAction("chmod") {
+            public void actionPerformed(ActionEvent e) {
+                //chmod
+            }
+        });
+        this.menu.add(new AbstractAction("cp") {
+            public void actionPerformed(ActionEvent e) {
+                //cp
+            }
+        });
+        this.menu.add(new AbstractAction("find") {
+            public void actionPerformed(ActionEvent e) {
+                //find
+            }
+        });
+        this.menu.add(new AbstractAction("mkdir") {
+            public void actionPerformed(ActionEvent e) {
+                //mkdir
+            }
+        });
+        this.menu.add(new AbstractAction("mv") {
+            public void actionPerformed(ActionEvent e) {
+                //mv
+            }
+        });
+        this.menu.add(new AbstractAction("rm") {
+            public void actionPerformed(ActionEvent e) {
+                //rm
+            }
+        });
+        this.menu.add(new AbstractAction("rmdir") {
+            public void actionPerformed(ActionEvent e) {
+                //rmdir
+            }
+        });
+        this.menu.add(new AbstractAction("tar") {
+            public void actionPerformed(ActionEvent e) {
+                //tar
+            }
+        });
+        this.menu.add(new AbstractAction("touch") {
+            public void actionPerformed(ActionEvent e) {
+                //touch
+            }
+        });
+        this.menu.add(new AbstractAction("wget") {
+            public void actionPerformed(ActionEvent e) {
+                //wget
+            }
+        });
     }
     
     //returns the content of the directory denoted by path or an empty array if path is not a directory
