@@ -14,4 +14,11 @@ public class Parameter{
     this.paramName = paramName;
     hasArg = false;
   }
+
+  public String getName(){
+    return paramName;
+  }
+  public boolean hasArg(){
+    return hasArg;
+  }
 }

@@ -10,10 +10,10 @@ public class Command{
     this.params = params;
   }
 
-public Command(String cmdName){
-  this.cmdName = cmdName;
-  params = null;
-}
+  public Command(String cmdName){
+    this.cmdName = cmdName;
+    params = null;
+  }
 
   public String getName(){
     return cmdName;
