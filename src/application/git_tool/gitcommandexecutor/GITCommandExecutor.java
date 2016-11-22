@@ -241,6 +241,29 @@ public class GITCommandExecutor {
         return executeCommand(command);
     }
     
+    /**
+    * Performs the "git pull --quiet" command to fetch information from another repository and incorporate them into the current branch
+    *
+    * @param repository Name of the remote repository. If left empty, it defaults to origin.
+    * @param refspec    Name of a remote reference that is pulled from which is usually master. It can be left empty.
+    *
+    * @return any output of the command, "" if the execution was successful
+    */
+    public String pull(String repository, String refspec) {
+        //generate the command from the options
+        List<String> command = new ArrayList<String>(5);
+        command.add("git");
+        command.add("pull");
+        command.add("--quiet");
+        if(!repository.equals(""))
+            command.add(repository);
+        if(!refspec.equals(""))
+            command.add(refspec);
+        
+        //execute the command
+        return executeCommand(command);
+    }
+    
     //executes a given command in the local processBuilder
     private String executeCommand(List<String> params) {
         try {
