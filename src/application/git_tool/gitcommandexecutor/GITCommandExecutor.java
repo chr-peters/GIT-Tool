@@ -218,6 +218,29 @@ public class GITCommandExecutor {
         return executeCommand(command);
     }
     
+    /**
+    * Performs the "git push --quiet" command to update remote refs along with associated objects
+    *
+    * @param repository The repository that is pushed into. Usually a remote name is given, if left empty,
+    *                   it defaults to origin.
+    * @param refspec    Specification of what to push where. See the documentation for more details. It can be left empty.
+    * @return any output of the command, "" if the execution was successful
+    */
+    public String push(String repository, String refspec) {
+        //generate the command from the options
+        List<String> command = new ArrayList<String>(5);
+        command.add("git");
+        command.add("push");
+        command.add("--quiet");
+        if(!repository.equals(""))
+            command.add(repository);
+        if(!refspec.equals(""))
+            command.add(refspec);
+        
+        //execute the command
+        return executeCommand(command);
+    }
+    
     //executes a given command in the local processBuilder
     private String executeCommand(List<String> params) {
         try {
