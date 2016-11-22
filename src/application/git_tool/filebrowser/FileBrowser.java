@@ -120,7 +120,7 @@ public class FileBrowser extends JPanel {
         @Override
         public void mousePressed(MouseEvent e) {
             int index = FileBrowser.this.list.locationToIndex(e.getPoint());
-            if(!FileBrowser.this.list.getCellBounds(index, index).contains(e.getPoint())) {
+            if(index==-1 || !FileBrowser.this.list.getCellBounds(index, index).contains(e.getPoint())) {
                 FileBrowser.this.list.clearSelection();
             }
         }
@@ -130,7 +130,7 @@ public class FileBrowser extends JPanel {
             boolean hit = true;
             int index = FileBrowser.this.list.locationToIndex(e.getPoint());
             //removes any selection if no element is hit
-            if(!FileBrowser.this.list.getCellBounds(index, index).contains(e.getPoint())) {
+            if(index==-1 || !FileBrowser.this.list.getCellBounds(index, index).contains(e.getPoint())) {
                 hit = false;
                 FileBrowser.this.list.clearSelection();
             }
