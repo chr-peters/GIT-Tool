@@ -219,27 +219,82 @@ public class FileBrowser extends JPanel {
     private void createPopupMenu() {
         this.menu.add(new AbstractAction("chmod") {
             public void actionPerformed(ActionEvent e) {
-                //chmod
+                JTextField textField = new JTextField("neue Rechte", 10);
+                textField.addActionListener(new AbstractAction() {
+                    public void actionPerformed(ActionEvent e) {
+                        String text = textField.getText();
+                        ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
+                    }
+                });
+                JPopupMenu tmp = new JPopupMenu();
+                tmp.add(textField);
+                Point p = FileBrowser.this.list.getMousePosition();
+                tmp.show(FileBrowser.this.list, (int) p.getX(), (int) p.getY());
+                tmp = null;
             }
         });
         this.menu.add(new AbstractAction("cp") {
             public void actionPerformed(ActionEvent e) {
-                //cp
+                JTextField textField = new JTextField("wohin", 10);
+                textField.addActionListener(new AbstractAction() {
+                    public void actionPerformed(ActionEvent e) {
+                        String text = textField.getText();
+                        ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
+                    }
+                });
+                JPopupMenu tmp = new JPopupMenu();
+                tmp.add(textField);
+                Point p = FileBrowser.this.list.getMousePosition();
+                tmp.show(FileBrowser.this.list, (int) p.getX(), (int) p.getY());
+                tmp = null;
             }
         });
         this.menu.add(new AbstractAction("find") {
             public void actionPerformed(ActionEvent e) {
-                //find
+                JTextField textField = new JTextField("Suchparameter", 10);
+                textField.addActionListener(new AbstractAction() {
+                    public void actionPerformed(ActionEvent e) {
+                        String text = textField.getText();
+                        ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
+                    }
+                });
+                JPopupMenu tmp = new JPopupMenu();
+                tmp.add(textField);
+                Point p = FileBrowser.this.list.getMousePosition();
+                tmp.show(FileBrowser.this.list, (int) p.getX(), (int) p.getY());
+                tmp = null;
             }
         });
         this.menu.add(new AbstractAction("mkdir") {
             public void actionPerformed(ActionEvent e) {
-                //mkdir
+                JTextField textField = new JTextField("Name", 10);
+                textField.addActionListener(new AbstractAction() {
+                    public void actionPerformed(ActionEvent e) {
+                        String text = textField.getText();
+                        ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
+                    }
+                });
+                JPopupMenu tmp = new JPopupMenu();
+                tmp.add(textField);
+                Point p = FileBrowser.this.list.getMousePosition();
+                tmp.show(FileBrowser.this.list, (int) p.getX(), (int) p.getY());
+                tmp = null;
             }
         });
         this.menu.add(new AbstractAction("mv") {
             public void actionPerformed(ActionEvent e) {
-                //mv
+                JTextField textField = new JTextField("wohin", 10);
+                textField.addActionListener(new AbstractAction() {
+                    public void actionPerformed(ActionEvent e) {
+                        String text = textField.getText();
+                        ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
+                    }
+                });
+                JPopupMenu tmp = new JPopupMenu();
+                tmp.add(textField);
+                Point p = FileBrowser.this.list.getMousePosition();
+                tmp.show(FileBrowser.this.list, (int) p.getX(), (int) p.getY());
+                tmp = null;
             }
         });
         this.menu.add(new AbstractAction("rm") {
@@ -254,17 +309,50 @@ public class FileBrowser extends JPanel {
         });
         this.menu.add(new AbstractAction("tar") {
             public void actionPerformed(ActionEvent e) {
-                //tar
+                JTextField textField = new JTextField("Name", 10);
+                textField.addActionListener(new AbstractAction() {
+                    public void actionPerformed(ActionEvent e) {
+                        String text = textField.getText();
+                        ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
+                    }
+                });
+                JPopupMenu tmp = new JPopupMenu();
+                tmp.add(textField);
+                Point p = FileBrowser.this.list.getMousePosition();
+                tmp.show(FileBrowser.this.list, (int) p.getX(), (int) p.getY());
+                tmp = null;
             }
         });
         this.menu.add(new AbstractAction("touch") {
             public void actionPerformed(ActionEvent e) {
-                //touch
+                JTextField textField = new JTextField("Name", 10);
+                textField.addActionListener(new AbstractAction() {
+                    public void actionPerformed(ActionEvent e) {
+                        String text = textField.getText();
+                        ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
+                    }
+                });
+                JPopupMenu tmp = new JPopupMenu();
+                tmp.add(textField);
+                Point p = FileBrowser.this.list.getMousePosition();
+                tmp.show(FileBrowser.this.list, (int) p.getX(), (int) p.getY());
+                tmp = null;
             }
         });
         this.menu.add(new AbstractAction("wget") {
             public void actionPerformed(ActionEvent e) {
-                //wget
+                JTextField textField = new JTextField("Adresse", 10);
+                textField.addActionListener(new AbstractAction() {
+                    public void actionPerformed(ActionEvent e) {
+                        String text = textField.getText();
+                        ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
+                    }
+                });
+                JPopupMenu tmp = new JPopupMenu();
+                tmp.add(textField);
+                Point p = FileBrowser.this.list.getMousePosition();
+                tmp.show(FileBrowser.this.list, (int) p.getX(), (int) p.getY());
+                tmp = null;
             }
         });
     }
