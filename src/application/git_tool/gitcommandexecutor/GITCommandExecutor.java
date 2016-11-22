@@ -202,6 +202,22 @@ public class GITCommandExecutor {
         return executeCommand(command);
     }
     
+    /**
+    * Performs the "git fetch --quiet" command to download objects and refs from another repository
+    *
+    * @return any output of the command, "" if the execution was successful
+    */
+    public String fetch() {
+        //generate the command from the options
+        List<String> command = new ArrayList<String>(3);
+        command.add("git");
+        command.add("fetch");
+        command.add("--quiet");
+        
+        //execute the command
+        return executeCommand(command);
+    }
+    
     //executes a given command in the local processBuilder
     private String executeCommand(List<String> params) {
         try {
