@@ -219,7 +219,7 @@ public class FileBrowser extends JPanel {
     private void createPopupMenu() {
         this.menu.add(new AbstractAction("chmod") {
             public void actionPerformed(ActionEvent e) {
-                JTextField textField = new JTextField("neue Rechte", 10);
+                final JTextField textField = new JTextField("neue Rechte", 10);
                 textField.addActionListener(new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
@@ -235,7 +235,7 @@ public class FileBrowser extends JPanel {
         });
         this.menu.add(new AbstractAction("cp") {
             public void actionPerformed(ActionEvent e) {
-                JTextField textField = new JTextField("wohin", 10);
+                final JTextField textField = new JTextField("wohin", 10);
                 textField.addActionListener(new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
@@ -251,7 +251,7 @@ public class FileBrowser extends JPanel {
         });
         this.menu.add(new AbstractAction("find") {
             public void actionPerformed(ActionEvent e) {
-                JTextField textField = new JTextField("Suchparameter", 10);
+                final JTextField textField = new JTextField("Suchparameter", 10);
                 textField.addActionListener(new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
@@ -267,7 +267,7 @@ public class FileBrowser extends JPanel {
         });
         this.menu.add(new AbstractAction("mkdir") {
             public void actionPerformed(ActionEvent e) {
-                JTextField textField = new JTextField("Name", 10);
+                final JTextField textField = new JTextField("Name", 10);
                 textField.addActionListener(new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
@@ -283,7 +283,7 @@ public class FileBrowser extends JPanel {
         });
         this.menu.add(new AbstractAction("mv") {
             public void actionPerformed(ActionEvent e) {
-                JTextField textField = new JTextField("wohin", 10);
+                final JTextField textField = new JTextField("wohin", 10);
                 textField.addActionListener(new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
@@ -309,7 +309,7 @@ public class FileBrowser extends JPanel {
         });
         this.menu.add(new AbstractAction("tar") {
             public void actionPerformed(ActionEvent e) {
-                JTextField textField = new JTextField("Name", 10);
+                final JTextField textField = new JTextField("Name", 10);
                 textField.addActionListener(new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
@@ -325,7 +325,7 @@ public class FileBrowser extends JPanel {
         });
         this.menu.add(new AbstractAction("touch") {
             public void actionPerformed(ActionEvent e) {
-                JTextField textField = new JTextField("Name", 10);
+                final JTextField textField = new JTextField("Name", 10);
                 textField.addActionListener(new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
@@ -341,7 +341,7 @@ public class FileBrowser extends JPanel {
         });
         this.menu.add(new AbstractAction("wget") {
             public void actionPerformed(ActionEvent e) {
-                JTextField textField = new JTextField("Adresse", 10);
+                final JTextField textField = new JTextField("Adresse", 10);
                 textField.addActionListener(new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
