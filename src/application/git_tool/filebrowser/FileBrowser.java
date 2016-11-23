@@ -2,6 +2,7 @@
 package application.git_tool.filebrowser;
 
 import application.git_tool.GITTool;
+import application.git_tool.unixcommandexecutor.UnixCommandExecutor;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -19,6 +20,7 @@ import javax.swing.tree.*;
 
 public class FileBrowser extends JPanel {
     private GITTool gitTool;
+    private UnixCommandExecutor unixCommandExecutor;
     private Desktop desktop;
     private JTree tree;
     private JList<File> list;
@@ -193,6 +195,7 @@ public class FileBrowser extends JPanel {
     //setting private attributes, placing tree and list in scrollpane and open current working directory
     public FileBrowser(GITTool gitTool) {
         this.gitTool = gitTool;
+        this.unixCommandExecutor = new UnixCommandExecutor(this.gitTool.getProcessBuilder());
         this.desktop = Desktop.getDesktop();
         this.tree = new JTree(new MyTreeModel(new MyTreeNode(new File("/"))));
         this.list = new JList<File>();
@@ -223,6 +226,7 @@ public class FileBrowser extends JPanel {
                 textField.addActionListener(new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
+                        FileBrowser.this.unixCommandExecutor.chmod(text, FileBrowser.this.list.getSelectedValuesList());
                         ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
                     }
                 });
@@ -239,6 +243,7 @@ public class FileBrowser extends JPanel {
                 textField.addActionListener(new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
+                        FileBrowser.this.unixCommandExecutor.cp(text, FileBrowser.this.list.getSelectedValuesList());
                         ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
                     }
                 });
