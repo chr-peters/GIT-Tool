@@ -28,9 +28,9 @@ public class GITCommandExecutor {
     * --quiet ensures that only error and warning messages are printed
     * 
     * @param bare true, if the --bare option is to be added
-    * @return Error or warning-message, "" if the execution was successful
+    * @return Lines of the process-output. The list is empty, if everything worked well.
     */
-    public String init(boolean bare){
+    public List<String> init(boolean bare){
         //generate the command from the options
         List<String> command = new ArrayList<String>(8);
         command.add("git");
@@ -51,9 +51,9 @@ public class GITCommandExecutor {
     * @param all add, modify or remove every index entry that does not match the working tree
     * @param ignore_errors proceed adding subsequent files even if errors occured
     * @param pathspec files to add content from. See Git-Documentation for more details
-    * @return Any output of the command, "" if the execution was successful
+    * @return Lines of the process-output. The list is empty, if everything worked well.
     */
-    public String add(boolean force, boolean update, boolean all, boolean ignore_errors, String pathspec){
+    public List<String> add(boolean force, boolean update, boolean all, boolean ignore_errors, String pathspec){
         //generate the command from the options
         List<String> command = new ArrayList<String>(8);
         command.add("git");
@@ -82,9 +82,9 @@ public class GITCommandExecutor {
     * @param r allow recursive removal when a leading directory name is given
     * @param cached only remove the files from the index but not from the working tree
     * @param file files to remove
-    * @return Any output of the command, "" if the execution was successful
+    * @return Lines of the process-output. The list is empty, if everything worked well.
     */
-    public String rm(boolean force, boolean r, boolean cached, String file) {
+    public List<String> rm(boolean force, boolean r, boolean cached, String file) {
         //generate the command from the options
         List<String> command = new ArrayList<String>(8);
         command.add("git");
@@ -108,9 +108,9 @@ public class GITCommandExecutor {
     * Performs the "git checkout --quiet" command to switch to the given branch or the given commit
     *
     * @param branchOrcommit the branch or commit that is checked out
-    * @return any output of the command, "" if the execution was successful
+    * @return Lines of the process-output. The list is empty, if everything worked well.
     */
-    public String checkout(String branchOrCommit) {
+    public List<String> checkout(String branchOrCommit) {
         //generate the command from the options
         List<String> command = new ArrayList<String>(4);
         command.add("git");
@@ -128,9 +128,9 @@ public class GITCommandExecutor {
     * @param repository the (possibly remote) and correctly specified repository to clone from
     * @param diretory the name of a new directory to clone into. If the repository is to be cloned
     *                 into the current directory, just leave the string empty
-    * @return any output of the command, "" if the execution was successful
+    * @return Lines of the process-output. The list is empty, if everything worked well.
     */
-    public String clone(String repository, String directory) {
+    public List<String> clone(String repository, String directory) {
         //generate the command from the options
         List<String> command = new ArrayList<String>(6);
         command.add("git");
@@ -152,9 +152,9 @@ public class GITCommandExecutor {
     * @param amend amend new changes to the last commit instead of creating a new one
     * @param commitMessage the corresponding log message
     * @param file (optional, just enter "" if not desired) only commit and stage the most recent contents of the specified files
-    * @return any output of the command, "" if the execution was successful
+    * @return Lines of the process-output. The list is empty, if everything worked well.
     */
-    public String commit(boolean all, boolean amend, String commitMessage, String file) {
+    public List<String> commit(boolean all, boolean amend, String commitMessage, String file) {
         //generate the command from the options
         List<String> command = new ArrayList<String>(9);
         command.add("git");
@@ -165,8 +165,11 @@ public class GITCommandExecutor {
         if(amend)
             command.add("--amend");
         command.add("-m");
-        if(commitMessage.equals(""))
-            return "No commit-message specified!";
+        if(commitMessage.equals("")) {
+            List<String> res = new ArrayList<String>();
+            res.add("No commit-message specified!");
+            return res;
+        }
         command.add(commitMessage);
         if(!file.equals("")){
             command.add("--");
@@ -183,9 +186,9 @@ public class GITCommandExecutor {
     * @param treeish something treeish, even a commit works fine. Leave at "" for HEAD
     * @param paths all directories which will be affected by the reset. Leave at "" for every directory. But be careful:
     *              specifying this option together with a commit will most likely lead to errors.
-    * @return any output of the command, "" if the execution was successful
+    * @return Lines of the process-output. The list is empty, if everything worked well.
     */
-    public String reset(String treeish, String paths) {
+    public List<String> reset(String treeish, String paths) {
         //generate the command from the options
         List<String> command = new ArrayList<String>(6);
         command.add("git");
@@ -205,9 +208,9 @@ public class GITCommandExecutor {
     /**
     * Performs the "git fetch --quiet" command to download objects and refs from another repository
     *
-    * @return any output of the command, "" if the execution was successful
+    * @return Lines of the process-output. The list is empty, if everything worked well.
     */
-    public String fetch() {
+    public List<String> fetch() {
         //generate the command from the options
         List<String> command = new ArrayList<String>(3);
         command.add("git");
@@ -224,9 +227,9 @@ public class GITCommandExecutor {
     * @param repository The repository that is pushed into. Usually a remote name is given, if left empty,
     *                   it defaults to origin.
     * @param refspec    Specification of what to push where. See the documentation for more details. It can be left empty.
-    * @return any output of the command, "" if the execution was successful
+    * @return Lines of the process-output. The list is empty, if everything worked well.
     */
-    public String push(String repository, String refspec) {
+    public List<String> push(String repository, String refspec) {
         //generate the command from the options
         List<String> command = new ArrayList<String>(5);
         command.add("git");
@@ -247,9 +250,9 @@ public class GITCommandExecutor {
     * @param repository Name of the remote repository. If left empty, it defaults to origin.
     * @param refspec    Name of a remote reference that is pulled from which is usually master. It can be left empty.
     *
-    * @return any output of the command, "" if the execution was successful
+    * @return Lines of the process-output. The list is empty, if everything worked well.
     */
-    public String pull(String repository, String refspec) {
+    public List<String> pull(String repository, String refspec) {
         //generate the command from the options
         List<String> command = new ArrayList<String>(5);
         command.add("git");
@@ -264,8 +267,48 @@ public class GITCommandExecutor {
         return executeCommand(command);
     }
     
+    /**
+    * Performs the "git merge --no-edit --quiet" command to join two development histories together
+    * 
+    * --no-edit ensures that the merge-message is created automatically
+    *
+    * @param commit Usually the name of another branch that is merged from. If left empty, the corresponding
+    *               remote-tracking branch is used as the source.
+    * @return The MergeResponse object stores all details about the merge. See its documentation for further details.
+    */
+    public MergeResponse merge(String commit) {
+        //generate the command from the options
+        List<String> command = new ArrayList<String>(5);
+        command.add("git");
+        command.add("merge");
+        command.add("--no-edit");
+        command.add("--quiet");
+        if(!commit.equals(""))
+            command.add(commit);
+        
+        //execute the command
+        List<String> res = executeCommand(command);
+        
+        if (res.size() == 0){
+            //the merge was fast forward
+            return new MergeResponse(MergeResponse.States.FAST_FORWARD, res);
+        } else {
+            //the merge was not fast forward
+            
+            //test if the merge was successful
+            for (String line: res){
+                if(!line.startsWith("Auto-merging")) {
+                    //there is a conflict somewhere
+                    return new MergeResponse(MergeResponse.States.OPEN_CONFLICTS, res);
+                }
+            }
+            //git was able to auto-merge every file without conflict
+            return new MergeResponse(MergeResponse.States.RESOLVED_CONFLICTS, res);
+        }
+    }
+    
     //executes a given command in the local processBuilder
-    private String executeCommand(List<String> params) {
+    private List<String> executeCommand(List<String> params) {
         try {
             this.processBuilder.command(params);
             Process p = this.processBuilder.start();
@@ -273,22 +316,21 @@ public class GITCommandExecutor {
             //read the output
             return getProcessOutput(p);
         } catch (IOException e) {
-            return e.getMessage();
+            List<String> res = new ArrayList<String>();
+            res.add(e.getMessage());
+            return res;
         }
     }
     
-    //returns the output of a process
-    private String getProcessOutput(Process p) throws IOException{
+    //returns the lines of the output of a process
+    private List<String> getProcessOutput(Process p) throws IOException{
         InputStream output = p.getInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(output));
-        StringBuilder res = new StringBuilder();
+        List<String> res = new ArrayList<String>();
         String line = "";
         while ((line=reader.readLine()) != null){
-            res.append(line);
+            res.add(line);
         }
-        
-        //if any errors or warnings occured, the output is returned
-        return res.toString();
+        return res;
     }
-
 }
