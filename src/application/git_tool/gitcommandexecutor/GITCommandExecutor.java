@@ -387,6 +387,81 @@ public class GITCommandExecutor {
         return executeCommand(command);
     }
     
+    /**
+    * Performs the "git tag --annotate" command to create an annotated tag with a given message
+    *
+    * @param message the mandatory tag message
+    * @param tagName the name of the tag that is to be created
+    * @param commit the commit the tag will refer to. Leave at "" for default behavior.
+    *
+    * @return Lines of the process-output. The list is empty, if everything worked well.
+    */
+    public List<String> createTag(String message, String tagName, String commit){
+        //generate the command from the options
+        List<String> command = new ArrayList<String>(7);
+        command.add("git");
+        command.add("tag");
+        command.add("--annotate");
+        command.add("-m");
+        if(message.equals("")){
+            List<String> res = new ArrayList<String>(1);
+            res.add("Error: No tag-message specified");
+            return res;
+        }
+        command.add(message);
+        command.add(tagName);
+        if(!commit.equals(""))
+            command.add(commit);
+        
+        //execute the command
+        return executeCommand(command);
+    }
+    
+    /**
+    * Performs the "git tag -d" command to delete a given tag
+    *
+    * @param tagName the name of the tag that is to be deleted
+    *
+    * @return Lines of the process-output. The list is empty, if everything worked well.
+    */
+    public List<String> deleteTag(String tagName){
+        //generate the command from the options
+        List<String> command = new ArrayList<String>(4);
+        command.add("git");
+        command.add("tag");
+        command.add("-d");
+        command.add(tagName);
+        
+        //execute the command
+        List<String> res = executeCommand(command);
+        
+        //check if everything went well
+        for (String line: res){
+            //if a line of this output does not start with "Deleted", something went wrong
+            if(!line.startsWith("Deleted"))
+                return res;
+        }
+        
+        //everything went well, so just return an empty list
+        res.clear();
+        return res;
+    }
+    
+    /**
+    * Performs the "git tag" command to list all tags
+    *
+    * @return One tagname per list-element.
+    */
+    public List<String> listTags() {
+        //generate the command from the options
+        List<String> command = new ArrayList<String>(2);
+        command.add("git");
+        command.add("tag");
+        
+        //execute the command
+        return executeCommand(command);
+    }
+    
     //executes a given command in the local processBuilder
     private List<String> executeCommand(List<String> params) {
         try {
