@@ -307,6 +307,86 @@ public class GITCommandExecutor {
         }
     }
     
+    /**
+    * Performs the "git branch --quiet" command to create a new branch
+    *
+    * @param branchName the name of the new branch that is to be created
+    *
+    * @return Lines of the process-output. The list is empty, if everything worked well.
+    */
+    public List<String> createBranch (String branchName) {
+        //generate the command from the options
+        List<String> command = new ArrayList<String>(4);
+        command.add("git");
+        command.add("branch");
+        command.add("--quiet");
+        command.add(branchName);
+        
+        //execute the command
+        return executeCommand(command);
+    }
+    
+    /**
+    * Performs the "git branch -d --quiet" command to delete a branch
+    *
+    * @param branchName the name of the branch that is to be deleted
+    *
+    * @return Lines of the process-output. The list is empty, if everything worked well.
+    */
+    public List<String> deleteBranch (String branchName) {
+        //generate the command from the options
+        List<String> command = new ArrayList<String>(5);
+        command.add("git");
+        command.add("branch");
+        command.add("-d");
+        command.add("--quiet");
+        command.add(branchName);
+        
+        //execute the command
+        return executeCommand(command);
+    }
+    
+    /**
+    * Performs the "git branch -m --quiet" command to rename oldbranch to newbranch
+    *
+    * @param oldBranch the name of the branch that is to be renamed. leave at "" to rename the current branch
+    * @param newBranch the new name for the branch
+    *
+    * @return Lines of the process-output. The list is empty, if everything worked well.
+    */
+    public List<String> renameBranch (String oldBranch, String newBranch) {
+        //generate the command from the options
+        List<String> command = new ArrayList<String>(6);
+        command.add("git");
+        command.add("branch");
+        command.add("-m");
+        command.add("--quiet");
+        if(!oldBranch.equals(""))
+            command.add(oldBranch);
+        command.add(newBranch);
+        
+        //execute the command
+        return executeCommand(command);
+    }
+    
+    /**
+    * Performs the "git branch --all" command to list all branches
+    * <p>
+    * --all ensures that the remote tracking branches are listed as well
+    *
+    * @return One branchname per list-element.
+    */
+    public List<String> listBranches() {
+        //generate the command from the options
+        List<String> command = new ArrayList<String>(3);
+        command.add("git");
+        command.add("branch");
+        command.add("--all");
+        
+        //execute the command
+        return executeCommand(command);
+    }
+    
     //executes a given command in the local processBuilder
     private List<String> executeCommand(List<String> params) {
         try {
