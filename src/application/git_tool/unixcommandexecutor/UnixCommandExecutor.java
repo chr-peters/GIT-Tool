@@ -2,6 +2,7 @@ package application.git_tool.unixcommandexecutor;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.*;
 
 public class UnixCommandExecutor {
     private ProcessBuilder processBuilder;
@@ -31,6 +32,18 @@ public class UnixCommandExecutor {
         }
         command.add(dest.trim());
         return executeCommand(command);
+    }
+    
+    //splits the given string into its components
+    private List<String> splitIntoComponents(String inputString) {
+        ArrayList<String> components = new ArrayList<String>();
+        Matcher m = Pattern.compile("(\"(\\\\\"|.)*?\"|'(\\\\\'|.)*?'|(\\\\ |\\S)*)").matcher(inputString);
+        while(m.find()) {
+            if(m.group(0).length()>0) {
+                components.add(m.group(0));
+            }
+        }
+        return components;
     }
     
     //executes a given command in the local processBuilder
