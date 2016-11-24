@@ -11,18 +11,24 @@ import net.miginfocom.swing.*;
 
 import application.git_tool.commandmenu.helpers.Command;
 import application.git_tool.commandmenu.helpers.Parameter;
+import application.git_tool.gitcommandexecutor.GITCommandExecutor;
+import application.git_tool.GITTool;
 
 public class CommandMenu extends JPanel {
-  private JComboBox cmdList;
-  private JButton bHelp;
   private Command[] commands;
+  private GITCommandExecutor gitCmdExec;
+  private GITTool gitTool;
+  private JButton bHelp;
   private JCheckBox[] paramBoxes;
+  private JComboBox cmdList;
   private JTextField[] paramTexts;
   private final static int maxParams = 5; //TODO wichtige Zeile
 
-  public CommandMenu(){ //KONSTRUKTOR///////////////////////////////////////////////////////////
+  public CommandMenu(GITTool gitTool){ //KONSTRUKTOR//////////////////////////////////////////////
+    this.gitTool = gitTool;
+    this.gitCmdExec = new GITCommandExecutor(this.gitTool.getProcessBuilder());
     this.setLayout(new MigLayout());
-    init();
+    //this.initialize();
     ActionListener menuListener = new ActionListener(){
       public void actionPerformed(ActionEvent e){
         int index = cmdList.getSelectedIndex();
@@ -33,6 +39,7 @@ public class CommandMenu extends JPanel {
     cmdList.addActionListener(menuListener);
 
   }//KONSTRUKTOR ENDE//////////////////////////////////////////////////////////////////////////
+
 
   //Zeigt oder versteckt die ersten num Parameter////////
   public void setParams(int num){
@@ -54,12 +61,14 @@ public class CommandMenu extends JPanel {
   }
   //////////////////////////////////////////////////////
 
+
   //Gibt das aktuell oben ausgewaehlte Kommando zurueck
   public Command getSelectedCommand(){
     return commands[cmdList.getSelectedIndex()];
   }////////////////////////////////////////////////////
 
-  public void init(){
+
+  public void initialize(){
     //Erzeugung der einzelnen Befehle/////////////////////////////////////////////////
     Parameter[] addParams = {new Parameter("pathspec", true),
                             new Parameter("--force"), new Parameter("--update"),

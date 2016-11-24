@@ -44,7 +44,7 @@ public class GITTool {
 
         //create components
         this.fileBrowser = new FileBrowser(this);
-        this.commandMenu = new CommandMenu();
+        this.commandMenu = new CommandMenu(this);
         this.commandLine = new CommandLine(this);
 
         //set up layout
