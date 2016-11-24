@@ -53,6 +53,9 @@ public class FileBrowser extends JPanel {
         private void load() {
             File[] content = FileBrowser.this.getContent(this.path);
             for(int i=0; i<content.length; i++) {
+                if(content[i].isFile()) {
+                    break;
+                }
                 this.insert(new MyTreeNode(content[i]), i);
             }
         }
