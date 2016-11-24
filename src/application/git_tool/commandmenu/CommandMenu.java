@@ -13,6 +13,7 @@ import net.miginfocom.swing.*;
 import application.git_tool.commandmenu.helpers.Command;
 import application.git_tool.commandmenu.helpers.Parameter;
 import application.git_tool.gitcommandexecutor.GITCommandExecutor;
+import application.git_tool.gitcommandexecutor.MergeResponse;
 import application.git_tool.GITTool;
 
 public class CommandMenu extends JPanel {
@@ -70,34 +71,68 @@ public class CommandMenu extends JPanel {
 
   public void execute(){
     switch(cmdList.getSelectedIndex()){
-      /*add*/case 0: errors = gitCmdExec.add(paramBoxes[1].isSelected(), paramBoxes[2].isSelected(), paramBoxes[3].isSelected(),
-                            paramBoxes[4].isSelected(), paramTexts[0].getText());break;
-   /*branch*/case 1: if(!paramBoxes[1].isSelected() && !paramBoxes[2].isSelected()){
-                        if(paramTexts[0].getText().trim().equals(""))
-                          errors = gitCmdExec.listBranches();
-                        else
-                          errors = gitCmdExec.createBranch(paramTexts[0].getText());
-                     }
-                     else if(paramBoxes[1].isSelected() && !paramBoxes[2].isSelected())
-                        errors = gitCmdExec.deleteBranch(paramTexts[1].getText());
-                     else if(paramBoxes[2].isSelected() && !paramBoxes[1].isSelected())
-                        errors = gitCmdExec.renameBranch(paramTexts[0].getText(), paramTexts[2].getText());
-                     break;
+      //add
+      case 0: errors = gitCmdExec.add(paramBoxes[1].isSelected(), paramBoxes[2].isSelected(), paramBoxes[3].isSelected(),
+                            paramBoxes[4].isSelected(), paramTexts[0].getText()); break;
+      //create branch
+      case 1: errors = gitCmdExec.createBranch(paramTexts[0].getText()); break;
+      //delete branch
+      case 2: errors = gitCmdExec.deleteBranch(paramTexts[0].getText()); break;
+      //list branches
+      case 3: errors = gitCmdExec.listBranches(); break;
+      //rename branch
+      case 4: errors = gitCmdExec.renameBranch(paramTexts[0].getText(), paramTexts[1].getText()); break;
+      //checkout
+      case 5: errors = gitCmdExec.checkout(paramTexts[0].getText()); break;
+      //clone
+      case 6: errors = gitCmdExec.clone(paramTexts[0].getText(), paramTexts[1].getText()); break;
+      //commit
+      case 7: errors = gitCmdExec.commit(paramBoxes[2].isSelected(), paramBoxes[3].isSelected(),
+                            paramTexts[0].getText(), paramTexts[1].getText()); break;
+      //fetch
+      case 8: errors = gitCmdExec.fetch(); break;
+      //init
+      case 9: errors = gitCmdExec.init(paramBoxes[0].isSelected()); break;
+      //merge
+      case 10: errors = gitCmdExec.merge(paramTexts[0].getText()).getOutputLines(); break;
+      //pull
+      case 11: errors = gitCmdExec.pull(paramTexts[0].getText(), paramTexts[1].getText()); break;
+      //push
+      case 12: errors = gitCmdExec.push(paramTexts[0].getText(), paramTexts[1].getText()); break;
+      //reset
+      case 13: errors = gitCmdExec.reset(paramTexts[0].getText(), paramTexts[1].getText()); break;
+      //rm
+      case 14: errors = gitCmdExec.reset(paramTexts[0].getText(), paramTexts[1].getText()); break;
+      //create tag
+      case 15: errors = gitCmdExec.createTag(paramTexts[1].getText(), paramTexts[0].getText(),
+                            paramTexts[2].getText()); break;
+      //delete tag
+      case 16: errors = gitCmdExec.deleteTag(paramTexts[0].getText()); break;
+      //list tags
+      case 17: errors = gitCmdExec.listTags(); break;
     }
     System.out.println(errors);
     System.out.println("Gelesen: " + paramTexts[0].getText().trim());
   }
 
+
   public void init(){
     //Erzeugung der einzelnen Befehle/////////////////////////////////////////////////
-    Parameter[] addParams = {new Parameter("pathspec", true),
+    Parameter[] addParams = {new Parameter("pathspec", "*file/directory*"),
                             new Parameter("--force"), new Parameter("--update"),
                             new Parameter("--all"), new Parameter("--ignore-errors")};
     Command add = new Command("add", addParams);
 
-    Parameter[] branchParams = {new Parameter("name", true), new Parameter("-d","*branch to delete*"),
-                               new Parameter("-m", "*new name*")};
-    Command branch = new Command("branch", branchParams);
+    Parameter[] createBranchParams = {new Parameter("name", true)};
+    Command createBranch = new Command("branch(create)", createBranchParams);
+
+    Parameter[] deleteBranchParams = {new Parameter("-d","*branchname*")};
+    Command deleteBranch = new Command("branch(delete)", deleteBranchParams);
+
+    Command listBranches = new Command("branch(list)", new Parameter[0]);
+
+    Parameter[] renameBranchParams = {new Parameter("old name", true), new Parameter("new name", true)};
+    Command renameBranch = new Command("branch(rename)", renameBranchParams);
 
     Parameter[] checkoutParams = {new Parameter("branch/commit", "*name*")};
     Command checkout = new Command("checkout", checkoutParams);
@@ -106,7 +141,7 @@ public class CommandMenu extends JPanel {
                               new Parameter("directory", true)};
     Command clone = new Command("clone", cloneParams);
 
-    Parameter[] commitParams =  {new Parameter("-m", "*message*"), new Parameter("file", true),
+    Parameter[] commitParams =  {new Parameter("-m", "*message*"), new Parameter("file", "*filename*"),
                                 new Parameter("--all"), new Parameter("--amend")};
     Command commit = new Command("commit", commitParams);
 
@@ -115,29 +150,35 @@ public class CommandMenu extends JPanel {
     Parameter[] initParams = {new Parameter("--bare")};
     Command init = new Command("init", initParams);
 
-    Parameter[] mergeParams = {new Parameter("branch/commit", true)};
+    Parameter[] mergeParams = {new Parameter("branch/commit", "*name*")};
     Command merge = new Command("merge", mergeParams);
 
-    Parameter[] pullParams = {new Parameter("repository", true), new Parameter("refspec", true)};
+    Parameter[] pullParams = {new Parameter("repository", true), new Parameter("refspec", "TODO")};
     Command pull = new Command("pull", pullParams);
 
-    Parameter[] pushParams = {new Parameter("repository", true), new Parameter("refspec", true)};
+    Parameter[] pushParams = {new Parameter("repository", true), new Parameter("refspec", "TODO")};
     Command push = new Command("push", pushParams);
 
-    Parameter[] resetParams = {new Parameter("tree-ish", true), new Parameter("paths", true)};
+    Parameter[] resetParams = {new Parameter("tree-ish", "TODO"), new Parameter("paths", "TODO")};
     Command reset = new Command("reset", resetParams);
 
-    Parameter[] rmParams = {new Parameter("file", true), new Parameter("--force"),
+    Parameter[] rmParams = {new Parameter("file", "*filename*"), new Parameter("--force"),
                            new Parameter("-r"), new Parameter("--cached")};
     Command rm = new Command("rm", rmParams);
 
-    Parameter[] tagParams = {new Parameter("name", "*name of new tag*"), new Parameter("-d", "*tag to delete*")};
-    Command tag = new Command("tag", tagParams);
+    Parameter[] createTagParams = {new Parameter("tagname", true), new Parameter("message", true),
+                                  new Parameter("commit", true)};
+    Command createTag = new Command("tag(create)", createTagParams);
+
+    Parameter[] deleteTagParams = {new Parameter("name", true)};
+    Command deleteTag = new Command("tag(delete)", deleteTagParams);
+
+    Command listTags = new Command("tag(list)", new Parameter[0]);
     /////////////////////////////////////////////////////////////////////////////////
 
     //Liste der git-Befehle////////////////////////////
-    Command[] tmpCommands  = { add, branch, checkout, clone, commit, fetch, init, merge,
-                              pull, push, reset, rm, tag};
+    Command[] tmpCommands  = { add, createBranch, deleteBranch, listBranches, renameBranch ,checkout, clone, commit,
+                              fetch, init, merge, pull, push, reset, rm, createTag, deleteTag, listTags};
     commands = tmpCommands;
     String[] strCommands = new String[commands.length];
     for(int i = 0; i < strCommands.length; i++){
