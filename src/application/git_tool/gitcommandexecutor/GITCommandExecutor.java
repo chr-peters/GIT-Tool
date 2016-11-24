@@ -8,9 +8,13 @@ public class GITCommandExecutor {
 
     //instance of the process-builder
     private ProcessBuilder processBuilder;
+    
+    //a flag for the last exit code of a command
+    private int lastExitCode;
 
     public GITCommandExecutor(ProcessBuilder p){
         this.processBuilder = p;
+        this.lastExitCode = 0;
     }
     
     public static void main(String args []) {
@@ -462,11 +466,65 @@ public class GITCommandExecutor {
         return executeCommand(command);
     }
     
+    /**
+    * Performs the "git --no-pager log" command to list all the commits for a given path
+    *
+    * @param path the path for which to list the commits. Leave at "" to list all commits for the project
+    *
+    * @throws GitLogException if an error occured, see the message of the gitlogexception
+    *
+    * @return a list of all the commits
+    */
+    public List<Commit> log(String path) throws GitLogException{
+        //generate the command from the options
+        List<String> command = new ArrayList<String>(3);
+        command.add("git");
+        command.add("--no-pager");
+        command.add("log");
+        
+        //execute the command
+        List<String> res = executeCommand(command);
+        
+        //test if something went wrong
+        if (getLastExitCode() != 0) {
+            //something went wrong, so just put the output into the GitLogException
+            String n = System.getProperty("line.separator");
+            StringBuilder msg = new StringBuilder();
+            for(String line: res){
+                msg.append(line+n);
+            }
+            throw new GitLogException(msg);
+        }
+        
+        //everything went well, so just parse the commits
+        List<Commit> commits = new ArrayList<Commit>();
+        String curHash;
+        String curAuthor;
+        String curDate;
+        StringBuilder curMessage;
+        String curMerge;
+        for (String line: res) {
+            if(line.startsWith("commit") && curHash == null){
+                curHash = (line.split("\\s+")[1]).trim();
+            }
+            
+        }
+    }
+    
+    //use this to get the last exit code as it resets it afterwards
+    private int getLastExitCode(){
+        return this.lastExitCode;
+        this.lastExitCode = 0;
+    }
+    
     //executes a given command in the local processBuilder
     private List<String> executeCommand(List<String> params) {
         try {
             this.processBuilder.command(params);
             Process p = this.processBuilder.start();
+            
+            //set the last exit code
+            this.lastExitCode = p.exitValue();
             
             //read the output
             return getProcessOutput(p);
