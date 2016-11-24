@@ -1,5 +1,9 @@
 package application.git_tool.gitcommandexecutor;
 
+
+/**
+* A container to store all the relevant information regarding a commit
+*/
 public class Commit {
 
     private String hash;
@@ -28,6 +32,9 @@ public class Commit {
         return this.date;
     }
     
+    /**
+    * @return Returns the merge information. It can be empty, if no information exists.
+    */
     public String getMerge() {
         return this.merge;
     }
