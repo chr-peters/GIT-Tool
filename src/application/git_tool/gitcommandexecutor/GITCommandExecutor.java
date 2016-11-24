@@ -46,7 +46,7 @@ public class GITCommandExecutor {
     /**
     * Performs the "git add" command with the given options in the current directory of the processBuilder.
     *
-    * @param force allow adding otherwise ignored files
+    * @param force allows adding otherwise ignored files
     * @param update updates changes made to files that already existed but does not add new files
     * @param all add, modify or remove every index entry that does not match the working tree
     * @param ignore_errors proceed adding subsequent files even if errors occured
@@ -67,7 +67,7 @@ public class GITCommandExecutor {
         if(ignore_errors)
             command.add("--ignore-errors");
         //separate file names from option names
-        //command.add("--"); commands like "git add test.txt" are impossible otherwise
+        command.add("--");
         command.add(pathspec);
 
         //execute the command

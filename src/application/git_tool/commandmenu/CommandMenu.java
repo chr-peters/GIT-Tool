@@ -1,10 +1,11 @@
 //!important!
 package application.git_tool.commandmenu;
 
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.Dimension;
 import java.util.Arrays;
+import java.util.List;
 import javax.swing.*;
 import net.miginfocom.layout.*;
 import net.miginfocom.swing.*;
@@ -18,9 +19,11 @@ public class CommandMenu extends JPanel {
   private Command[] commands;
   private GITCommandExecutor gitCmdExec;
   private GITTool gitTool;
-  private JButton bHelp;
+  private List errors;
+  private JButton bHelp, bExec;
   private JCheckBox[] paramBoxes;
   private JComboBox cmdList;
+  private JLabel currCmdText;
   private JTextField[] paramTexts;
   private final static int maxParams = 5; //TODO wichtige Zeile
 
@@ -29,15 +32,13 @@ public class CommandMenu extends JPanel {
     this.gitCmdExec = new GITCommandExecutor(this.gitTool.getProcessBuilder());
     this.setLayout(new MigLayout());
     this.init();
-    ActionListener menuListener = new ActionListener(){
+    cmdList.addActionListener(new ActionListener(){
        public void actionPerformed(ActionEvent e){
          int index = CommandMenu.this.cmdList.getSelectedIndex();
          int numParams = CommandMenu.this.commands[index].getParams().length;
          CommandMenu.this.setParams(numParams);
        }
-     };
-     cmdList.addActionListener(menuListener);
-
+     });
   }//KONSTRUKTOR ENDE//////////////////////////////////////////////////////////////////////////
 
 
@@ -67,6 +68,13 @@ public class CommandMenu extends JPanel {
     return commands[cmdList.getSelectedIndex()];
   }////////////////////////////////////////////////////
 
+  public void execute(){
+    switch(cmdList.getSelectedIndex()){
+      case 0: errors = gitCmdExec.add(paramBoxes[1].isSelected(), paramBoxes[2].isSelected(), paramBoxes[3].isSelected(),
+                            paramBoxes[4].isSelected(), paramTexts[0].getText());break;
+    }
+    System.out.println(errors);
+  }
 
   public void init(){
     //Erzeugung der einzelnen Befehle/////////////////////////////////////////////////
@@ -140,11 +148,26 @@ public class CommandMenu extends JPanel {
     paramTexts = new JTextField[maxParams];
     for(int i = 0; i < maxParams; i++){
       paramBoxes[i] = new JCheckBox();
-      this.add(paramBoxes[i], "height "+scalHeight+"%"+", width 30%");
+      this.add(paramBoxes[i], "height "+scalHeight+"%"+", width 20%");
       paramTexts[i] = new JTextField();
-      this.add(paramTexts[i], "height "+scalHeight/2+"%"+", width 70%, growx, wrap");
+      this.add(paramTexts[i], "height "+scalHeight/2+"%"+", width 80%, growx, wrap");
     }
     ///////////////////////////////////////////////////////////////////////////////
+
+    //Anzeige des aktuellen Befehls///////////////////////
+    currCmdText = new JLabel("HIER STEHT SPÄTER WAT :O"); //TODO
+    this.add(currCmdText, "growx, wrap");
+    //////////////////////////////////////////////////////
+
+    //Button zum Absetzen des Befehls
+    bExec = new JButton("Execute");
+    bExec.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent e){
+         execute();
+       }
+    });
+    this.add(bExec, "growx, spanx, wrap, height 5%");
+    /////////////////////////////////
 
     //Setze Startzustand
     setParams(commands[cmdList.getSelectedIndex()].getParams().length);
