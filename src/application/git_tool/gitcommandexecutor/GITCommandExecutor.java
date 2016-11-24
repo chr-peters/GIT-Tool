@@ -19,6 +19,7 @@ public class GITCommandExecutor {
     
     public static void main(String args []) {
         ProcessBuilder p = new ProcessBuilder();
+        p.redirectErrorStream(true);
         p.directory(new File("../TestRepository"));
         GITCommandExecutor commandExecutor = new GITCommandExecutor(p);
 //         System.out.println(commandExecutor.init(false));
@@ -26,11 +27,9 @@ public class GITCommandExecutor {
 //         System.out.println(commandExecutor.reset("", ""));
         //System.out.println(commandExecutor.commit(false, false, "", ""));
         try {
-            List<Commit> res = commandExecutor.log("");
-            for(Commit c: res){
-                System.out.println(c);
-            }
-        } catch (GitLogException e) {
+            StatusContainer res = commandExecutor.status();
+            System.out.println(res);
+        } catch (GitCommandException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -485,7 +484,7 @@ public class GITCommandExecutor {
     *
     * @return a list of all the commits
     */
-    public List<Commit> log(String path) throws GitLogException{
+    public List<Commit> log(String path) throws GitCommandException{
         //generate the command from the options
         List<String> command = new ArrayList<String>(4);
         command.add("git");
@@ -502,12 +501,12 @@ public class GITCommandExecutor {
         
         //test if something went wrong
         if (getLastExitCode() != 0) {
-            //something went wrong, so just put the output into the GitLogException
+            //something went wrong, so just put the output into the GitCommandException
             StringBuilder msg = new StringBuilder();
             for(String line: res){
                 msg.append(line+n);
             }
-            throw new GitLogException(msg.toString());
+            throw new GitCommandException(msg.toString());
         }
         
         //everything went well, so just parse the commits
@@ -545,6 +544,88 @@ public class GITCommandExecutor {
             commits.add(new Commit(curHash, curAuthor, curDate, curMerge, curMessage.toString().trim()));
         }
         return commits;
+    }
+    
+    /**
+    * Performs the "git status --porcelain" command to fetch information about the working tree's status
+    * <p>
+    * --porcelain makes the output of the command parseable
+    *
+    * @return A container for all the status information. See its documentation for more details.
+    */
+    public StatusContainer status() throws GitCommandException{
+        //generate the command from the options
+        List<String> command = new ArrayList<String>(3);
+        command.add("git");
+        command.add("status");
+        command.add("--porcelain");
+        
+        //execute the command
+        List<String> res = executeCommand(command);
+        
+        //the endline character of the current system
+        String n = System.getProperty("line.separator");
+        
+        //test if something went wrong
+        if (getLastExitCode() != 0) {
+            //something went wrong, so just put the output into the GitCommandException
+            StringBuilder msg = new StringBuilder();
+            for(String line: res){
+                msg.append(line+n);
+            }
+            throw new GitCommandException(msg.toString());
+        }
+        
+        //initialize the containers
+        StatusFiles staged = new StatusFiles();
+        StatusFiles unstaged = new StatusFiles();
+        for(String line: res){
+            parseStatusCode(line.charAt(0), line.trim(), staged);
+            parseStatusCode(line.charAt(1), line.trim(), unstaged);
+        }
+        
+        //return the result
+        return new StatusContainer(staged, unstaged);
+    }
+    
+    //more convenient parsing of the status codes
+    private void parseStatusCode(char code, String line, StatusFiles dest) {
+        //split the line into its core components
+        String [] parts = line.split("\\s+");
+        //check the status code
+        switch ( code ) {
+            case 'M': {
+                //the file was modified
+                dest.getModifiedFiles().add(parts[1]);
+                break;
+            } case 'A': {
+                //the file was added
+                dest.getNewFiles().add(parts[1]);
+                break;
+            } case 'D': {
+                //the file was deleted
+                dest.getDeletedFiles().add(parts[1]);
+                break;
+            } case 'R': {
+                //the file was renamed
+                dest.getRenamedFiles().add(parts[1] + " -> " + parts[3]);
+                break;
+            } case 'C': {
+                //the file was copied
+                dest.getCopiedFiles().add(parts[1]);   
+                break;
+            } case 'U': {
+                //the file was updated but unmerged
+                dest.getUpdatedFiles().add(parts[1]);  
+                break;
+            } case '?': {
+                //the file was untracked
+                dest.getUntrackedFiles().add(parts[1]);  
+                break;
+            } default: {
+                break;
+            }
+        }
     }
     
     //use this to get the last exit code as it resets it afterwards

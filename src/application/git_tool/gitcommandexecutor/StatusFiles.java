@@ -52,5 +52,40 @@ public class StatusFiles {
     
     public List<String> getUpdatedFiles () {
         return this.updatedFiles;
-    }    
+    }
+    
+    public String toString() {
+        //the endline character of the current system
+        String n = System.getProperty("line.separator");
+        StringBuilder res = new StringBuilder();
+        res.append("Untracked Files:"+n);
+        for(String f: untrackedFiles){
+            res.append(f+n);
+        }
+        res.append("New Files:"+n);
+        for(String f: newFiles){
+            res.append(f+n);
+        }
+        res.append("Modified Files:"+n);
+        for(String f: modifiedFiles){
+            res.append(f+n);
+        }
+        res.append("Deleted Files:"+n);
+        for(String f: deletedFiles){
+            res.append(f+n);
+        }
+        res.append("Renamed Files:"+n);
+        for(String f: renamedFiles){
+            res.append(f+n);
+        }
+        res.append("Copied Files:"+n);
+        for(String f: copiedFiles){
+            res.append(f+n);
+        }
+        res.append("Updated but unmerged Files:"+n);
+        for(String f: updatedFiles){
+            res.append(f+n);
+        }
+        return res.toString().trim();
+    }
 }

@@ -28,4 +28,10 @@ public class StatusContainer {
     public StatusFiles getUnstagedChanges(){
         return this.unstagedChanges;
     }
+    
+    public String toString(){
+        //the endline character of the current system
+        String n = System.getProperty("line.separator");
+        return "Staged changes:"+n+stagedChanges.toString()+n+"Unstaged changes:"+n+unstagedChanges.toString();
+    }
 }
