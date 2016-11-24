@@ -28,15 +28,21 @@ public class CommandMenu extends JPanel {
     this.gitTool = gitTool;
     this.gitCmdExec = new GITCommandExecutor(this.gitTool.getProcessBuilder());
     this.setLayout(new MigLayout());
+    
+    /**
+    *Loesung: Bevor du auf cmdList zugreifst, muss diese erst initialisiert(erzeugt) werden.
+    * Zur Zeit ist sie null und daher gibt es Fehler, wenn du im Folgenden auf sie zugreifst.
+    */
+    
     //this.initialize();
-    ActionListener menuListener = new ActionListener(){
-      public void actionPerformed(ActionEvent e){
-        int index = cmdList.getSelectedIndex();
-        int numParams = commands[index].getParams().length;
-        setParams(numParams);
-      }
-    };
-    cmdList.addActionListener(menuListener);
+//     ActionListener menuListener = new ActionListener(){
+//       public void actionPerformed(ActionEvent e){
+//         int index = CommandMenu.this.cmdList.getSelectedIndex();
+//         int numParams = CommandMenu.this.commands[index].getParams().length;
+//         CommandMenu.this.setParams(numParams);
+//       }
+//     };
+//     cmdList.addActionListener(menuListener);
 
   }//KONSTRUKTOR ENDE//////////////////////////////////////////////////////////////////////////
 
