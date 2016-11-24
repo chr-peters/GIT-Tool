@@ -70,10 +70,22 @@ public class CommandMenu extends JPanel {
 
   public void execute(){
     switch(cmdList.getSelectedIndex()){
-      case 0: errors = gitCmdExec.add(paramBoxes[1].isSelected(), paramBoxes[2].isSelected(), paramBoxes[3].isSelected(),
+      /*add*/case 0: errors = gitCmdExec.add(paramBoxes[1].isSelected(), paramBoxes[2].isSelected(), paramBoxes[3].isSelected(),
                             paramBoxes[4].isSelected(), paramTexts[0].getText());break;
+   /*branch*/case 1: if(!paramBoxes[1].isSelected() && !paramBoxes[2].isSelected()){
+                        if(paramTexts[0].getText().trim().equals(""))
+                          errors = gitCmdExec.listBranches();
+                        else
+                          errors = gitCmdExec.createBranch(paramTexts[0].getText());
+                     }
+                     else if(paramBoxes[1].isSelected() && !paramBoxes[2].isSelected())
+                        errors = gitCmdExec.deleteBranch(paramTexts[1].getText());
+                     else if(paramBoxes[2].isSelected() && !paramBoxes[1].isSelected())
+                        errors = gitCmdExec.renameBranch(paramTexts[0].getText(), paramTexts[2].getText());
+                     break;
     }
     System.out.println(errors);
+    System.out.println("Gelesen: " + paramTexts[0].getText().trim());
   }
 
   public void init(){
