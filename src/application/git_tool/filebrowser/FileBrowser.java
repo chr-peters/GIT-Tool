@@ -40,11 +40,9 @@ public class FileBrowser extends JPanel {
     
     private class MyTreeNode extends DefaultMutableTreeNode {
         private File path;
-        private boolean loaded;
         
         private MyTreeNode(File path) {
             this.path = path.getAbsoluteFile();
-            this.loaded = false;
             this.setUserObject(this.path.getName());
             if(path.getAbsolutePath().equals("/")) {
                 this.load();
@@ -53,12 +51,9 @@ public class FileBrowser extends JPanel {
         
         //method for lazy loading the tree nodes
         private void load() {
-            if(!this.loaded) {
-                File[] content = FileBrowser.this.getContent(this.path);
-                for(int i=0; i<content.length; i++) {
-                    this.insert(new MyTreeNode(content[i]), i);
-                }
-                this.loaded = true;
+            File[] content = FileBrowser.this.getContent(this.path);
+            for(int i=0; i<content.length; i++) {
+                this.insert(new MyTreeNode(content[i]), i);
             }
         }
     }
@@ -184,7 +179,7 @@ public class FileBrowser extends JPanel {
                         }
                     }
                     FileBrowser.this.menu.getComponent(7).setEnabled(true);
-                    FileBrowser.this.menu.getComponent(8).setEnabled(false);
+                    FileBrowser.this.menu.getComponent(8).setEnabled(true);
                     FileBrowser.this.menu.getComponent(9).setEnabled(false);
                 }
                 FileBrowser.this.menu.show(e.getComponent(), e.getX(), e.getY());
@@ -227,6 +222,7 @@ public class FileBrowser extends JPanel {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
                         FileBrowser.this.unixCommandExecutor.chmod(text, FileBrowser.this.list.getSelectedValuesList());
+                        FileBrowser.this.refresh();
                         ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
                     }
                 });
@@ -244,6 +240,7 @@ public class FileBrowser extends JPanel {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
                         FileBrowser.this.unixCommandExecutor.cp(text, FileBrowser.this.list.getSelectedValuesList());
+                        FileBrowser.this.refresh();
                         ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
                     }
                 });
@@ -260,6 +257,8 @@ public class FileBrowser extends JPanel {
                 textField.addActionListener(new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
+                        FileBrowser.this.unixCommandExecutor.find(text);
+                        FileBrowser.this.refresh();
                         ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
                     }
                 });
@@ -276,6 +275,8 @@ public class FileBrowser extends JPanel {
                 textField.addActionListener(new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
+                        FileBrowser.this.unixCommandExecutor.mkdir(text);
+                        FileBrowser.this.refresh();
                         ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
                     }
                 });
@@ -292,6 +293,8 @@ public class FileBrowser extends JPanel {
                 textField.addActionListener(new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
+                        FileBrowser.this.unixCommandExecutor.mv(text, FileBrowser.this.list.getSelectedValuesList());
+                        FileBrowser.this.refresh();
                         ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
                     }
                 });
@@ -304,12 +307,14 @@ public class FileBrowser extends JPanel {
         });
         this.menu.add(new AbstractAction("rm") {
             public void actionPerformed(ActionEvent e) {
-                //rm
+                FileBrowser.this.unixCommandExecutor.rm(FileBrowser.this.list.getSelectedValuesList());
+                FileBrowser.this.refresh();
             }
         });
         this.menu.add(new AbstractAction("rmdir") {
             public void actionPerformed(ActionEvent e) {
-                //rmdir
+                FileBrowser.this.unixCommandExecutor.rmdir(FileBrowser.this.list.getSelectedValuesList());
+                FileBrowser.this.refresh();
             }
         });
         this.menu.add(new AbstractAction("tar") {
@@ -318,6 +323,8 @@ public class FileBrowser extends JPanel {
                 textField.addActionListener(new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
+                        FileBrowser.this.unixCommandExecutor.tar(text, FileBrowser.this.list.getSelectedValuesList());
+                        FileBrowser.this.refresh();
                         ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
                     }
                 });
@@ -334,6 +341,8 @@ public class FileBrowser extends JPanel {
                 textField.addActionListener(new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
+                        FileBrowser.this.unixCommandExecutor.touch(text, FileBrowser.this.list.getSelectedValuesList());
+                        FileBrowser.this.refresh();
                         ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
                     }
                 });
@@ -350,6 +359,8 @@ public class FileBrowser extends JPanel {
                 textField.addActionListener(new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
+                        FileBrowser.this.unixCommandExecutor.wget(text);
+                        FileBrowser.this.refresh();
                         ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
                     }
                 });
@@ -406,5 +417,11 @@ public class FileBrowser extends JPanel {
     }
     
     public void refresh() {
+        File curPath = this.gitTool.getProcessBuilder().directory();
+        this.tree.collapsePath(new TreePath((MyTreeNode) this.tree.getModel().getRoot()));
+        ((MyTreeNode) this.tree.getModel().getRoot()).removeAllChildren();
+        this.tree.expandPath(new TreePath((MyTreeNode) this.tree.getModel().getRoot()));
+        ((MyTreeModel) this.tree.getModel()).reload((MyTreeNode) this.tree.getModel().getRoot());
+        this.openPath(curPath);
     }
 }
