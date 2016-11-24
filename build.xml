@@ -28,7 +28,7 @@
     <!-- compiles all source files in the project -->
     <target name="compile" depends="link-libraries">
         <javac includeantruntime="true"
-               srcdir="src" destdir="build/classes" target="1.6" source="1.6">
+               srcdir="src" destdir="build/classes" target="1.6" source="1.6" encoding="iso-8859-1">
         </javac>
     </target>
     
