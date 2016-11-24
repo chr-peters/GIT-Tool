@@ -167,7 +167,7 @@ public class CommandMenu extends JPanel {
     ///////////////////////////////////////////////////////////////////////////////
 
     //Anzeige des aktuellen Befehls///////////////////////
-    currCmdText = new JLabel("HIER STEHT SPÃ„TER WAT :O"); //TODO
+    currCmdText = new JLabel("HIER STEHT SPÄTER WAT :O"); //TODO
     this.add(currCmdText, "growx, wrap");
     //////////////////////////////////////////////////////
 
