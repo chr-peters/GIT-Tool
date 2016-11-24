@@ -12,7 +12,7 @@ public class GITCommandExecutor {
     public GITCommandExecutor(ProcessBuilder p){
         this.processBuilder = p;
     }
-    
+
     public static void main(String args []) {
         ProcessBuilder p = new ProcessBuilder();
         p.directory(new File("../TestRepository"));
@@ -22,11 +22,11 @@ public class GITCommandExecutor {
         System.out.println(commandExecutor.reset("", ""));
         //System.out.println(commandExecutor.commit(false, false, "", ""));
     }
-    
+
     /**
     * Performs the "git init --quiet" command in the current directory of the processBuilder.
     * --quiet ensures that only error and warning messages are printed
-    * 
+    *
     * @param bare true, if the --bare option is to be added
     * @return Lines of the process-output. The list is empty, if everything worked well.
     */
@@ -38,11 +38,11 @@ public class GITCommandExecutor {
         if(bare)
             command.add("--bare");
         command.add("--quiet");
-        
+
         //execute the command
         return executeCommand(command);
     }
-    
+
     /**
     * Performs the "git add" command with the given options in the current directory of the processBuilder.
     *
@@ -67,13 +67,13 @@ public class GITCommandExecutor {
         if(ignore_errors)
             command.add("--ignore-errors");
         //separate file names from option names
-        command.add("--");
+        //command.add("--"); commands like "git add test.txt" are impossible otherwise
         command.add(pathspec);
-        
+
         //execute the command
         return executeCommand(command);
     }
-    
+
     /**
     * Performs the "git rm --quiet" command with the given options in the current directory of the processBuilder.
     * --quiet ensures that only error and warning messages are printed
@@ -99,11 +99,11 @@ public class GITCommandExecutor {
         //separate file names from option names
         command.add("--");
         command.add(file);
-        
+
         //execute the command
         return executeCommand(command);
     }
-    
+
     /**
     * Performs the "git checkout --quiet" command to switch to the given branch or the given commit
     *
@@ -117,11 +117,11 @@ public class GITCommandExecutor {
         command.add("checkout");
         command.add("--quiet");
         command.add(branchOrCommit);
-        
+
         //execute the command
         return executeCommand(command);
     }
-    
+
     /**
     * Performs the "git clone --quiet" command to clone an existing repository into a directory
     *
@@ -140,11 +140,11 @@ public class GITCommandExecutor {
         command.add(repository);
         if (!directory.equals(""))
             command.add(directory);
-        
+
         //execute the command
         return executeCommand(command);
     }
-    
+
     /**
     * Performs the "git commit --quiet" command to store the current contents of the index in a new commit with a log message
     *
@@ -175,11 +175,11 @@ public class GITCommandExecutor {
             command.add("--");
             command.add(file);
         }
-        
+
         //execute the command
         return executeCommand(command);
     }
-    
+
     /**
     * Performs the "git reset --quiet" command to reset the current HEAD to the specified state
     *
@@ -200,11 +200,11 @@ public class GITCommandExecutor {
             command.add("--");
             command.add(paths);
         }
-        
+
         //execute the command
         return executeCommand(command);
     }
-    
+
     /**
     * Performs the "git fetch --quiet" command to download objects and refs from another repository
     *
@@ -216,11 +216,11 @@ public class GITCommandExecutor {
         command.add("git");
         command.add("fetch");
         command.add("--quiet");
-        
+
         //execute the command
         return executeCommand(command);
     }
-    
+
     /**
     * Performs the "git push --quiet" command to update remote refs along with associated objects
     *
@@ -239,11 +239,11 @@ public class GITCommandExecutor {
             command.add(repository);
         if(!refspec.equals(""))
             command.add(refspec);
-        
+
         //execute the command
         return executeCommand(command);
     }
-    
+
     /**
     * Performs the "git pull --quiet" command to fetch information from another repository and incorporate them into the current branch
     *
@@ -262,14 +262,14 @@ public class GITCommandExecutor {
             command.add(repository);
         if(!refspec.equals(""))
             command.add(refspec);
-        
+
         //execute the command
         return executeCommand(command);
     }
-    
+
     /**
     * Performs the "git merge --no-edit --quiet" command to join two development histories together
-    * 
+    *
     * --no-edit ensures that the merge-message is created automatically
     *
     * @param commit Usually the name of another branch that is merged from. If left empty, the corresponding
@@ -285,16 +285,16 @@ public class GITCommandExecutor {
         command.add("--quiet");
         if(!commit.equals(""))
             command.add(commit);
-        
+
         //execute the command
         List<String> res = executeCommand(command);
-        
+
         if (res.size() == 0){
             //the merge was fast forward
             return new MergeResponse(MergeResponse.States.FAST_FORWARD, res);
         } else {
             //the merge was not fast forward
-            
+
             //test if the merge was successful
             for (String line: res){
                 if(!line.startsWith("Auto-merging")) {
@@ -306,7 +306,7 @@ public class GITCommandExecutor {
             return new MergeResponse(MergeResponse.States.RESOLVED_CONFLICTS, res);
         }
     }
-    
+
     /**
     * Performs the "git branch --quiet" command to create a new branch
     *
@@ -321,11 +321,11 @@ public class GITCommandExecutor {
         command.add("branch");
         command.add("--quiet");
         command.add(branchName);
-        
+
         //execute the command
         return executeCommand(command);
     }
-    
+
     /**
     * Performs the "git branch -d --quiet" command to delete a branch
     *
@@ -341,11 +341,11 @@ public class GITCommandExecutor {
         command.add("-d");
         command.add("--quiet");
         command.add(branchName);
-        
+
         //execute the command
         return executeCommand(command);
     }
-    
+
     /**
     * Performs the "git branch -m --quiet" command to rename oldbranch to newbranch
     *
@@ -364,11 +364,11 @@ public class GITCommandExecutor {
         if(!oldBranch.equals(""))
             command.add(oldBranch);
         command.add(newBranch);
-        
+
         //execute the command
         return executeCommand(command);
     }
-    
+
     /**
     * Performs the "git branch --all" command to list all branches
     * <p>
@@ -382,11 +382,11 @@ public class GITCommandExecutor {
         command.add("git");
         command.add("branch");
         command.add("--all");
-        
+
         //execute the command
         return executeCommand(command);
     }
-    
+
     /**
     * Performs the "git tag --annotate" command to create an annotated tag with a given message
     *
@@ -412,11 +412,11 @@ public class GITCommandExecutor {
         command.add(tagName);
         if(!commit.equals(""))
             command.add(commit);
-        
+
         //execute the command
         return executeCommand(command);
     }
-    
+
     /**
     * Performs the "git tag -d" command to delete a given tag
     *
@@ -431,22 +431,22 @@ public class GITCommandExecutor {
         command.add("tag");
         command.add("-d");
         command.add(tagName);
-        
+
         //execute the command
         List<String> res = executeCommand(command);
-        
+
         //check if everything went well
         for (String line: res){
             //if a line of this output does not start with "Deleted", something went wrong
             if(!line.startsWith("Deleted"))
                 return res;
         }
-        
+
         //everything went well, so just return an empty list
         res.clear();
         return res;
     }
-    
+
     /**
     * Performs the "git tag" command to list all tags
     *
@@ -457,17 +457,17 @@ public class GITCommandExecutor {
         List<String> command = new ArrayList<String>(2);
         command.add("git");
         command.add("tag");
-        
+
         //execute the command
         return executeCommand(command);
     }
-    
+
     //executes a given command in the local processBuilder
     private List<String> executeCommand(List<String> params) {
         try {
             this.processBuilder.command(params);
             Process p = this.processBuilder.start();
-            
+
             //read the output
             return getProcessOutput(p);
         } catch (IOException e) {
@@ -476,7 +476,7 @@ public class GITCommandExecutor {
             return res;
         }
     }
-    
+
     //returns the lines of the output of a process
     private List<String> getProcessOutput(Process p) throws IOException{
         InputStream output = p.getInputStream();
