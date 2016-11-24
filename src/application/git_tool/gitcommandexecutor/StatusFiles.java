@@ -3,6 +3,9 @@ package application.git_tool.gitcommandexecutor;
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+* A container to store all the relevant changes made to files.
+*/
 public class StatusFiles {
     
     private List<String> untrackedFiles;
