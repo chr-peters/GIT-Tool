@@ -21,10 +21,18 @@ public class GITCommandExecutor {
         ProcessBuilder p = new ProcessBuilder();
         p.directory(new File("../TestRepository"));
         GITCommandExecutor commandExecutor = new GITCommandExecutor(p);
-        System.out.println(commandExecutor.init(false));
-        System.out.println(commandExecutor.add(false, false, false, false, "addtest.txt"));
-        System.out.println(commandExecutor.reset("", ""));
+//         System.out.println(commandExecutor.init(false));
+//         System.out.println(commandExecutor.add(false, false, false, false, "addtest.txt"));
+//         System.out.println(commandExecutor.reset("", ""));
         //System.out.println(commandExecutor.commit(false, false, "", ""));
+        try {
+            List<Commit> res = commandExecutor.log("");
+            for(Commit c: res){
+                System.out.println(c);
+            }
+        } catch (GitLogException e) {
+            System.out.println(e.getMessage());
+        }
     }
     
     /**
@@ -71,8 +79,10 @@ public class GITCommandExecutor {
         if(ignore_errors)
             command.add("--ignore-errors");
         //separate file names from option names
-        command.add("--");
-        command.add(pathspec);
+        if(!pathspec.equals("")){
+            command.add("--");
+            command.add(pathspec);
+        }
         
         //execute the command
         return executeCommand(command);
@@ -477,23 +487,27 @@ public class GITCommandExecutor {
     */
     public List<Commit> log(String path) throws GitLogException{
         //generate the command from the options
-        List<String> command = new ArrayList<String>(3);
+        List<String> command = new ArrayList<String>(4);
         command.add("git");
         command.add("--no-pager");
         command.add("log");
+        if(!path.equals(""))
+            command.add(path);
         
         //execute the command
         List<String> res = executeCommand(command);
         
+        //the endline character of the current system
+        String n = System.getProperty("line.separator");
+        
         //test if something went wrong
         if (getLastExitCode() != 0) {
             //something went wrong, so just put the output into the GitLogException
-            String n = System.getProperty("line.separator");
             StringBuilder msg = new StringBuilder();
             for(String line: res){
                 msg.append(line+n);
             }
-            throw new GitLogException(msg);
+            throw new GitLogException(msg.toString());
         }
         
         //everything went well, so just parse the commits
@@ -503,18 +517,41 @@ public class GITCommandExecutor {
         String curDate;
         StringBuilder curMessage;
         String curMerge;
-        for (String line: res) {
-            if(line.startsWith("commit") && curHash == null){
-                curHash = (line.split("\\s+")[1]).trim();
+        String curLine;
+        while (res.size() > 0) {
+            //get hash
+            curHash = (res.remove(0).split("\\s+")[1]).trim();
+            //test if merge attribute exists and if so, add it
+            curLine = res.remove(0);
+            if(curLine.startsWith("Merge:")){
+                curMerge = (curLine.split("Merge:")[1]).trim();
+                curAuthor = (res.remove(0).split("Author:")[1]).trim();
+            } else {
+                curMerge = "";
+                curAuthor = (curLine.split("Author:")[1]).trim();
             }
+            //get the date
+            curDate = (res.remove(0).split("Date:")[1]).trim();
             
+            //reset the old commit message
+            curMessage = new StringBuilder();
+            //get the commit message
+            while(res.size() > 0 && !(curLine = res.get(0)).startsWith("commit")) {
+                curLine = res.remove(0).trim();
+                if(!curLine.equals(""))
+                    curMessage.append(curLine+n);
+            }
+            //add the commit-object to the list
+            commits.add(new Commit(curHash, curAuthor, curDate, curMerge, curMessage.toString().trim()));
         }
+        return commits;
     }
     
     //use this to get the last exit code as it resets it afterwards
     private int getLastExitCode(){
-        return this.lastExitCode;
+        int exitCode = this.lastExitCode;
         this.lastExitCode = 0;
+        return exitCode;
     }
     
     //executes a given command in the local processBuilder
@@ -524,11 +561,15 @@ public class GITCommandExecutor {
             Process p = this.processBuilder.start();
             
             //set the last exit code
-            this.lastExitCode = p.exitValue();
+            this.lastExitCode = p.waitFor();
             
             //read the output
             return getProcessOutput(p);
         } catch (IOException e) {
+            List<String> res = new ArrayList<String>();
+            res.add(e.getMessage());
+            return res;
+        } catch (InterruptedException e){
             List<String> res = new ArrayList<String>();
             res.add(e.getMessage());
             return res;
