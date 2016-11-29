@@ -73,4 +73,11 @@ public class GITTool {
     public ProcessBuilder getProcessBuilder(){
         return this.processBuilder;
     }
+    
+    public void refresh() {
+        this.fileBrowser.refresh();
+        //this.commandMenu.refresh();
+        this.commandLine.refresh();
+        this.infoMenu.refresh();
+    }
 }
