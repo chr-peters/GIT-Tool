@@ -3,6 +3,7 @@ package application.git_tool;
 import application.git_tool.filebrowser.*;
 import application.git_tool.commandmenu.*;
 import application.git_tool.commandline.*;
+import application.git_tool.infomenu.*;
 
 import net.miginfocom.layout.*;
 import net.miginfocom.swing.*;
@@ -22,6 +23,7 @@ public class GITTool {
     private FileBrowser fileBrowser;
     private CommandMenu commandMenu;
     private CommandLine commandLine;
+    private InfoMenu infoMenu;
 
     //central instance of the process-builder to perform tasks within the system
     private ProcessBuilder processBuilder;
@@ -46,11 +48,12 @@ public class GITTool {
         this.fileBrowser = new FileBrowser(this);
         this.commandMenu = new CommandMenu(this);
         this.commandLine = new CommandLine(this);
+        this.infoMenu = new InfoMenu(this);
 
         //set up layout
         rootContainer.add(commandMenu, "width 25%, height 75%");
         rootContainer.add(fileBrowser, "width 50%, spany 2, growx, growy, height 100%");
-        rootContainer.add(new JLabel("Info"), "width 25%, spany 3, growx, growy, wrap");
+        rootContainer.add(infoMenu, "width 25%, spany 3, growx, growy, wrap");
         rootContainer.add(new JLabel("History"), "spany 2, growx, growy, height 25%,wrap");
         rootContainer.add(commandLine, "growx, growy, skip, skip, skip");
 
