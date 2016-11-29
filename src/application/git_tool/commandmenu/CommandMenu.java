@@ -1,4 +1,3 @@
-//!important!
 package application.git_tool.commandmenu;
 
 import java.awt.event.ActionEvent;
@@ -12,11 +11,14 @@ import net.miginfocom.swing.*;
 
 import application.git_tool.commandmenu.helpers.Command;
 import application.git_tool.commandmenu.helpers.Parameter;
+import application.git_tool.commandmenu.helpers.MyTextField;
+
 import application.git_tool.gitcommandexecutor.GITCommandExecutor;
 import application.git_tool.gitcommandexecutor.MergeResponse;
 import application.git_tool.GITTool;
 
-public class CommandMenu extends JPanel {
+public class CommandMenu extends JPanel {//Class CommandMenu/////////////////////////////////////////////////////////////
+
   private Command[] commands;
   private GITCommandExecutor gitCmdExec;
   private GITTool gitTool;
@@ -25,50 +27,177 @@ public class CommandMenu extends JPanel {
   private JCheckBox[] paramBoxes;
   private JComboBox cmdList;
   private JLabel currCmdText;
-  private JTextField[] paramTexts;
+  private JLabel[] paramNames;
+  private MyTextField[] paramTexts;
   private final static int maxParams = 5; //TODO wichtige Zeile
 
-  public CommandMenu(GITTool gitTool){ //KONSTRUKTOR//////////////////////////////////////////////
+
+  public CommandMenu(GITTool gitTool){ //Konstruktor//////////////////////////////////////////////////////////////////
     this.gitTool = gitTool;
     this.gitCmdExec = new GITCommandExecutor(this.gitTool.getProcessBuilder());
     this.setLayout(new MigLayout());
     this.init();
-    cmdList.addActionListener(new ActionListener(){
-       public void actionPerformed(ActionEvent e){
-         int index = CommandMenu.this.cmdList.getSelectedIndex();
-         int numParams = CommandMenu.this.commands[index].getParams().length;
-         CommandMenu.this.setParams(numParams);
-       }
-     });
-  }//KONSTRUKTOR ENDE//////////////////////////////////////////////////////////////////////////
-
-
-  //Zeigt oder versteckt die ersten num Parameter////////
-  public void setParams(int num){
-    for(int i = 0; i < Math.min(num, maxParams); i++){
-      paramBoxes[i].setSelected(false);
-      paramBoxes[i].setText(getSelectedCommand().getParams()[i].getName());
-      paramBoxes[i].setVisible(true);
-
-      paramTexts[i].setText(getSelectedCommand().getParams()[i].getDefaultText());
-      if(getSelectedCommand().getParams()[i].hasArg()) paramTexts[i].setVisible(true);
-      else paramTexts[i].setVisible(false);
+    addListenerToMenu();
+    for(int i = 0; i < maxParams; i++){
+      final int j = i; //In der Implementierung eines ActionListeners darf nur mit final Parametern gearbeitet werden.
+      addListenerToBox(j);
     }
-    for(int i = num; i < maxParams; i++){
-      paramBoxes[i].setVisible(false);
+  }///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-      paramTexts[i].setText("");
+
+  public void init(){ //INITIALISIERUNG/////////////////////////////////////////////////////////////////////////////
+
+    //Erzeugung der einzelnen Befehle////////////////////////////////////////////////////////////////////////
+    Parameter[] addParams = {new Parameter("pathspec", "*file/directory*"),
+                            new Parameter("--force"), new Parameter("--update"),
+                            new Parameter("--all"), new Parameter("--ignore-errors")};
+    Command add = new Command("add", addParams);
+
+    Parameter[] createBranchParams = {new Parameter("name", "*name*", true)};
+    Command createBranch = new Command("branch(create)", createBranchParams);
+
+    Parameter[] deleteBranchParams = {new Parameter("-d","*branchname*", true)};
+    Command deleteBranch = new Command("branch(delete)", deleteBranchParams);
+
+    Command listBranches = new Command("branch(list)", new Parameter[0]);
+
+    Parameter[] renameBranchParams = {new Parameter("old name", "*old name*", true), new Parameter("new name", "*old name*", true)};
+    Command renameBranch = new Command("branch(rename)", renameBranchParams);
+
+    Parameter[] checkoutParams = {new Parameter("branch/commit", "*name*", true)};
+    Command checkout = new Command("checkout", checkoutParams);
+
+    Parameter[] cloneParams = {new Parameter("repository", "*repository*", true),
+                              new Parameter("directory", "*directory*", true)};
+    Command clone = new Command("clone", cloneParams);
+
+    Parameter[] commitParams =  {new Parameter("-m", "*message*", true), new Parameter("file", "*filename*"),
+                                new Parameter("--all"), new Parameter("--amend")};
+    Command commit = new Command("commit", commitParams);
+
+    Command fetch = new Command("fetch", new Parameter[0]);
+
+    Parameter[] initParams = {new Parameter("--bare")};
+    Command init = new Command("init", initParams);
+
+    Parameter[] mergeParams = {new Parameter("branch/commit", "PFLICHTPAREMETER?")};
+    Command merge = new Command("merge", mergeParams);
+
+    Parameter[] pullParams = {new Parameter("repository", "*repository*"), new Parameter("refspec", "TODO")};
+    Command pull = new Command("pull", pullParams);
+
+    Parameter[] pushParams = {new Parameter("repository", "*repository*"), new Parameter("refspec", "TODO")};
+    Command push = new Command("push", pushParams);
+
+    Parameter[] resetParams = {new Parameter("tree-ish", "TODO"), new Parameter("paths", "TODO")};
+    Command reset = new Command("reset", resetParams);
+
+    Parameter[] rmParams = {new Parameter("file", "*filename*", true), new Parameter("--force"),
+                           new Parameter("-r"), new Parameter("--cached")};
+    Command rm = new Command("rm", rmParams);
+
+    Parameter[] createTagParams = {new Parameter("tagname", "*name*", true), new Parameter("message", "*message*"),
+                                  new Parameter("commit", "*commit*")};
+    Command createTag = new Command("tag(create)", createTagParams);
+
+    Parameter[] deleteTagParams = {new Parameter("name", "*to delete*", true)};
+    Command deleteTag = new Command("tag(delete)", deleteTagParams);
+
+    Command listTags = new Command("tag(list)", new Parameter[0]);
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //Liste der GIT-Befehle/////////////////////////////////////////////////////////////////////////////////////////
+    Command[] tmpCommands  = { add, createBranch, deleteBranch, listBranches, renameBranch ,checkout, clone, commit,
+                              fetch, init, merge, pull, push, reset, rm, createTag, deleteTag, listTags};
+    commands = tmpCommands;
+    String[] strCommands = new String[commands.length];
+    for(int i = 0; i < strCommands.length; i++){
+      strCommands[i] = commands[i].getName();
+    } //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //Dropdown-Men체//////////////////////////////
+    cmdList = new JComboBox<String>(strCommands);
+    this.add(cmdList, "width 75%,  height 5%");
+    /////////////////////////////////////////////
+
+    //Hilfe-Button//////////////////////////////////////////////
+    bHelp = new JButton("Help");
+    this.add(bHelp, "width 25%, height 5%, growx, spanx, wrap");
+    ////////////////////////////////////////////////////////////
+
+    //Anzeige der Befehlsparameter///////////////////////////////////////////////////
+    int scalHeight = Math.min(90/maxParams, 10);
+    paramBoxes = new JCheckBox[maxParams];
+    paramNames = new JLabel[maxParams];
+    paramTexts = new MyTextField[maxParams];
+    for(int i = 0; i < maxParams; i++){
+      paramNames[i] = new JLabel();
+      this.add(paramNames[i], "height "+scalHeight+"%"+", width 18%");
+      paramBoxes[i] = new JCheckBox();
+      this.add(paramBoxes[i], "height "+scalHeight+"%"+", width 2%");
+      paramTexts[i] = new MyTextField();
+      this.add(paramTexts[i], "height "+scalHeight/2+"%"+", width 80%, growx, wrap");
+    }
+    /////////////////////////////////////////////////////////////////////////////////
+
+    //Anzeige des aktuellen Befehls//////
+    currCmdText = new JLabel(); //TODO
+    this.add(currCmdText, "growx, wrap");
+    /////////////////////////////////////
+
+    //Button zum Absetzen des Befehls////////////////
+    bExec = new JButton("Execute");
+    bExec.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent e){
+         execute();
+       }
+    });
+    this.add(bExec, "growx, spanx, wrap, height 5%");
+    /////////////////////////////////////////////////
+
+    //Startzustand
+    setParams();
+
+  }//INITIALISIERUNG ENDE///////////////////////////////////////////////////////////////////////////////////////////
+
+
+  //Anzeige der Parameter, bezogen auf den ausgew채hlten Befehl
+  public void setParams(){
+    int numParams = getSelectedCommand().getParams().length;
+    Parameter param;
+    for(int i = 0; i < Math.min(numParams, maxParams); i++){
+      param = getSelectedCommand().getParams()[i];
+
+      paramNames[i].setText(param.getName());
+      paramBoxes[i].setSelected(false);
+      paramTexts[i].setText(param.getDefaultText());
+      if(param.hasArg()) paramTexts[i].setVisible(true);
+      else paramTexts[i].setVisible(false);
+
+      if(param.isNecessary()){
+        paramTexts[i].setEnabled(true);
+        paramBoxes[i].setVisible(false);
+      }
+      else {
+        paramTexts[i].setEnabled(false);
+        paramBoxes[i].setVisible(true);
+      }
+    }
+    for(int i = numParams; i < maxParams; i++){
+      paramNames[i].setText("");
+      paramBoxes[i].setVisible(false);
       paramTexts[i].setVisible(false);
     }
-  }
-  //////////////////////////////////////////////////////
+  }///////////////////////////////////////////////////////////
 
 
-  //Gibt das aktuell oben ausgewaehlte Kommando zurueck
+  //R체ckgabe des aktuell ausgew채hlten Kommandos/
   public Command getSelectedCommand(){
     return commands[cmdList.getSelectedIndex()];
-  }////////////////////////////////////////////////////
+  }/////////////////////////////////////////////
 
+
+  //Ausf체hrung des ausgew채hlten Kommands mit den vom Nutzer angegebenen Parametern///////////////////////////////////////
   public void execute(){
     switch(cmdList.getSelectedIndex()){
       //add
@@ -113,116 +242,27 @@ public class CommandMenu extends JPanel {
     }
     System.out.println(errors);
     System.out.println("Gelesen: " + paramTexts[0].getText().trim());
-  }
+  }//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-  public void init(){
-    //Erzeugung der einzelnen Befehle/////////////////////////////////////////////////
-    Parameter[] addParams = {new Parameter("pathspec", "*file/directory*"),
-                            new Parameter("--force"), new Parameter("--update"),
-                            new Parameter("--all"), new Parameter("--ignore-errors")};
-    Command add = new Command("add", addParams);
-
-    Parameter[] createBranchParams = {new Parameter("name", true)};
-    Command createBranch = new Command("branch(create)", createBranchParams);
-
-    Parameter[] deleteBranchParams = {new Parameter("-d","*branchname*")};
-    Command deleteBranch = new Command("branch(delete)", deleteBranchParams);
-
-    Command listBranches = new Command("branch(list)", new Parameter[0]);
-
-    Parameter[] renameBranchParams = {new Parameter("old name", true), new Parameter("new name", true)};
-    Command renameBranch = new Command("branch(rename)", renameBranchParams);
-
-    Parameter[] checkoutParams = {new Parameter("branch/commit", "*name*")};
-    Command checkout = new Command("checkout", checkoutParams);
-
-    Parameter[] cloneParams = {new Parameter("repository", true),
-                              new Parameter("directory", true)};
-    Command clone = new Command("clone", cloneParams);
-
-    Parameter[] commitParams =  {new Parameter("-m", "*message*"), new Parameter("file", "*filename*"),
-                                new Parameter("--all"), new Parameter("--amend")};
-    Command commit = new Command("commit", commitParams);
-
-    Command fetch = new Command("fetch", new Parameter[0]);
-
-    Parameter[] initParams = {new Parameter("--bare")};
-    Command init = new Command("init", initParams);
-
-    Parameter[] mergeParams = {new Parameter("branch/commit", "*name*")};
-    Command merge = new Command("merge", mergeParams);
-
-    Parameter[] pullParams = {new Parameter("repository", true), new Parameter("refspec", "TODO")};
-    Command pull = new Command("pull", pullParams);
-
-    Parameter[] pushParams = {new Parameter("repository", true), new Parameter("refspec", "TODO")};
-    Command push = new Command("push", pushParams);
-
-    Parameter[] resetParams = {new Parameter("tree-ish", "TODO"), new Parameter("paths", "TODO")};
-    Command reset = new Command("reset", resetParams);
-
-    Parameter[] rmParams = {new Parameter("file", "*filename*"), new Parameter("--force"),
-                           new Parameter("-r"), new Parameter("--cached")};
-    Command rm = new Command("rm", rmParams);
-
-    Parameter[] createTagParams = {new Parameter("tagname", true), new Parameter("message", true),
-                                  new Parameter("commit", true)};
-    Command createTag = new Command("tag(create)", createTagParams);
-
-    Parameter[] deleteTagParams = {new Parameter("name", true)};
-    Command deleteTag = new Command("tag(delete)", deleteTagParams);
-
-    Command listTags = new Command("tag(list)", new Parameter[0]);
-    /////////////////////////////////////////////////////////////////////////////////
-
-    //Liste der git-Befehle////////////////////////////
-    Command[] tmpCommands  = { add, createBranch, deleteBranch, listBranches, renameBranch ,checkout, clone, commit,
-                              fetch, init, merge, pull, push, reset, rm, createTag, deleteTag, listTags};
-    commands = tmpCommands;
-    String[] strCommands = new String[commands.length];
-    for(int i = 0; i < strCommands.length; i++){
-      strCommands[i] = commands[i].getName();
-    } ///////////////////////////////////////////////////
-
-    //Dropdown-Menue/////////////////////////////
-    cmdList = new JComboBox<String>(strCommands);
-    this.add(cmdList, "width 75%,  height 5%");
-    /////////////////////////////////////////////
-
-    //Hilfe-Button////////////////////////////////
-    bHelp = new JButton("Help");
-    this.add(bHelp, "width 25%, height 5%, growx, wrap");
-    //////////////////////////////////////////////
-
-    //Anzeige der Befehlsparameter////////////////////////////////////////////////
-    int scalHeight = Math.min(90/maxParams, 10);
-    paramBoxes = new JCheckBox[maxParams];
-    paramTexts = new JTextField[maxParams];
-    for(int i = 0; i < maxParams; i++){
-      paramBoxes[i] = new JCheckBox();
-      this.add(paramBoxes[i], "height "+scalHeight+"%"+", width 20%");
-      paramTexts[i] = new JTextField();
-      this.add(paramTexts[i], "height "+scalHeight/2+"%"+", width 80%, growx, wrap");
-    }
-    ///////////////////////////////////////////////////////////////////////////////
-
-    //Anzeige des aktuellen Befehls///////////////////////
-    currCmdText = new JLabel("HIER STEHT SP훂ER WAT :O"); //TODO
-    this.add(currCmdText, "growx, wrap");
-    //////////////////////////////////////////////////////
-
-    //Button zum Absetzen des Befehls
-    bExec = new JButton("Execute");
-    bExec.addActionListener(new ActionListener(){
-      public void actionPerformed(ActionEvent e){
-         execute();
+  //ActionListener f체r das Dropdown-Men체/////////////////////////////////////
+  public void addListenerToMenu(){
+    cmdList.addActionListener(new ActionListener(){
+      @Override
+       public void actionPerformed(ActionEvent e){
+         CommandMenu.this.setParams();
        }
     });
-    this.add(bExec, "growx, spanx, wrap, height 5%");
-    /////////////////////////////////
+  }//////////////////////////////////////////////////////////////////////////
 
-    //Setze Startzustand
-    setParams(commands[cmdList.getSelectedIndex()].getParams().length);
-  }
-}
+  //ActionListener f체r die CheckBoxen/////////////////////////////////////////
+  public void addListenerToBox(final int index){
+    paramBoxes[index].addActionListener(new ActionListener(){
+      @Override
+      public void actionPerformed(ActionEvent e){
+        if(paramBoxes[index].isSelected()) paramTexts[index].setEnabled(true);
+        else paramTexts[index].setEnabled(false);
+      }
+    });
+  }///////////////////////////////////////////////////////////////////////////
+
+}//Class CommandMenu/////////////////////////////////////////////////////////////////////////////////////////////////////

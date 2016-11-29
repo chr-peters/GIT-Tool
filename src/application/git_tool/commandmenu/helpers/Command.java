@@ -1,7 +1,7 @@
-//!important!
 package application.git_tool.commandmenu.helpers;
 
 public class Command{
+
   private String cmdName;
   private Parameter[] params;
 

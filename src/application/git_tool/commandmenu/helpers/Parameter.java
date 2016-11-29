@@ -1,27 +1,27 @@
-//!important!
 package application.git_tool.commandmenu.helpers;
 
 public class Parameter{
+
   private String defaultText;
   private String paramName;
-  private boolean hasArg;
+  private boolean isNecessary;
 
-  public Parameter(String paramName, String defaultText){
-    this.defaultText = defaultText;
+  public Parameter(String paramName, String defaultText, boolean isNecessary){
     this.paramName = paramName;
-    hasArg = true;
+    this.defaultText = defaultText;
+    this.isNecessary = isNecessary;
   }
 
-  public Parameter(String paramName, boolean hasArg){
-    defaultText = "";
+  public Parameter(String paramName, String defaultText){
     this.paramName = paramName;
-    this.hasArg = hasArg;
+    this.defaultText = defaultText;
+    isNecessary = false;
   }
 
   public Parameter(String paramName){
-    defaultText = "";
     this.paramName = paramName;
-    hasArg = false;
+    this.defaultText = "";
+    isNecessary = false;
   }
 
   public String getDefaultText(){
@@ -30,7 +30,10 @@ public class Parameter{
   public String getName(){
     return paramName;
   }
+  public boolean isNecessary(){
+    return isNecessary;
+  }
   public boolean hasArg(){
-    return hasArg;
+    return !defaultText.isEmpty();
   }
 }
