@@ -12,6 +12,8 @@ import javax.swing.*;
 
 import java.io.File;
 
+import java.util.List;
+
 public class GITTool {
 
     //root frame
@@ -69,15 +71,69 @@ public class GITTool {
         new GITTool();
     }
 
-    //returns the instance of the process builder
+    /**
+    * returns a reference to the process builder
+    */
     public ProcessBuilder getProcessBuilder(){
         return this.processBuilder;
     }
     
+    /**
+    * Refreshes every component of the git-tool.
+    */
     public void refresh() {
         this.fileBrowser.refresh();
         //this.commandMenu.refresh();
         this.commandLine.refresh();
         this.infoMenu.refresh();
+    }
+    
+    /**
+    * Displays an error message to the user.
+    *
+    * @param message The message to be shown. Use \n to break lines.
+    * @param title The title of the message.
+    */
+    public void errorMessage(String message, String title) {
+        JOptionPane.showMessageDialog(this.frame, message, title, JOptionPane.ERROR_MESSAGE);
+    }
+    
+    /**
+    * Displays an error message to the user
+    *
+    * @param message The lines of the message to be shown. The line separator 
+    *                is added after each line automatically
+    * @param title The title of the message
+    */
+    public void errorMessage(List<String> message, String title) {
+        StringBuilder msg = new StringBuilder();
+        for(String line: message){
+            msg.append(line+System.getProperty("line.separator"));
+        }
+        this.errorMessage(msg.toString(), title);
+    }
+    
+    /**
+    * Displays an information message to the user
+    *
+    * @param message The message to be shown. Use \n to break lines.
+    * @param title The title of the message.
+    */
+    public void infoMessage(String message, String title) {
+        JOptionPane.showMessageDialog(this.frame, message, title, JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    /**
+    * Displays an information message to the user
+    * 
+    * @param message The lines of the message to be shown.
+    * @param title The title of the message
+    */
+    public void infoMessage(List<String> message, String title) {
+        StringBuilder msg = new StringBuilder();
+        for(String line: message){
+            msg.append(line+System.getProperty("line.separator"));
+        }
+        this.infoMessage(msg.toString(), title);
     }
 }
