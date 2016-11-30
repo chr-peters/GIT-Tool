@@ -4,6 +4,7 @@ import application.git_tool.filebrowser.*;
 import application.git_tool.commandmenu.*;
 import application.git_tool.commandline.*;
 import application.git_tool.infomenu.*;
+import application.git_tool.history.*;
 
 import net.miginfocom.layout.*;
 import net.miginfocom.swing.*;
@@ -59,7 +60,7 @@ public class GITTool {
         rootContainer.add(commandMenu, "width 25%, height 75%");
         rootContainer.add(fileBrowser, "width 50%, spany 2, growx, growy, height 100%");
         rootContainer.add(infoMenu, "width 25%, spany 3, growx, growy, wrap");
-        rootContainer.add(history, "spany 2, growx, growy, height 25%,wrap");
+        rootContainer.add(new JScrollPane(history), "spany 2, growx, growy, height 25%,wrap");
         rootContainer.add(commandLine, "growx, growy, skip, skip, skip");
 
         //set up JFrame
