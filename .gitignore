@@ -1,4 +1,5 @@
 # ausgeschlossene Dateien
+src/data/workingdirectory.info
 
 # ausgeschlossene Verzeichnisse (mit / beenden)
 build/
