@@ -1,15 +1,18 @@
 package application.git_tool.unixcommandexecutor;
 
+import application.git_tool.GITTool;
+import application.git_tool.history.*;
+
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
 
 public class UnixCommandExecutor {
-    private ProcessBuilder processBuilder;
+    private GITTool gitTool;
     private int lastExitCode;
     
-    public UnixCommandExecutor(ProcessBuilder p) {
-        this.processBuilder = p;
+    public UnixCommandExecutor(GITTool gitTool) {
+        this.gitTool = gitTool;
         this.lastExitCode = 0;
     }
     
@@ -206,9 +209,14 @@ public class UnixCommandExecutor {
 
     //executes a given command in the local processBuilder
     private List<String> executeCommand(List<String> params) {
+        StringBuilder command = new StringBuilder();
+        for(String s: params) {
+            command.append(s+" ");
+        }
+        this.gitTool.getHistory().addCommand(new Command(command.toString()));
         try {
-            this.processBuilder.command(params);
-            Process p = this.processBuilder.start();
+            this.gitTool.getProcessBuilder().command(params);
+            Process p = this.gitTool.getProcessBuilder().start();
             //set the last exit code
             this.lastExitCode = p.waitFor();
 
