@@ -8,37 +8,65 @@ import net.miginfocom.swing.*;
 
 import javax.swing.*;
 
+import java.awt.Color;
+
+import java.util.LinkedList;
+
 public class History extends JPanel {
 
     private GITTool gitTool;
+    //maximum number of commands to be stored
     private int maxCommands;
-    //remove this as it is stored in the linkedlist
-    private int size;
+    //list to store the commands
+    private LinkedList<Command> commands;
     
-    public History (GITTool gitTool){
+    public History (GITTool gitTool, int maxCommands){
         this.gitTool = gitTool;
-        this.maxCommands = 10;
-        this.size = 10;
+        this.maxCommands = maxCommands;
+        this.commands = new LinkedList<Command>();
         
-        this.setLayout(new MigLayout("debug, fillx"));
-        
-        this.drawCommands();
+        //init GUI
+        this.setLayout(new MigLayout("fillx"));
+        this.setBorder(BorderFactory.createTitledBorder("Command History"));
     }
     
     private void drawCommands() {
         //remove all components to redraw the history
         this.removeAll();
-        //headline
-        this.add(new JLabel("Command History:"), "spanx 2, center, wrap");
         //draw the commands
-        for(int i=0; i<size; i++){
-            this.add(new JLabel("Date: "), "");
-            this.add(new JLabel("Command"), "wrap");
+        for(int i=0; i<commands.size(); i++){
+            this.add(new JLabel(commands.get(i).printDate("dd.MM.yyyy' - 'HH:mm:ss")), "");
+            this.add(new JLabel(commands.get(i).getText()), "wrap");
         }
     }
     
-    public void refresh () {
+    /**
+    * Adds a command to the command history.
+    * <p>
+    * No need to call refresh afterwards as the history redraws itself
+    * automatically.
+    *
+    * @param command A container for the relevant information regarding a command.
+    *                See it's documentation for more details.
+    */
+    public void addCommand(Command command) {
+        if(commands.size() < maxCommands) {
+            commands.addFirst(command);
+        } else {
+            commands.pollLast();
+            commands.addFirst(command);
+        }
+        this.drawCommands();
+    }
     
+    /**
+    * Refreshes the command history.
+    * <p>
+    * At the moment, this method does not do anything, as the history redraws
+    * itself everytime a new command is added.
+    */
+    public void refresh () {
+        this.drawCommands();
     }
     
 }

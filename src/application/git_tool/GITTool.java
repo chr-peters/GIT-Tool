@@ -53,7 +53,7 @@ public class GITTool {
         this.commandMenu = new CommandMenu(this);
         this.commandLine = new CommandLine(this);
         this.infoMenu = new InfoMenu(this);
-        this.history = new History(this);
+        this.history = new History(this, 10);
         
 
         //set up layout
@@ -139,5 +139,14 @@ public class GITTool {
             msg.append(line+System.getProperty("line.separator"));
         }
         this.infoMessage(msg.toString(), title);
+    }
+    
+    /**
+    * Returns a reference to the command history.
+    * <p>
+    * Enables other components to access the history conveniently.
+    */
+    public History getHistory(){
+        return this.history;
     }
 }
