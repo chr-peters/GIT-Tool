@@ -38,6 +38,8 @@ public class History extends JPanel {
             this.add(new JLabel(commands.get(i).printDate("dd.MM.yyyy' - 'HH:mm:ss")), "");
             this.add(new JLabel(commands.get(i).getText()), "wrap");
         }
+        this.revalidate();
+        this.repaint();
     }
     
     /**
