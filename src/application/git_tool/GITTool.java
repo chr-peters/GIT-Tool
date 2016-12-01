@@ -173,7 +173,10 @@ public class GITTool {
             BufferedReader reader = new BufferedReader(new FileReader(this.workingDirectoryInfo));
             String workingDirectory = reader.readLine();
             reader.close();
-            return new File(workingDirectory);
+            File f = new File(workingDirectory);
+            if(f.isDirectory())
+                return f;                
+            return new File(".");
         } catch (IOException e) {
             return new File(".");
         }
