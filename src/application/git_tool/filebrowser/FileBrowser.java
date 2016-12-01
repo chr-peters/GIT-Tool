@@ -3,6 +3,7 @@ package application.git_tool.filebrowser;
 
 import application.git_tool.GITTool;
 import application.git_tool.unixcommandexecutor.UnixCommandExecutor;
+import application.git_tool.infomenu.InfoMenu;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -21,6 +22,7 @@ import javax.swing.tree.*;
 public class FileBrowser extends JPanel {
     private GITTool gitTool;
     private UnixCommandExecutor unixCommandExecutor;
+    private InfoMenu infoMenu;
     private Desktop desktop;
     private JTree tree;
     private JList<File> list;
@@ -79,6 +81,7 @@ public class FileBrowser extends JPanel {
             }
             FileBrowser.this.gitTool.getProcessBuilder().directory(node.path);
             FileBrowser.this.list.setListData(FileBrowser.this.getContent(FileBrowser.this.gitTool.getProcessBuilder().directory()));
+            //FileBrowser.this.infoMenu.refresh();
         }
         
         //collapses all child nodes of the newly collapsed node
@@ -97,6 +100,7 @@ public class FileBrowser extends JPanel {
                 FileBrowser.this.gitTool.getProcessBuilder().directory(((MyTreeNode) node.getRoot()).path);
             }
             FileBrowser.this.list.setListData(FileBrowser.this.getContent(FileBrowser.this.gitTool.getProcessBuilder().directory()));
+            //FileBrowser.this.infoMenu.refresh();
         }
     }
     
@@ -194,6 +198,7 @@ public class FileBrowser extends JPanel {
     public FileBrowser(GITTool gitTool) {
         this.gitTool = gitTool;
         this.unixCommandExecutor = new UnixCommandExecutor(this.gitTool);
+        this.infoMenu = new InfoMenu(this.gitTool);
         this.desktop = Desktop.getDesktop();
         this.tree = new JTree(new MyTreeModel(new MyTreeNode(new File("/"))));
         this.list = new JList<File>();
