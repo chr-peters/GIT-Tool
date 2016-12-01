@@ -1,5 +1,6 @@
 # ausgeschlossene Dateien
 src/data/workingdirectory.info
+src/data/commands.log
 
 # ausgeschlossene Verzeichnisse (mit / beenden)
 build/
