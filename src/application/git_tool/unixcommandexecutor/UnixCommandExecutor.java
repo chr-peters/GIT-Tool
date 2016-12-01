@@ -6,9 +6,11 @@ import java.util.regex.*;
 
 public class UnixCommandExecutor {
     private ProcessBuilder processBuilder;
+    private int lastExitCode;
     
     public UnixCommandExecutor(ProcessBuilder p) {
         this.processBuilder = p;
+        this.lastExitCode = 0;
     }
     
     public List<String> chmod(String rights, List<File> files) {
@@ -22,7 +24,11 @@ public class UnixCommandExecutor {
         for(File f: files) {
             command.add(f.getName());
         }
-        return executeCommand(command);
+        List<String> res = executeCommand(command);
+        if(this.getLastExitCode()!=0) {
+            res.add(0, "ERRORERRORERROR");
+        }
+        return res;
     }
     
     public List<String> cp(String dest, List<File> files) {
@@ -38,10 +44,14 @@ public class UnixCommandExecutor {
         for(File f: files) {
             command.add(f.getName());
         }
-        if(!command.contains("-t")) {
+        if(!command.contains("-t") && splitted.size()!=0) {
             command.add(splitted.get(splitted.size()-1));
         }
-        return executeCommand(command);
+        List<String> res = executeCommand(command);
+        if(this.getLastExitCode()!=0) {
+            res.add(0, "ERRORERRORERROR");
+        }
+        return res;
     }
     
     public List<String> find(String pattern) {
@@ -52,7 +62,11 @@ public class UnixCommandExecutor {
                 command.add(s);
             }
         }
-        return executeCommand(command);
+        List<String> res = executeCommand(command);
+        if(this.getLastExitCode()!=0) {
+            res.add(0, "ERRORERRORERROR");
+        }
+        return res;
     }
     
     public List<String> mkdir(String name) {
@@ -63,7 +77,11 @@ public class UnixCommandExecutor {
                 command.add(s);
             }
         }
-        return executeCommand(command);
+        List<String> res = executeCommand(command);
+        if(this.getLastExitCode()!=0) {
+            res.add(0, "ERRORERRORERROR");
+        }
+        return res;
     }
     
     public List<String> mv(String dest, List<File> files) {
@@ -78,10 +96,14 @@ public class UnixCommandExecutor {
         for(File f: files) {
             command.add(f.getName());
         }
-        if(!command.contains("-t")) {
+        if(!command.contains("-t") && splitted.size()!=0) {
             command.add(splitted.get(splitted.size()-1));
         }
-        return executeCommand(command);
+        List<String> res = executeCommand(command);
+        if(this.getLastExitCode()!=0) {
+            res.add(0, "ERRORERRORERROR");
+        }
+        return res;
     }
     
     public List<String> rm(List<File> files) {
@@ -92,7 +114,11 @@ public class UnixCommandExecutor {
         for(File f: files) {
             command.add(f.getName());
         }
-        return executeCommand(command);
+        List<String> res = executeCommand(command);
+        if(this.getLastExitCode()!=0) {
+            res.add(0, "ERRORERRORERROR");
+        }
+        return res;
     }
     
     public List<String> rmdir(List<File> files) {
@@ -101,7 +127,11 @@ public class UnixCommandExecutor {
         for(File f: files) {
             command.add(f.getName());
         }
-        return executeCommand(command);
+        List<String> res = executeCommand(command);
+        if(this.getLastExitCode()!=0) {
+            res.add(0, "ERRORERRORERROR");
+        }
+        return res;
     }
     
     public List<String> tar(String name, List<File> files) {
@@ -115,7 +145,11 @@ public class UnixCommandExecutor {
         for(File f: files) {
             command.add(f.getName());
         }
-        return executeCommand(command);
+        List<String> res = executeCommand(command);
+        if(this.getLastExitCode()!=0) {
+            res.add(0, "ERRORERRORERROR");
+        }
+        return res;
     }
     
     public List<String> touch(String name, List<File> files) {
@@ -129,7 +163,11 @@ public class UnixCommandExecutor {
         for(File f: files) {
             command.add(f.getName());
         }
-        return executeCommand(command);
+        List<String> res = executeCommand(command);
+        if(this.getLastExitCode()!=0) {
+            res.add(0, "ERRORERRORERROR");
+        }
+        return res;
     }
     
     public List<String> wget(String address) {
@@ -140,7 +178,11 @@ public class UnixCommandExecutor {
                 command.add(s);
             }
         }
-        return executeCommand(command);
+        List<String> res = executeCommand(command);
+        if(this.getLastExitCode()!=0) {
+            res.add(0, "ERRORERRORERROR");
+        }
+        return res;
     }
     
     //splits the given string into its components
@@ -155,21 +197,34 @@ public class UnixCommandExecutor {
         return components;
     }
     
+    //use this to get the last exit code as it resets it afterwards
+    private int getLastExitCode(){
+        int exitCode = this.lastExitCode;
+        this.lastExitCode = 0;
+        return exitCode;
+    }
+
     //executes a given command in the local processBuilder
     private List<String> executeCommand(List<String> params) {
         try {
             this.processBuilder.command(params);
             Process p = this.processBuilder.start();
-            
+            //set the last exit code
+            this.lastExitCode = p.waitFor();
+
             //read the output
             return getProcessOutput(p);
         } catch (IOException e) {
             List<String> res = new ArrayList<String>();
             res.add(e.getMessage());
             return res;
+        } catch (InterruptedException e){
+            List<String> res = new ArrayList<String>();
+            res.add(e.getMessage());
+            return res;
         }
     }
-    
+
     //returns the lines of the output of a process
     private List<String> getProcessOutput(Process p) throws IOException{
         InputStream output = p.getInputStream();
