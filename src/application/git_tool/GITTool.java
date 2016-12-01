@@ -11,7 +11,7 @@ import net.miginfocom.swing.*;
 
 import javax.swing.*;
 
-import java.io.File;
+import java.io.*;
 
 import java.util.List;
 
@@ -31,6 +31,9 @@ public class GITTool {
 
     //central instance of the process-builder to perform tasks within the system
     private ProcessBuilder processBuilder;
+    
+    //this file contains the information about the current working directory
+    private final File workingDirectoryInfo = new File("src/data/workingdirectory.info");
 
     public GITTool (){
 
@@ -38,7 +41,7 @@ public class GITTool {
         this.processBuilder = new ProcessBuilder();
         //this way error output and standard output are merged together in the subprocesses
         this.processBuilder.redirectErrorStream(true);
-        this.processBuilder.directory(new File("."));
+        this.processBuilder.directory(getWorkingDirectory());
 
         //create JFrame
         this.frame = new JFrame("GIT Tool");
@@ -69,6 +72,20 @@ public class GITTool {
         frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+        
+        //add shutdown routine
+        Runtime.getRuntime().addShutdownHook(new Thread (new Runnable () {
+            public void run () {
+                try {
+                    //write the current working directory to the workingDirectoryInfo file
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(workingDirectoryInfo, false));
+                    writer.write(GITTool.this.getProcessBuilder().directory().getAbsolutePath());
+                    writer.close();
+                } catch (IOException e) {
+                    System.err.println("Could not safe the current working directory.");
+                }
+            }
+        }));
     }
 
     public static void main (String args []){
@@ -148,5 +165,17 @@ public class GITTool {
     */
     public History getHistory(){
         return this.history;
+    }
+    
+    //retrieve the last working directory from the workingDirectoryInfo file
+    private File getWorkingDirectory() {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(this.workingDirectoryInfo));
+            String workingDirectory = reader.readLine();
+            reader.close();
+            return new File(workingDirectory);
+        } catch (IOException e) {
+            return new File(".");
+        }
     }
 }
