@@ -224,9 +224,15 @@ public class FileBrowser extends JPanel {
                 textField.addActionListener(new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
-                        FileBrowser.this.unixCommandExecutor.chmod(text, FileBrowser.this.list.getSelectedValuesList());
-                        FileBrowser.this.refresh();
                         ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
+                        java.util.List<String> res = FileBrowser.this.unixCommandExecutor.chmod(text, FileBrowser.this.list.getSelectedValuesList());
+                        if(!res.isEmpty() && res.get(0).equals("ERRORERRORERROR")) {
+                            res.remove(0);
+                            FileBrowser.this.gitTool.errorMessage(res, "Error");
+                        } else if(!res.isEmpty()) {
+                            FileBrowser.this.gitTool.infoMessage(res, "Info");
+                        }
+                        FileBrowser.this.refresh();
                     }
                 });
                 JPopupMenu tmp = new JPopupMenu();
@@ -242,9 +248,15 @@ public class FileBrowser extends JPanel {
                 textField.addActionListener(new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
-                        FileBrowser.this.unixCommandExecutor.cp(text, FileBrowser.this.list.getSelectedValuesList());
-                        FileBrowser.this.refresh();
                         ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
+                        java.util.List<String> res = FileBrowser.this.unixCommandExecutor.cp(text, FileBrowser.this.list.getSelectedValuesList());
+                        if(!res.isEmpty() && res.get(0).equals("ERRORERRORERROR")) {
+                            res.remove(0);
+                            FileBrowser.this.gitTool.errorMessage(res, "Error");
+                        } else if(!res.isEmpty()) {
+                            FileBrowser.this.gitTool.infoMessage(res, "Info");
+                        }
+                        FileBrowser.this.refresh();
                     }
                 });
                 JPopupMenu tmp = new JPopupMenu();
@@ -260,9 +272,15 @@ public class FileBrowser extends JPanel {
                 textField.addActionListener(new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
-                        FileBrowser.this.unixCommandExecutor.find(text);
-                        FileBrowser.this.refresh();
                         ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
+                        java.util.List<String> res = FileBrowser.this.unixCommandExecutor.find(text);
+                        if(!res.isEmpty() && res.get(0).equals("ERRORERRORERROR")) {
+                            res.remove(0);
+                            FileBrowser.this.gitTool.errorMessage(res, "Error");
+                        } else if(!res.isEmpty()) {
+                            FileBrowser.this.gitTool.infoMessage(res, "Info");
+                        }
+                        FileBrowser.this.refresh();
                     }
                 });
                 JPopupMenu tmp = new JPopupMenu();
@@ -278,9 +296,15 @@ public class FileBrowser extends JPanel {
                 textField.addActionListener(new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
-                        FileBrowser.this.unixCommandExecutor.mkdir(text);
-                        FileBrowser.this.refresh();
                         ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
+                        java.util.List<String> res = FileBrowser.this.unixCommandExecutor.mkdir(text);
+                        if(!res.isEmpty() && res.get(0).equals("ERRORERRORERROR")) {
+                            res.remove(0);
+                            FileBrowser.this.gitTool.errorMessage(res, "Error");
+                        } else if(!res.isEmpty()) {
+                            FileBrowser.this.gitTool.infoMessage(res, "Info");
+                        }
+                        FileBrowser.this.refresh();
                     }
                 });
                 JPopupMenu tmp = new JPopupMenu();
@@ -296,9 +320,15 @@ public class FileBrowser extends JPanel {
                 textField.addActionListener(new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
-                        FileBrowser.this.unixCommandExecutor.mv(text, FileBrowser.this.list.getSelectedValuesList());
-                        FileBrowser.this.refresh();
                         ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
+                        java.util.List<String> res = FileBrowser.this.unixCommandExecutor.mv(text, FileBrowser.this.list.getSelectedValuesList());
+                        if(!res.isEmpty() && res.get(0).equals("ERRORERRORERROR")) {
+                            res.remove(0);
+                            FileBrowser.this.gitTool.errorMessage(res, "Error");
+                        } else if(!res.isEmpty()) {
+                            FileBrowser.this.gitTool.infoMessage(res, "Info");
+                        }
+                        FileBrowser.this.refresh();
                     }
                 });
                 JPopupMenu tmp = new JPopupMenu();
@@ -310,13 +340,25 @@ public class FileBrowser extends JPanel {
         });
         this.menu.add(new AbstractAction("rm") {
             public void actionPerformed(ActionEvent e) {
-                FileBrowser.this.unixCommandExecutor.rm(FileBrowser.this.list.getSelectedValuesList());
+                java.util.List<String> res = FileBrowser.this.unixCommandExecutor.rm(FileBrowser.this.list.getSelectedValuesList());
+                if(!res.isEmpty() && res.get(0).equals("ERRORERRORERROR")) {
+                    res.remove(0);
+                    FileBrowser.this.gitTool.errorMessage(res, "Error");
+                } else if(!res.isEmpty()) {
+                    FileBrowser.this.gitTool.infoMessage(res, "Info");
+                }
                 FileBrowser.this.refresh();
             }
         });
         this.menu.add(new AbstractAction("rmdir") {
             public void actionPerformed(ActionEvent e) {
-                FileBrowser.this.unixCommandExecutor.rmdir(FileBrowser.this.list.getSelectedValuesList());
+                java.util.List<String> res = FileBrowser.this.unixCommandExecutor.rmdir(FileBrowser.this.list.getSelectedValuesList());
+                if(!res.isEmpty() && res.get(0).equals("ERRORERRORERROR")) {
+                    res.remove(0);
+                    FileBrowser.this.gitTool.errorMessage(res, "Error");
+                } else if(!res.isEmpty()) {
+                    FileBrowser.this.gitTool.infoMessage(res, "Info");
+                }
                 FileBrowser.this.refresh();
             }
         });
@@ -326,9 +368,15 @@ public class FileBrowser extends JPanel {
                 textField.addActionListener(new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
-                        FileBrowser.this.unixCommandExecutor.tar(text, FileBrowser.this.list.getSelectedValuesList());
-                        FileBrowser.this.refresh();
                         ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
+                        java.util.List<String> res = FileBrowser.this.unixCommandExecutor.tar(text, FileBrowser.this.list.getSelectedValuesList());
+                        if(!res.isEmpty() && res.get(0).equals("ERRORERRORERROR")) {
+                            res.remove(0);
+                            FileBrowser.this.gitTool.errorMessage(res, "Error");
+                        } else if(!res.isEmpty()) {
+                            FileBrowser.this.gitTool.infoMessage(res, "Info");
+                        }
+                        FileBrowser.this.refresh();
                     }
                 });
                 JPopupMenu tmp = new JPopupMenu();
@@ -340,20 +388,37 @@ public class FileBrowser extends JPanel {
         });
         this.menu.add(new AbstractAction("touch") {
             public void actionPerformed(ActionEvent e) {
-                final JTextField textField = new JTextField("Name", 10);
-                textField.addActionListener(new AbstractAction() {
-                    public void actionPerformed(ActionEvent e) {
-                        String text = textField.getText();
-                        FileBrowser.this.unixCommandExecutor.touch(text, FileBrowser.this.list.getSelectedValuesList());
-                        FileBrowser.this.refresh();
-                        ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
+                if(!FileBrowser.this.list.getSelectedValuesList().isEmpty()) {
+                    java.util.List<String> res = FileBrowser.this.unixCommandExecutor.touch("", FileBrowser.this.list.getSelectedValuesList());
+                    if(!res.isEmpty() && res.get(0).equals("ERRORERRORERROR")) {
+                        res.remove(0);
+                        FileBrowser.this.gitTool.errorMessage(res, "Error");
+                    } else if(!res.isEmpty()) {
+                        FileBrowser.this.gitTool.infoMessage(res, "Info");
                     }
-                });
-                JPopupMenu tmp = new JPopupMenu();
-                tmp.add(textField);
-                Point p = FileBrowser.this.list.getMousePosition();
-                tmp.show(FileBrowser.this.list, (int) p.getX(), (int) p.getY());
-                tmp = null;
+                    FileBrowser.this.refresh();
+                } else {
+                    final JTextField textField = new JTextField("Name", 10);
+                    textField.addActionListener(new AbstractAction() {
+                        public void actionPerformed(ActionEvent e) {
+                            String text = textField.getText();
+                            ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
+                            java.util.List<String> res = FileBrowser.this.unixCommandExecutor.touch(text, FileBrowser.this.list.getSelectedValuesList());
+                            if(!res.isEmpty() && res.get(0).equals("ERRORERRORERROR")) {
+                                res.remove(0);
+                                FileBrowser.this.gitTool.errorMessage(res, "Error");
+                            } else if(!res.isEmpty()) {
+                                FileBrowser.this.gitTool.infoMessage(res, "Info");
+                            }
+                            FileBrowser.this.refresh();
+                        }
+                    });
+                    JPopupMenu tmp = new JPopupMenu();
+                    tmp.add(textField);
+                    Point p = FileBrowser.this.list.getMousePosition();
+                    tmp.show(FileBrowser.this.list, (int) p.getX(), (int) p.getY());
+                    tmp = null;
+                }
             }
         });
         this.menu.add(new AbstractAction("wget") {
@@ -362,9 +427,15 @@ public class FileBrowser extends JPanel {
                 textField.addActionListener(new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
-                        FileBrowser.this.unixCommandExecutor.wget(text);
-                        FileBrowser.this.refresh();
                         ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
+                        java.util.List<String> res = FileBrowser.this.unixCommandExecutor.wget(text);
+                        if(!res.isEmpty() && res.get(0).equals("ERRORERRORERROR")) {
+                            res.remove(0);
+                            FileBrowser.this.gitTool.errorMessage(res, "Error");
+                        } else if(!res.isEmpty()) {
+                            FileBrowser.this.gitTool.infoMessage(res, "Info");
+                        }
+                        FileBrowser.this.refresh();
                     }
                 });
                 JPopupMenu tmp = new JPopupMenu();
