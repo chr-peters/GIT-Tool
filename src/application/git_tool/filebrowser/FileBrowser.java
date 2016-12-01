@@ -193,7 +193,7 @@ public class FileBrowser extends JPanel {
     //setting private attributes, placing tree and list in scrollpane and open current working directory
     public FileBrowser(GITTool gitTool) {
         this.gitTool = gitTool;
-        this.unixCommandExecutor = new UnixCommandExecutor(this.gitTool.getProcessBuilder());
+        this.unixCommandExecutor = new UnixCommandExecutor(this.gitTool);
         this.desktop = Desktop.getDesktop();
         this.tree = new JTree(new MyTreeModel(new MyTreeNode(new File("/"))));
         this.list = new JList<File>();
