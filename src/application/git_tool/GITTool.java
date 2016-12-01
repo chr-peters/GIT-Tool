@@ -82,7 +82,7 @@ public class GITTool {
                     writer.write(GITTool.this.getProcessBuilder().directory().getAbsolutePath());
                     writer.close();
                 } catch (IOException e) {
-                    System.err.println("Could not safe the current working directory.");
+                    System.err.println("Could not save the current working directory.");
                 }
             }
         }));
