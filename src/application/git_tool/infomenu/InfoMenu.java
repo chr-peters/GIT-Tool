@@ -15,6 +15,7 @@ import javax.swing.*;
 public class InfoMenu extends JPanel {
 
     private GITTool gitTool;
+    private GITCommandExecutor executor;
     private int lastExitCode;
     private JLabel name;
     private JTextArea remote;
@@ -23,22 +24,25 @@ public class InfoMenu extends JPanel {
     
     public InfoMenu (GITTool gitTool){
         this.gitTool = gitTool;
+        this.executor = new GITCommandExecutor(this.gitTool.getProcessBuilder());
         this.lastExitCode = 0;
         this.name = new JLabel();
         this.remote = new JTextArea();
         this.remote.setBackground(this.getBackground());
+        this.remote.setEditable(false);
         this.branch = new JLabel();
         this.commits = new JTextArea();
         this.commits.setBackground(this.getBackground());
+        this.commits.setEditable(false);
         this.setLayout(new MigLayout());
-        this.add(new JLabel("Repository:"), "growx, spanx, wrap");
-        this.add(this.name, "growx, spanx, wrap");
-        this.add(new JLabel("Remote:"), "growx, spanx, wrap");
-        this.add(new JScrollPane(this.remote), "growx, spanx, wrap");
-        this.add(new JLabel("Current Branch:"), "growx, spanx, wrap");
+        this.add(new JLabel("Repository:"), "growx, wrap");
+        this.add(this.name, "growx, wrap");
+        this.add(new JLabel("Remote:"), "growx, wrap");
+        this.add(new JScrollPane(this.remote), "growx, wrap");
+        this.add(new JLabel("Current Branch:"), "growx, wrap");
         this.add(this.branch, "growx, spanx, wrap");
-        this.add(new JLabel("Last Commits:"), "growx, spanx, wrap");
-        this.add(new JScrollPane(this.commits), "growx, spanx, wrap");
+        this.add(new JLabel("Last Commits:"), "growx, wrap");
+        this.add(new JScrollPane(this.commits), "growx, wrap");
     }
     
     //use this to get the last exit code as it resets it afterwards
@@ -117,30 +121,33 @@ public class InfoMenu extends JPanel {
         return "";
     }
     
-    private List<String> getCommits() {
-        List<String> commitCommand = new ArrayList<String>(4);
-        commitCommand.add("git");
-        commitCommand.add("--no-pager");
-        commitCommand.add("log");
-        return executeCommand(commitCommand);
+    private List<Commit> getCommits() throws GitCommandException {
+        return this.executor.log("");
     }
     
     public void refresh () {
         this.name.setText("");
-        this.remote.removeAll();
+        this.remote.setText("");
         this.branch.setText("");
-        this.commits.removeAll();
+        this.commits.setText("");
         String name = this.getRepoName();
-        if(name.equals("")) {
-            return;
-        }
-        this.name.setText(name);
-        for(String s: this.getRemotes()) {
-            this.remote.append(s.trim()+"\n");
-        }
-        this.branch.setText(this.getCurBranch());
-        for(String s: this.getCommits()) {
-            this.commits.append(s.trim()+"\n");
+        if(!name.equals("")) {
+            this.name.setText(name);
+            for(String s: this.getRemotes()) {
+                this.remote.append(s.trim()+"\n");
+            }
+            this.branch.setText(this.getCurBranch());
+            try {
+                int i = 0;
+                for(Commit c: this.getCommits()) {
+                    if(i>=5) {
+                        break;
+                    }
+                    this.commits.append(c.toString().trim()+"\n");
+                    i++;
+                }
+            } catch(GitCommandException e) {
+            }
         }
     }
 }

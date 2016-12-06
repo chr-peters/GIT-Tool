@@ -81,7 +81,7 @@ public class FileBrowser extends JPanel {
             }
             FileBrowser.this.gitTool.getProcessBuilder().directory(node.path);
             FileBrowser.this.list.setListData(FileBrowser.this.getContent(FileBrowser.this.gitTool.getProcessBuilder().directory()));
-            //FileBrowser.this.infoMenu.refresh();
+            FileBrowser.this.infoMenu.refresh();
         }
         
         //collapses all child nodes of the newly collapsed node
@@ -100,7 +100,7 @@ public class FileBrowser extends JPanel {
                 FileBrowser.this.gitTool.getProcessBuilder().directory(((MyTreeNode) node.getRoot()).path);
             }
             FileBrowser.this.list.setListData(FileBrowser.this.getContent(FileBrowser.this.gitTool.getProcessBuilder().directory()));
-            //FileBrowser.this.infoMenu.refresh();
+            FileBrowser.this.infoMenu.refresh();
         }
     }
     
