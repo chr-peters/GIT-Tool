@@ -82,11 +82,13 @@ public class CommandLine extends JPanel {
                     String fragments [] = line.split("\\s+");
                     //if the user wants to change the directory
                     if(fragments[0].equalsIgnoreCase("cd")){
-                        File destination = new File(CommandLine.this.processBuilder.directory().getPath()+"/"+fragments[1]);
-                        if(destination.isDirectory()){
-                            CommandLine.this.processBuilder.directory(destination);
-                        } else {
-                            CommandLine.this.appendOutput(fragments[1]+": No such file or directory");
+                        if(fragments.length > 1){
+                            File destination = new File(CommandLine.this.processBuilder.directory().getPath()+"/"+fragments[1]);
+                            if(destination.isDirectory()){
+                                CommandLine.this.processBuilder.directory(destination);
+                            } else {
+                                CommandLine.this.appendOutput(fragments[1]+": No such file or directory");
+                            }
                         }
                     } else {
                         List<String> command = new ArrayList<String>(Arrays.asList(fragments));
