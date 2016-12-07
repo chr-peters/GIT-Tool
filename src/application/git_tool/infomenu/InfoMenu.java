@@ -17,23 +17,11 @@ public class InfoMenu extends JPanel {
     private GITTool gitTool;
     private GITCommandExecutor executor;
     private int lastExitCode;
-    private JLabel name;
-    private JTextArea remote;
-    private JLabel branch;
-    private JTextArea commits;
     
     public InfoMenu (GITTool gitTool){
         this.gitTool = gitTool;
         this.executor = new GITCommandExecutor(this.gitTool.getProcessBuilder());
         this.lastExitCode = 0;
-        this.name = new JLabel();
-        this.remote = new JTextArea();
-        this.remote.setBackground(this.getBackground());
-        this.remote.setEditable(false);
-        this.branch = new JLabel();
-        this.commits = new JTextArea();
-        this.commits.setBackground(this.getBackground());
-        this.commits.setEditable(false);
         this.setLayout(new MigLayout());
         this.refresh();
     }
@@ -120,37 +108,41 @@ public class InfoMenu extends JPanel {
     
     public void refresh () {
         this.removeAll();
-        this.name.setText("");
-        this.remote.setText("");
-        this.branch.setText("");
-        this.commits.setText("");
-        String name = this.getRepoName();
-        if(!name.equals("")) {
-            this.name.setText(name);
+        JLabel name = new JLabel();
+        JTextArea remote = new JTextArea();
+        remote.setBackground(this.getBackground());
+        remote.setEditable(false);
+        JLabel branch = new JLabel();
+        JTextArea commits = new JTextArea();
+        commits.setBackground(this.getBackground());
+        commits.setEditable(false);
+        String repoName = this.getRepoName();
+        if(!repoName.equals("")) {
+            name.setText(repoName);
             for(String s: this.getRemotes()) {
-                this.remote.append(s.trim()+"\n");
+                remote.append(s.trim()+"\n");
             }
-            this.branch.setText(this.getCurBranch());
+            branch.setText(this.getCurBranch());
             try {
                 int i = 0;
                 for(Commit c: this.getCommits()) {
                     if(i>=5) {
                         break;
                     }
-                    this.commits.append(c.toString().trim()+"\n");
+                    commits.append(c.toString().trim()+"\n");
                     i++;
                 }
             } catch(GitCommandException e) {
             }
         }
         this.add(new JLabel("Repository:"), "growx, wrap");
-        this.add(this.name, "growx, wrap");
+        this.add(name, "growx, wrap");
         this.add(new JLabel("Remote:"), "growx, wrap");
-        this.add(new JScrollPane(this.remote), "growx, wrap");
+        this.add(new JScrollPane(remote), "growx, wrap");
         this.add(new JLabel("Current Branch:"), "growx, wrap");
-        this.add(this.branch, "growx, spanx, wrap");
+        this.add(branch, "growx, spanx, wrap");
         this.add(new JLabel("Last Commits:"), "growx, wrap");
-        this.add(new JScrollPane(this.commits), "growx, wrap");
+        this.add(new JScrollPane(commits), "growx, wrap");
         this.revalidate();
         this.repaint();
     }
