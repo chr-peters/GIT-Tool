@@ -35,14 +35,7 @@ public class InfoMenu extends JPanel {
         this.commits.setBackground(this.getBackground());
         this.commits.setEditable(false);
         this.setLayout(new MigLayout());
-        this.add(new JLabel("Repository:"), "growx, wrap");
-        this.add(this.name, "growx, wrap");
-        this.add(new JLabel("Remote:"), "growx, wrap");
-        this.add(new JScrollPane(this.remote), "growx, wrap");
-        this.add(new JLabel("Current Branch:"), "growx, wrap");
-        this.add(this.branch, "growx, spanx, wrap");
-        this.add(new JLabel("Last Commits:"), "growx, wrap");
-        this.add(new JScrollPane(this.commits), "growx, wrap");
+        this.refresh();
     }
     
     //use this to get the last exit code as it resets it afterwards
@@ -126,6 +119,7 @@ public class InfoMenu extends JPanel {
     }
     
     public void refresh () {
+        this.removeAll();
         this.name.setText("");
         this.remote.setText("");
         this.branch.setText("");
@@ -149,5 +143,15 @@ public class InfoMenu extends JPanel {
             } catch(GitCommandException e) {
             }
         }
+        this.add(new JLabel("Repository:"), "growx, wrap");
+        this.add(this.name, "growx, wrap");
+        this.add(new JLabel("Remote:"), "growx, wrap");
+        this.add(new JScrollPane(this.remote), "growx, wrap");
+        this.add(new JLabel("Current Branch:"), "growx, wrap");
+        this.add(this.branch, "growx, spanx, wrap");
+        this.add(new JLabel("Last Commits:"), "growx, wrap");
+        this.add(new JScrollPane(this.commits), "growx, wrap");
+        this.revalidate();
+        this.repaint();
     }
 }
