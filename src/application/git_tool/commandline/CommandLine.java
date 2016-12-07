@@ -83,7 +83,13 @@ public class CommandLine extends JPanel {
                     //if the user wants to change the directory
                     if(fragments[0].equalsIgnoreCase("cd")){
                         if(fragments.length > 1){
-                            File destination = new File(CommandLine.this.processBuilder.directory().getPath()+"/"+fragments[1]);
+                            File destination;
+                            //test if an absolute path was given
+                            if(fragments[1].charAt(0) == '/'){
+                                destination = new File(fragments[1]);
+                            } else {
+                                destination = new File(CommandLine.this.processBuilder.directory().getPath()+"/"+fragments[1]);
+                            }
                             if(destination.isDirectory()){
                                 CommandLine.this.processBuilder.directory(destination);
                             } else {
