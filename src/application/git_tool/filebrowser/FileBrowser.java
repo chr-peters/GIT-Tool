@@ -28,6 +28,33 @@ public class FileBrowser extends JPanel {
     private JList<File> list;
     private JPopupMenu menu;
     
+    //setting private attributes, placing tree and list in scrollpane and open current working directory
+    public FileBrowser(GITTool gitTool) {
+        this.gitTool = gitTool;
+        this.unixCommandExecutor = new UnixCommandExecutor(this.gitTool);
+        this.infoMenu = new InfoMenu(this.gitTool);
+        this.desktop = Desktop.getDesktop();
+        this.tree = new JTree(new MyTreeModel(new MyTreeNode(new File("/"))));
+        this.list = new JList<File>();
+        this.menu = new JPopupMenu();
+        this.setLayout(new MigLayout());
+        
+        this.tree.addTreeWillExpandListener(new MyTreeWillExpandListener());
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.getViewport().add(this.tree);
+        this.add(scrollPane, "width 40%, height 100%");
+        this.openPath(this.gitTool.getProcessBuilder().directory());
+        
+        this.list.setCellRenderer(new MyListCellRenderer());
+        this.list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+        this.list.setVisibleRowCount(0);
+        this.list.addMouseListener(new MyMouseAdapter());
+        JScrollPane scrollPane2 = new JScrollPane();
+        scrollPane2.getViewport().add(this.list);
+        this.add(scrollPane2, "width 60%, height 100%");
+        this.createPopupMenu();
+    }
+    
     private class MyTreeModel extends DefaultTreeModel {
         private MyTreeModel(MyTreeNode node) {
             super(node);
@@ -131,13 +158,9 @@ public class FileBrowser extends JPanel {
         
         @Override
         public void mouseClicked(MouseEvent e) {
-            boolean hit = true;
+            this.mousePressed(e);
+            boolean hit = !FileBrowser.this.list.isSelectionEmpty();
             int index = FileBrowser.this.list.locationToIndex(e.getPoint());
-            //removes any selection if no element is hit
-            if(index==-1 || !FileBrowser.this.list.getCellBounds(index, index).contains(e.getPoint())) {
-                hit = false;
-                FileBrowser.this.list.clearSelection();
-            }
             //if clicked on a non selected element with not the button1 removes any selection and selects only this element
             if(hit && e.getButton()!=MouseEvent.BUTTON1 && !FileBrowser.this.list.isSelectedIndex(index)) {
                 FileBrowser.this.list.clearSelection();
@@ -189,36 +212,27 @@ public class FileBrowser extends JPanel {
                     FileBrowser.this.menu.getComponent(8).setEnabled(true);
                     FileBrowser.this.menu.getComponent(9).setEnabled(false);
                 }
-                FileBrowser.this.menu.show(e.getComponent(), e.getX(), e.getY());
+                FileBrowser.this.showPopupMenu(FileBrowser.this.menu, e.getX(), e.getY());
             }
         }
     }
     
-    //setting private attributes, placing tree and list in scrollpane and open current working directory
-    public FileBrowser(GITTool gitTool) {
-        this.gitTool = gitTool;
-        this.unixCommandExecutor = new UnixCommandExecutor(this.gitTool);
-        this.infoMenu = new InfoMenu(this.gitTool);
-        this.desktop = Desktop.getDesktop();
-        this.tree = new JTree(new MyTreeModel(new MyTreeNode(new File("/"))));
-        this.list = new JList<File>();
-        this.menu = new JPopupMenu();
-        this.setLayout(new MigLayout());
-        
-        this.tree.addTreeWillExpandListener(new MyTreeWillExpandListener());
-        JScrollPane scrollPane = new JScrollPane();
-        scrollPane.getViewport().add(this.tree);
-        this.add(scrollPane, "width 40%, height 100%");
-        this.openPath(this.gitTool.getProcessBuilder().directory());
-        
-        this.list.setCellRenderer(new MyListCellRenderer());
-        this.list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-        this.list.setVisibleRowCount(0);
-        this.list.addMouseListener(new MyMouseAdapter());
-        JScrollPane scrollPane2 = new JScrollPane();
-        scrollPane2.getViewport().add(this.list);
-        this.add(scrollPane2, "width 60%, height 100%");
-        this.createPopupMenu();
+    private void showPopupMenu(JPopupMenu menu, int x, int y) {
+        menu.show(FileBrowser.this.list, x, y);
+        menu.setVisible(false);
+        Rectangle r = FileBrowser.this.list.getBounds();
+        Rectangle r2 = menu.getBounds();
+        if(!r.contains(x+r2.getWidth(), y+r2.getHeight())) {
+            if(x+r2.getWidth()<r.getX()+r.getWidth()) {
+                menu.show(FileBrowser.this.list, x, (int) (r.getY()+r.getHeight()-r2.getHeight()));
+            } else if(y+r2.getHeight()<r.getX()+r.getHeight()) {
+                menu.show(FileBrowser.this.list, (int) (r.getX()+r.getWidth()-r2.getWidth()), y);
+            } else {
+                menu.show(FileBrowser.this.list, (int) (r.getX()+r.getWidth()-r2.getWidth()), (int) (r.getY()+r.getHeight()-r2.getHeight()));
+            }
+        } else {
+            menu.show(FileBrowser.this.list, x, y);
+        }
     }
     
     //creates the popup menu
@@ -243,7 +257,7 @@ public class FileBrowser extends JPanel {
                 JPopupMenu tmp = new JPopupMenu();
                 tmp.add(textField);
                 Point p = FileBrowser.this.list.getMousePosition();
-                tmp.show(FileBrowser.this.list, (int) p.getX(), (int) p.getY());
+                FileBrowser.this.showPopupMenu(tmp, (int) p.getX(), (int) p.getY());
                 tmp = null;
             }
         });
@@ -267,7 +281,7 @@ public class FileBrowser extends JPanel {
                 JPopupMenu tmp = new JPopupMenu();
                 tmp.add(textField);
                 Point p = FileBrowser.this.list.getMousePosition();
-                tmp.show(FileBrowser.this.list, (int) p.getX(), (int) p.getY());
+                FileBrowser.this.showPopupMenu(tmp, (int) p.getX(), (int) p.getY());
                 tmp = null;
             }
         });
@@ -291,7 +305,7 @@ public class FileBrowser extends JPanel {
                 JPopupMenu tmp = new JPopupMenu();
                 tmp.add(textField);
                 Point p = FileBrowser.this.list.getMousePosition();
-                tmp.show(FileBrowser.this.list, (int) p.getX(), (int) p.getY());
+                FileBrowser.this.showPopupMenu(tmp, (int) p.getX(), (int) p.getY());
                 tmp = null;
             }
         });
@@ -315,7 +329,7 @@ public class FileBrowser extends JPanel {
                 JPopupMenu tmp = new JPopupMenu();
                 tmp.add(textField);
                 Point p = FileBrowser.this.list.getMousePosition();
-                tmp.show(FileBrowser.this.list, (int) p.getX(), (int) p.getY());
+                FileBrowser.this.showPopupMenu(tmp, (int) p.getX(), (int) p.getY());
                 tmp = null;
             }
         });
@@ -339,7 +353,7 @@ public class FileBrowser extends JPanel {
                 JPopupMenu tmp = new JPopupMenu();
                 tmp.add(textField);
                 Point p = FileBrowser.this.list.getMousePosition();
-                tmp.show(FileBrowser.this.list, (int) p.getX(), (int) p.getY());
+                FileBrowser.this.showPopupMenu(tmp, (int) p.getX(), (int) p.getY());
                 tmp = null;
             }
         });
@@ -387,7 +401,7 @@ public class FileBrowser extends JPanel {
                 JPopupMenu tmp = new JPopupMenu();
                 tmp.add(textField);
                 Point p = FileBrowser.this.list.getMousePosition();
-                tmp.show(FileBrowser.this.list, (int) p.getX(), (int) p.getY());
+                FileBrowser.this.showPopupMenu(tmp, (int) p.getX(), (int) p.getY());
                 tmp = null;
             }
         });
@@ -421,7 +435,7 @@ public class FileBrowser extends JPanel {
                     JPopupMenu tmp = new JPopupMenu();
                     tmp.add(textField);
                     Point p = FileBrowser.this.list.getMousePosition();
-                    tmp.show(FileBrowser.this.list, (int) p.getX(), (int) p.getY());
+                    FileBrowser.this.showPopupMenu(tmp, (int) p.getX(), (int) p.getY());
                     tmp = null;
                 }
             }
@@ -446,7 +460,7 @@ public class FileBrowser extends JPanel {
                 JPopupMenu tmp = new JPopupMenu();
                 tmp.add(textField);
                 Point p = FileBrowser.this.list.getMousePosition();
-                tmp.show(FileBrowser.this.list, (int) p.getX(), (int) p.getY());
+                FileBrowser.this.showPopupMenu(tmp, (int) p.getX(), (int) p.getY());
                 tmp = null;
             }
         });
