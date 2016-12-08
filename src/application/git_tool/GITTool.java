@@ -52,10 +52,10 @@ public class GITTool {
         this.rootContainer = new JPanel(layout);
 
         //create components
+        this.infoMenu = new InfoMenu(this);
         this.fileBrowser = new FileBrowser(this);
         this.commandMenu = new CommandMenu(this);
         this.commandLine = new CommandLine(this);
-        this.infoMenu = new InfoMenu(this);
         this.history = new History(this, 10);
         
 
@@ -165,6 +165,15 @@ public class GITTool {
     */
     public History getHistory(){
         return this.history;
+    }
+    
+    /**
+    * Returns a reference to the info menu.
+    * <p>
+    * Enables other components to access the info menu conveniently.
+    */
+    public InfoMenu getInfoMenu(){
+        return this.infoMenu;
     }
     
     //retrieve the last working directory from the workingDirectoryInfo file
