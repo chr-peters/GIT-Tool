@@ -7,10 +7,10 @@ import java.util.ArrayList;
 public class CommandExecutor {
 
     //instance of the process-builder
-    private ProcessBuilder processBuilder;
+    protected ProcessBuilder processBuilder;
 
     //a flag for the last exit code of a command
-    private int lastExitCode;
+    protected int lastExitCode;
 
     public CommandExecutor(ProcessBuilder p){
         this.processBuilder = p;
