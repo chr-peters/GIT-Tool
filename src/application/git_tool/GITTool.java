@@ -14,6 +14,7 @@ import javax.swing.*;
 import java.io.*;
 
 import java.util.List;
+import java.util.ArrayList;
 
 public class GITTool {
 
@@ -72,6 +73,9 @@ public class GITTool {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         
+        //check if all necessary components are installed
+        this.checkComponents();
+        
         //add shutdown routine
         Runtime.getRuntime().addShutdownHook(new Thread (new Runnable () {
             public void run () {
@@ -89,6 +93,20 @@ public class GITTool {
 
     public static void main (String args []){
         new GITTool();
+    }
+    
+    private void checkComponents(){
+        //try to execute the git --version command and check the exit code
+        CommandExecutor c = new CommandExecutor(this.processBuilder);
+        List<String> command = new ArrayList<String>(2);
+        command.add("git");
+        command.add("--version");
+        c.executeCommand(command);
+        int exitCode = c.getLastExitCode();
+        if(exitCode != 0){
+            this.errorMessage("Git is not installed on your system.", "Error");
+        }
+        
     }
     
     private void paintComponents(){
