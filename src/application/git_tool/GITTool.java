@@ -34,6 +34,8 @@ public class GITTool {
     
     //this file contains the information about the current working directory
     private final File workingDirectoryInfo = new File("src/data/workingdirectory.info");
+    
+    private boolean terminalActive;
 
     public GITTool (){
 
@@ -58,13 +60,10 @@ public class GITTool {
         this.commandLine = new CommandLine(this);
         this.history = new History(this, 10);
         
-
-        //set up layout
-        rootContainer.add(commandMenu, "width 25%, height 75%");
-        rootContainer.add(fileBrowser, "width 50%, spany 2, growx, growy, height 100%");
-        rootContainer.add(infoMenu, "width 25%, spany 3, growx, growy, wrap");
-        rootContainer.add(new JScrollPane(history), "spany 2, growx, growy, height 25%,wrap");
-        rootContainer.add(commandLine, "growx, growy, skip, skip, skip");
+        this.terminalActive = true;
+        
+        //paint the components to the root container
+        this.paintComponents();
 
         //set up JFrame
         frame.getContentPane().add(rootContainer);
@@ -90,6 +89,31 @@ public class GITTool {
 
     public static void main (String args []){
         new GITTool();
+    }
+    
+    private void paintComponents(){
+        rootContainer.removeAll();
+        //set up layout
+        if(this.terminalActive){
+            rootContainer.add(commandMenu, "width 25%, height 75%");
+            rootContainer.add(fileBrowser, "width 50%, spany 2, growx, growy, height 100%");
+            rootContainer.add(infoMenu, "width 25%, spany 3, growx, growy, wrap");
+            rootContainer.add(new JScrollPane(history), "spany 2, growx, growy, height 25%,wrap");
+            rootContainer.add(commandLine, "growx, growy, skip, skip, skip");
+        } else {
+            rootContainer.add(commandMenu, "width 25%, height 75%");
+            rootContainer.add(fileBrowser, "width 50%, spany 2, growx, growy, height 100%");
+            rootContainer.add(infoMenu, "width 25%, spany 2, growx, growy, wrap");
+            rootContainer.add(new JScrollPane(history), "growx, growy, height 25%");
+        }
+    }
+    
+    /**
+    * Toggles the terminal.
+    */
+    public void toggleTerminal(){
+        this.terminalActive = !this.terminalActive;
+        this.paintComponents();
     }
 
     /**
