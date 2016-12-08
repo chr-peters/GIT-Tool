@@ -124,6 +124,8 @@ public class GITTool {
             rootContainer.add(infoMenu, "width 25%, spany 2, growx, growy, wrap");
             rootContainer.add(new JScrollPane(history), "growx, growy, height 25%");
         }
+        rootContainer.revalidate();
+        rootContainer.repaint();
     }
     
     /**

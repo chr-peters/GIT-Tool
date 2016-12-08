@@ -7,6 +7,7 @@ import application.git_tool.gitcommandexecutor.*;
 import net.miginfocom.layout.*;
 import net.miginfocom.swing.*;
 
+import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.*;
 
@@ -34,7 +35,13 @@ public class InfoMenu extends JPanel {
         this.commits = new JTextArea();
         this.commits.setBackground(this.getBackground());
         this.commits.setEditable(false);
-        this.setLayout(new MigLayout());
+        this.setLayout(new MigLayout("", "", "[][][][][][][][]push[]"));
+        JButton toggle = new JButton(new AbstractAction("Toggle Terminal") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                InfoMenu.this.gitTool.toggleTerminal();
+            }
+        });
         this.add(new JLabel("Repository:"), "growx, wrap");
         this.add(this.name, "growx, wrap");
         this.add(new JLabel("Remote:"), "growx, wrap");
@@ -43,6 +50,7 @@ public class InfoMenu extends JPanel {
         this.add(this.branch, "growx, wrap");
         this.add(new JLabel("Last Commits:"), "growx, wrap");
         this.add(new JScrollPane(this.commits), "growx, wrap");
+        this.add(toggle, "dock south");
     }
     
     //use this to get the last exit code as it resets it afterwards
@@ -133,21 +141,14 @@ public class InfoMenu extends JPanel {
         String repoName = this.getRepoName();
         if(!repoName.equals("")) {
             this.name.setText(repoName);
-            List<String> remotes = this.getRemotes();
-            for(int i=0; i<remotes.size(); i++) {
-                this.remote.append(remotes.get(i).trim());
-                if(i!=remotes.size()-1) {
-                    this.remote.append("\n");
-                }
+            for(String s: this.getRemotes()) {
+                this.remote.append(s.trim()+"\n");
             }
             this.branch.setText(this.getCurBranch());
             try {
                 List<Commit> commit = this.getCommits();
                 for(int i=0; i<Math.min(5, commit.size()); i++) {
-                    this.commits.append(commit.get(i).toString().trim());
-                    if(i!=Math.min(5, commit.size())-1) {
-                        this.commits.append("\n");
-                    }
+                    this.commits.append(commit.get(i).toString().trim()+"\n");
                 }
             } catch(GitCommandException e) {
             }
