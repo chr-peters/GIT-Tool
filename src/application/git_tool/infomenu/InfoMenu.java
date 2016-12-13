@@ -22,6 +22,7 @@ public class InfoMenu extends JPanel {
     private JTextArea remote;
     private JLabel branch;
     private JTextArea commits;
+    private JTextArea status;
     
     public InfoMenu (GITTool gitTool){
         this.gitTool = gitTool;
@@ -35,7 +36,10 @@ public class InfoMenu extends JPanel {
         this.commits = new JTextArea();
         this.commits.setBackground(this.getBackground());
         this.commits.setEditable(false);
-        this.setLayout(new MigLayout("", "", "[][][][][][][][]push[]"));
+        this.status = new JTextArea();
+        this.status.setBackground(this.getBackground());
+        this.status.setEditable(false);
+        this.setLayout(new MigLayout("fillx", "", "[][][][][][][][][][]push[]"));
         JButton toggle = new JButton(new AbstractAction("Toggle Terminal") {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -50,6 +54,8 @@ public class InfoMenu extends JPanel {
         this.add(this.branch, "growx, wrap");
         this.add(new JLabel("Last Commits:"), "growx, wrap");
         this.add(new JScrollPane(this.commits), "growx, wrap");
+        this.add(new JLabel("Status:"), "growx, wrap");
+        this.add(new JScrollPane(this.status), "growx, wrap");
         this.add(toggle, "dock south");
     }
     
@@ -133,11 +139,16 @@ public class InfoMenu extends JPanel {
         return this.executor.log("");
     }
     
+    private StatusContainer getStatus() throws GitCommandException {
+        return this.executor.status();
+    }
+    
     public void refresh () {
         this.name.setText("");
         this.remote.setText("");
         this.branch.setText("");
         this.commits.setText("");
+        this.status.setText("");
         String repoName = this.getRepoName();
         if(!repoName.equals("")) {
             this.name.setText(repoName);
@@ -150,10 +161,12 @@ public class InfoMenu extends JPanel {
                 for(int i=0; i<Math.min(5, commit.size()); i++) {
                     this.commits.append(commit.get(i).toString().trim()+"\n");
                 }
+                this.status.append(this.getStatus().toString().trim()+"\n");
             } catch(GitCommandException e) {
             }
         }
         this.remote.setCaretPosition(0);
         this.commits.setCaretPosition(0);
+        this.status.setCaretPosition(0);
     }
 }
