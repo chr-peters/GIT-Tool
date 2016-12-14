@@ -103,6 +103,7 @@ public class CommandLine extends JPanel {
                     }
                 }
                 CommandLine.this.inputField.setText("");
+                CommandLine.this.gitTool.refresh();
             }
         });
         

@@ -36,6 +36,7 @@ public class GITTool {
     //this file contains the information about the current working directory
     private final File workingDirectoryInfo = new File("src/data/workingdirectory.info");
     
+    //is the terminal currently enabled?
     private boolean terminalActive;
 
     public GITTool (){
@@ -51,7 +52,7 @@ public class GITTool {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //create layout and assign it to rootcontainer
-        MigLayout layout = new MigLayout("debug");
+        MigLayout layout = new MigLayout();
         this.rootContainer = new JPanel(layout);
 
         //create components
@@ -61,7 +62,8 @@ public class GITTool {
         this.commandLine = new CommandLine(this);
         this.history = new History(this, 10);
         
-        this.terminalActive = true;
+        //the terminal is disabled on startup
+        this.terminalActive = false;
         
         //paint the components to the root container
         this.paintComponents();
@@ -157,6 +159,7 @@ public class GITTool {
         //this.commandMenu.refresh();
         this.commandLine.refresh();
         this.infoMenu.refresh();
+        this.history.refresh();
     }
     
     /**
