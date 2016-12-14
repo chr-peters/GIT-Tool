@@ -47,6 +47,10 @@ public class History extends JPanel {
         Runtime.getRuntime().addShutdownHook(new Thread (new Runnable () {
             public void run () {
                 try {
+                    //if the directory of the commandlog file does not exist, create it
+                    if(!History.this.commandLog.getParentFile().exists()){
+                        History.this.commandLog.getParentFile().mkdirs();
+                    }
                     //write the last commands into the commands.log file
                     BufferedWriter writer = new BufferedWriter(new FileWriter(History.this.commandLog, false));
                     for(Command c: History.this.commands) {
@@ -107,6 +111,10 @@ public class History extends JPanel {
     //parse the last commands from the log file
     private void parseCommands() {
         try {
+            //if the directory of the commandlog file does not exist, create it
+            if(!this.commandLog.getParentFile().exists()){
+                this.commandLog.getParentFile().mkdirs();
+            }
             BufferedReader reader = new BufferedReader(new FileReader(this.commandLog));
             String line = "";
             while ((line=reader.readLine()) != null && commands.size() < this.maxCommands){

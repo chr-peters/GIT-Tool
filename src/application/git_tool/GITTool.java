@@ -80,6 +80,10 @@ public class GITTool {
         Runtime.getRuntime().addShutdownHook(new Thread (new Runnable () {
             public void run () {
                 try {
+                    //if the directory of the info file does not exist, create it
+                    if(!GITTool.this.workingDirectoryInfo.getParentFile().exists()){
+                        GITTool.this.workingDirectoryInfo.getParentFile().mkdirs();
+                    }
                     //write the current working directory to the workingDirectoryInfo file
                     BufferedWriter writer = new BufferedWriter(new FileWriter(workingDirectoryInfo, false));
                     writer.write(GITTool.this.getProcessBuilder().directory().getAbsolutePath());
@@ -223,6 +227,10 @@ public class GITTool {
     //retrieve the last working directory from the workingDirectoryInfo file
     private File getWorkingDirectory() {
         try {
+            //if the directory of the info file does not exist, create it
+            if(!this.workingDirectoryInfo.getParentFile().exists()){
+                this.workingDirectoryInfo.getParentFile().mkdirs();
+            }
             BufferedReader reader = new BufferedReader(new FileReader(this.workingDirectoryInfo));
             String workingDirectory = reader.readLine();
             reader.close();
