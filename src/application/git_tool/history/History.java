@@ -128,7 +128,7 @@ public class History extends JPanel {
                     SimpleDateFormat dateParser = new SimpleDateFormat(this.dateFormat);
                     this.commands.add(new Command(textString, dateParser.parse(dateString)));
                 } catch (Exception e) {
-                    System.err.println("Could not read line from "+this.commandLog.toString()+". Invalid command!");
+                    History.this.gitTool.errorMessage("Could not read line from "+this.commandLog.toString()+". Invalid command!", "Error");
                 }
             }
             reader.close();

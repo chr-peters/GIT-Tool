@@ -89,6 +89,8 @@ public class GITTool {
                     writer.write(GITTool.this.getProcessBuilder().directory().getAbsolutePath());
                     writer.close();
                 } catch (IOException e) {
+                    //printing to stderr because this is a shutdown routine and the user won't be
+                    //able to respond in time
                     System.err.println("Could not save the current working directory.");
                 }
             }
