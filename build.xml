@@ -24,6 +24,13 @@
         </manifest>
     </target>
     
+    <!-- create a runnable jar file -->
+    <target name="archive-application" depends="compile, create-manifest">
+        <jar destfile="dist/${project.prj.lc}-app.jar" manifest="${build.path}/MANIFEST.MF" >
+            <fileset dir="${build.path}" excludes="**/testcases/**" />
+        </jar>
+    </target>
+    
     <!-- dummy target to initialize the project structure -->
     <target name="init" depends="link-libraries" />
     
