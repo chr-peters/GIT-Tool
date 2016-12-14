@@ -1,6 +1,32 @@
 <?xml version="1.0"?>
 
 <project name="git_tool" default="compile">
+    
+    <!-- set global properties for this build -->
+    <property name="author.prj" value="Das Abelsche Softwarehaus" />
+    <property name="project.prj.lc" value="git_tool" />
+    <property name="project.prj.uc" value="GITTool" />
+    <property name="build.path" value="./build/classes" />
+    <property name="jar.path" value="./dist/${project.prj.lc}.jar" />
+    
+    <!-- set the current time, needed by the manifest -->
+    <tstamp>
+        <format property="timestamp.isoformat"
+                pattern="yyyy-MM-dd'T'HH:mm:s" locale="de" />
+    </tstamp>
+    
+    <!-- create the manifest -->
+    <target name="create-manifest" depends="init">
+        <manifest file="${build.path}/MANIFEST.MF">
+            <attribute name="Built-By" value="${author.prj}" />
+            <attribute name="Build-On" value="${timestamp.isoformat}" />
+            <attribute name="Main-Class" value="application.${project.prj.lc}.${project.prj.uc}" />
+        </manifest>
+    </target>
+    
+    <!-- dummy target to initialize the project structure -->
+    <target name="init" depends="link-libraries" />
+    
     <!-- initializes folders for class files -->
     <target name="init-dirs">
         <mkdir dir="build/classes" />
@@ -26,7 +52,7 @@
     </target>
     
     <!-- compiles all source files in the project -->
-    <target name="compile" depends="link-libraries">
+    <target name="compile" depends="init">
         <javac includeantruntime="true"
                srcdir="src" destdir="build/classes" target="1.6" source="1.6" encoding="iso-8859-1">
         </javac>
