@@ -31,6 +31,12 @@
         </jar>
     </target>
     
+    <!-- runs javadoc to create a html documentation for the project -->
+    <target name="document" >
+        <javadoc sourcepath="./src" packagenames="application.git_tool.*" destdir="./src/doc"
+                 encoding="UTF-8" docencoding="UTF-8" charset="UTF-8" />
+    </target>
+    
     <!-- dummy target to initialize the project structure -->
     <target name="init" depends="link-libraries" />
     

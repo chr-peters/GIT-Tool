@@ -114,7 +114,7 @@ public class GITCommandExecutor extends CommandExecutor{
     /**
     * Performs the "git checkout --quiet" command to switch to the given branch or the given commit
     *
-    * @param branchOrcommit the branch or commit that is checked out
+    * @param branchOrCommit the branch or commit that is checked out
     * @return Lines of the process-output. The list is empty, if everything worked well.
     */
     public List<String> checkout(String branchOrCommit) {
@@ -133,7 +133,7 @@ public class GITCommandExecutor extends CommandExecutor{
     * Performs the "git clone --quiet" command to clone an existing repository into a directory
     *
     * @param repository the (possibly remote) and correctly specified repository to clone from
-    * @param diretory the name of a new directory to clone into. If the repository is to be cloned
+    * @param directory the name of a new directory to clone into. If the repository is to be cloned
     *                 into the current directory, just leave the string empty
     * @return Lines of the process-output. The list is empty, if everything worked well.
     */
