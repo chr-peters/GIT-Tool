@@ -29,7 +29,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
   private JLabel currCmdText;
   private JLabel[] paramNames;
   private MyTextField[] paramTexts;
-  private final static int maxParams = 5; //TODO wichtige Zeile
+  private final static int maxParams = 5;
 
 
   public CommandMenu(GITTool gitTool){ //Konstruktor//////////////////////////////////////////////////////////////////
@@ -45,7 +45,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
   }///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-  public void init(){ //INITIALISIERUNG/////////////////////////////////////////////////////////////////////////////
+  private void init(){ //INITIALISIERUNG/////////////////////////////////////////////////////////////////////////////
 
     //Erzeugung der einzelnen Befehle////////////////////////////////////////////////////////////////////////
     Parameter[] addParams = {new Parameter("pathspec", "*file/directory*"),
@@ -162,7 +162,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
 
 
   //Anzeige der Parameter, bezogen auf den ausgewählten Befehl
-  public void setParams(){
+  private void setParams(){
     int numParams = getSelectedCommand().getParams().length;
     Parameter param;
     for(int i = 0; i < Math.min(numParams, maxParams); i++){
@@ -192,13 +192,13 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
 
 
   //Rückgabe des aktuell ausgewählten Kommandos/
-  public Command getSelectedCommand(){
+  private Command getSelectedCommand(){
     return commands[cmdList.getSelectedIndex()];
   }/////////////////////////////////////////////
 
 
   //Ausführung des ausgewählten Kommands mit den vom Nutzer angegebenen Parametern///////////////////////////////////////
-  public void execute(){
+  private void execute(){
     switch(cmdList.getSelectedIndex()){
       //add
       case 0: errors = gitCmdExec.add(paramBoxes[1].isSelected(), paramBoxes[2].isSelected(), paramBoxes[3].isSelected(),
@@ -240,12 +240,17 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
       //list tags
       case 17: errors = gitCmdExec.listTags(); break;
     }
+
+    if(!errors.isEmpty()){ //TODO dat wird die Rückmeldung, Kolleche
+
+    }
     System.out.println(errors);
     System.out.println("Gelesen: " + paramTexts[0].getText().trim());
   }//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
   //ActionListener für das Dropdown-Menü/////////////////////////////////////
-  public void addListenerToMenu(){
+  private void addListenerToMenu(){
     cmdList.addActionListener(new ActionListener(){
       @Override
        public void actionPerformed(ActionEvent e){
@@ -254,8 +259,9 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
     });
   }//////////////////////////////////////////////////////////////////////////
 
+
   //ActionListener für die CheckBoxen/////////////////////////////////////////
-  public void addListenerToBox(final int index){
+  private void addListenerToBox(final int index){
     paramBoxes[index].addActionListener(new ActionListener(){
       @Override
       public void actionPerformed(ActionEvent e){
