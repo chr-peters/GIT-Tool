@@ -23,10 +23,10 @@ public class InfoMenu extends JPanel {
     private JLabel branch;
     private JTextArea commits;
     private JTextArea status;
-    
+
     public InfoMenu (GITTool gitTool){
         this.gitTool = gitTool;
-        this.executor = new GITCommandExecutor(this.gitTool.getProcessBuilder());
+        this.executor = new GITCommandExecutor(this.gitTool, this.gitTool.getProcessBuilder());
         this.lastExitCode = 0;
         this.name = new JLabel();
         this.remote = new JTextArea();
@@ -58,7 +58,7 @@ public class InfoMenu extends JPanel {
         this.add(new JScrollPane(this.status), "growx, wrap");
         this.add(toggle, "dock south");
     }
-    
+
     //use this to get the last exit code as it resets it afterwards
     private int getLastExitCode(){
         int exitCode = this.lastExitCode;
@@ -98,7 +98,7 @@ public class InfoMenu extends JPanel {
         }
         return res;
     }
-    
+
     private String getRepoName() {
         List<String> nameCommand = new ArrayList<String>(3);
         nameCommand.add("git");
@@ -114,7 +114,7 @@ public class InfoMenu extends JPanel {
         String[] namePath = res.get(0).split(File.separator);
         return namePath[namePath.length-1].trim();
     }
-    
+
     private List<String> getRemotes() {
         List<String> remoteCommand = new ArrayList<String>(3);
         remoteCommand.add("git");
@@ -122,7 +122,7 @@ public class InfoMenu extends JPanel {
         remoteCommand.add("-v");
         return this.executeCommand(remoteCommand);
     }
-    
+
     private String getCurBranch() {
         List<String> branchCommand = new ArrayList<String>(2);
         branchCommand.add("git");
@@ -134,15 +134,15 @@ public class InfoMenu extends JPanel {
         }
         return "";
     }
-    
+
     private List<Commit> getCommits() throws GitCommandException {
         return this.executor.log("");
     }
-    
+
     private StatusContainer getStatus() throws GitCommandException {
         return this.executor.status();
     }
-    
+
     public void refresh () {
         this.name.setText("");
         this.remote.setText("");

@@ -25,7 +25,7 @@ public class FileBrowser extends JPanel {
     private JTree tree;
     private JList<File> list;
     private JPopupMenu menu;
-    
+
     //setting private attributes, placing tree and list in scrollpane and open current working directory
     public FileBrowser(GITTool gitTool) {
         this.gitTool = gitTool;
@@ -35,13 +35,13 @@ public class FileBrowser extends JPanel {
         this.list = new JList<File>();
         this.menu = new JPopupMenu();
         this.setLayout(new MigLayout());
-        
+
         this.tree.addTreeWillExpandListener(new MyTreeWillExpandListener());
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.getViewport().add(this.tree);
         this.add(scrollPane, "width 40%, height 100%");
         this.openPath(this.gitTool.getProcessBuilder().directory());
-        
+
         this.list.setCellRenderer(new MyListCellRenderer());
         this.list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
         this.list.setVisibleRowCount(0);
@@ -51,22 +51,22 @@ public class FileBrowser extends JPanel {
         this.add(scrollPane2, "width 60%, height 100%");
         this.createPopupMenu();
     }
-    
+
     private class MyTreeModel extends DefaultTreeModel {
         private MyTreeModel(MyTreeNode node) {
             super(node);
         }
-        
+
         //check if node is a leaf, true only if node is a file
         @Override
         public boolean isLeaf(Object node) {
             return ((MyTreeNode) node).path.isFile();
         }
     }
-    
+
     private class MyTreeNode extends DefaultMutableTreeNode {
         private File path;
-        
+
         private MyTreeNode(File path) {
             this.path = path.getAbsoluteFile();
             this.setUserObject(this.path.getName());
@@ -74,7 +74,7 @@ public class FileBrowser extends JPanel {
                 this.load();
             }
         }
-        
+
         //method for lazy loading the tree nodes
         private void load() {
             File[] content = FileBrowser.this.getContent(this.path);
@@ -86,7 +86,7 @@ public class FileBrowser extends JPanel {
             }
         }
     }
-    
+
     //class for handling the tree events and updating the current working directory
     private class MyTreeWillExpandListener implements TreeWillExpandListener {
         //collapses all siblings of the newly expanding node
@@ -107,7 +107,7 @@ public class FileBrowser extends JPanel {
             FileBrowser.this.list.setListData(FileBrowser.this.getContent(FileBrowser.this.gitTool.getProcessBuilder().directory()));
             FileBrowser.this.gitTool.getInfoMenu().refresh();
         }
-        
+
         //collapses all child nodes of the newly collapsed node
         @Override
         public void treeWillCollapse(TreeExpansionEvent e) {
@@ -127,7 +127,7 @@ public class FileBrowser extends JPanel {
             FileBrowser.this.gitTool.getInfoMenu().refresh();
         }
     }
-    
+
     //class for editing each list element, so that list elements display an icon and the file name
     private class MyListCellRenderer extends DefaultListCellRenderer {
         @Override
@@ -141,7 +141,7 @@ public class FileBrowser extends JPanel {
             return l;
         }
     }
-    
+
     //class for handling the list click events
     private class MyMouseAdapter extends MouseAdapter {
         //mouse pressed over no element removes any selection
@@ -152,7 +152,7 @@ public class FileBrowser extends JPanel {
                 FileBrowser.this.list.clearSelection();
             }
         }
-        
+
         @Override
         public void mouseClicked(MouseEvent e) {
             this.mousePressed(e);
@@ -213,7 +213,7 @@ public class FileBrowser extends JPanel {
             }
         }
     }
-    
+
     private void showPopupMenu(JPopupMenu menu, int x, int y) {
         menu.show(FileBrowser.this.list, x, y);
         menu.setVisible(false);
@@ -231,7 +231,7 @@ public class FileBrowser extends JPanel {
             menu.show(FileBrowser.this.list, x, y);
         }
     }
-    
+
     //creates the popup menu
     private void createPopupMenu() {
         this.menu.add(new AbstractAction("chmod") {
@@ -462,7 +462,7 @@ public class FileBrowser extends JPanel {
             }
         });
     }
-    
+
     //returns the content of the directory denoted by path or an empty array if path is not a directory
     private File[] getContent(File path) {
         try{
@@ -487,7 +487,7 @@ public class FileBrowser extends JPanel {
             return new File[] {};
         }
     }
-    
+
     //expands the tree path to the openPath file
     private void openPath(File openPath) {
         String[] openPathParts = openPath.getAbsolutePath().substring(1).split(File.separator);
@@ -498,14 +498,17 @@ public class FileBrowser extends JPanel {
             }
             TreePath path;
             do {
+                System.out.println("s = " + s);
                 path = this.tree.getNextMatch(s, currentRow, Position.Bias.Forward);
                 currentRow = this.tree.getRowForPath(path)+1;
+                  System.out.println("currentRow = " + currentRow);
+                  System.out.println("lastcomponent: " + path.getLastPathComponent());
             } while(!((MyTreeNode) path.getLastPathComponent()).getUserObject().equals(s));
             this.tree.expandPath(path);
             this.tree.scrollPathToVisible(path);
         }
     }
-    
+
     public void refresh() {
         File curPath = this.gitTool.getProcessBuilder().directory();
         this.tree.collapsePath(new TreePath((MyTreeNode) this.tree.getModel().getRoot()));

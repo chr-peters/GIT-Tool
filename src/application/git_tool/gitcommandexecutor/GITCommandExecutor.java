@@ -5,29 +5,25 @@ import java.util.List;
 import java.util.ArrayList;
 
 import application.git_tool.CommandExecutor;
+import application.git_tool.GITTool;
 
 public class GITCommandExecutor extends CommandExecutor{
 
-    public GITCommandExecutor(ProcessBuilder p){
-        super(p);
-    }
-
-    public static void main(String args []) {
-        ProcessBuilder p = new ProcessBuilder();
+    public GITCommandExecutor(GITTool gitTool, ProcessBuilder p){
+        super(gitTool, p);
         p.redirectErrorStream(true);
         p.directory(new File("../TestRepository"));
-        GITCommandExecutor commandExecutor = new GITCommandExecutor(p);
-//         System.out.println(commandExecutor.init(false));
-//         System.out.println(commandExecutor.add(false, false, false, false, "addtest.txt"));
-//         System.out.println(commandExecutor.reset("", ""));
-        //System.out.println(commandExecutor.commit(false, false, "", ""));
         try {
-            StatusContainer res = commandExecutor.status();
+            StatusContainer res = this.status();
             System.out.println(res);
         } catch (GitCommandException e) {
             System.out.println(e.getMessage());
         }
     }
+
+    /*public static void main(String args []) {
+        ProcessBuilder p = new ProcessBuilder();
+    }*/
 
     /**
     * Performs the "git init --quiet" command in the current directory of the processBuilder.
@@ -538,7 +534,7 @@ public class GITCommandExecutor extends CommandExecutor{
         }
         return commits;
     }
-    
+
     /**
     * Performs the "git status --porcelain" command to fetch information about the working tree's status
     * <p>
@@ -552,13 +548,13 @@ public class GITCommandExecutor extends CommandExecutor{
         command.add("git");
         command.add("status");
         command.add("--porcelain");
-        
+
         //execute the command
         List<String> res = executeCommand(command);
-        
+
         //the endline character of the current system
         String n = System.getProperty("line.separator");
-        
+
         //test if something went wrong
         if (getLastExitCode() != 0) {
             //something went wrong, so just put the output into the GitCommandException
@@ -568,7 +564,7 @@ public class GITCommandExecutor extends CommandExecutor{
             }
             throw new GitCommandException(msg.toString());
         }
-        
+
         //initialize the containers
         StatusFiles staged = new StatusFiles();
         StatusFiles unstaged = new StatusFiles();
@@ -576,11 +572,11 @@ public class GITCommandExecutor extends CommandExecutor{
             parseStatusCode(line.charAt(0), line.trim(), staged);
             parseStatusCode(line.charAt(1), line.trim(), unstaged);
         }
-        
+
         //return the result
         return new StatusContainer(staged, unstaged);
     }
-    
+
     //more convenient parsing of the status codes
     private void parseStatusCode(char code, String line, StatusFiles dest) {
         //split the line into its core components
@@ -605,15 +601,15 @@ public class GITCommandExecutor extends CommandExecutor{
                 break;
             } case 'C': {
                 //the file was copied
-                dest.getCopiedFiles().add(parts[1]);   
+                dest.getCopiedFiles().add(parts[1]);
                 break;
             } case 'U': {
                 //the file was updated but unmerged
-                dest.getUpdatedFiles().add(parts[1]);  
+                dest.getUpdatedFiles().add(parts[1]);
                 break;
             } case '?': {
                 //the file was untracked
-                dest.getUntrackedFiles().add(parts[1]);  
+                dest.getUntrackedFiles().add(parts[1]);
                 break;
             } default: {
                 break;

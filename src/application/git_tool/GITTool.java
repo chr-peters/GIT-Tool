@@ -32,10 +32,10 @@ public class GITTool {
 
     //central instance of the process-builder to perform tasks within the system
     private ProcessBuilder processBuilder;
-    
+
     //this file contains the information about the current working directory
     private final File workingDirectoryInfo = new File("src/data/workingdirectory.info");
-    
+
     //is the terminal currently enabled?
     private boolean terminalActive;
 
@@ -61,10 +61,10 @@ public class GITTool {
         this.commandMenu = new CommandMenu(this);
         this.commandLine = new CommandLine(this);
         this.history = new History(this, 10);
-        
+
         //the terminal is disabled on startup
         this.terminalActive = false;
-        
+
         //paint the components to the root container
         this.paintComponents();
 
@@ -74,10 +74,10 @@ public class GITTool {
         frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-        
+
         //check if all necessary components are installed
         this.checkComponents();
-        
+
         //add shutdown routine
         Runtime.getRuntime().addShutdownHook(new Thread (new Runnable () {
             public void run () {
@@ -102,10 +102,10 @@ public class GITTool {
     public static void main (String args []){
         new GITTool();
     }
-    
+
     private void checkComponents(){
         //try to execute the git --version command and check the exit code
-        CommandExecutor c = new CommandExecutor(this.processBuilder);
+        CommandExecutor c = new CommandExecutor(this, this.processBuilder);
         List<String> command = new ArrayList<String>(2);
         command.add("git");
         command.add("--version");
@@ -114,9 +114,9 @@ public class GITTool {
         if(exitCode != 0){
             this.errorMessage("Git is not installed on your system.", "Error");
         }
-        
+
     }
-    
+
     private void paintComponents(){
         rootContainer.removeAll();
         //set up layout
@@ -135,7 +135,7 @@ public class GITTool {
         rootContainer.revalidate();
         rootContainer.repaint();
     }
-    
+
     /**
     * Toggles the terminal.
     */
@@ -150,7 +150,7 @@ public class GITTool {
     public ProcessBuilder getProcessBuilder(){
         return this.processBuilder;
     }
-    
+
     /**
     * Refreshes every component of the git-tool.
     */
@@ -161,7 +161,7 @@ public class GITTool {
         this.infoMenu.refresh();
         this.history.refresh();
     }
-    
+
     /**
     * Displays an error message to the user.
     *
@@ -171,11 +171,11 @@ public class GITTool {
     public void errorMessage(String message, String title) {
         JOptionPane.showMessageDialog(this.frame, message, title, JOptionPane.ERROR_MESSAGE);
     }
-    
+
     /**
     * Displays an error message to the user
     *
-    * @param message The lines of the message to be shown. The line separator 
+    * @param message The lines of the message to be shown. The line separator
     *                is added after each line automatically
     * @param title The title of the message
     */
@@ -186,7 +186,7 @@ public class GITTool {
         }
         this.errorMessage(msg.toString(), title);
     }
-    
+
     /**
     * Displays an information message to the user
     *
@@ -196,10 +196,10 @@ public class GITTool {
     public void infoMessage(String message, String title) {
         JOptionPane.showMessageDialog(this.frame, message, title, JOptionPane.INFORMATION_MESSAGE);
     }
-    
+
     /**
     * Displays an information message to the user
-    * 
+    *
     * @param message The lines of the message to be shown.
     * @param title The title of the message
     */
@@ -210,7 +210,7 @@ public class GITTool {
         }
         this.infoMessage(msg.toString(), title);
     }
-    
+
     /**
     * Returns a reference to the command history.
     * <p>
@@ -219,7 +219,7 @@ public class GITTool {
     public History getHistory(){
         return this.history;
     }
-    
+
     /**
     * Returns a reference to the info menu.
     * <p>
@@ -228,7 +228,7 @@ public class GITTool {
     public InfoMenu getInfoMenu(){
         return this.infoMenu;
     }
-    
+
     //retrieve the last working directory from the workingDirectoryInfo file
     private File getWorkingDirectory() {
         try {
@@ -241,7 +241,7 @@ public class GITTool {
             reader.close();
             File f = new File(workingDirectory);
             if(f.isDirectory())
-                return f;                
+                return f;
             return new File(".");
         } catch (IOException e) {
             return new File(".");

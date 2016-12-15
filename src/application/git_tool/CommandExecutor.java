@@ -4,19 +4,23 @@ import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
 
+import application.git_tool.GITTool;
+import application.git_tool.history.Command;
+
 public class CommandExecutor {
 
+    private GITTool gitTool;
     //instance of the process-builder
     protected ProcessBuilder processBuilder;
-
     //a flag for the last exit code of a command
     protected int lastExitCode;
 
-    public CommandExecutor(ProcessBuilder p){
+    public CommandExecutor(GITTool gitTool, ProcessBuilder p){
+        this.gitTool = gitTool;
         this.processBuilder = p;
         this.lastExitCode = 0;
     }
-    
+
     //use this to get the last exit code as it resets it afterwards
     public int getLastExitCode(){
         int exitCode = this.lastExitCode;
@@ -27,10 +31,15 @@ public class CommandExecutor {
     //executes a given command in the local processBuilder
     public List<String> executeCommand(List<String> params) {
         try {
+            /*StringBuilder cmdString = new StringBuilder();
+            for(String s: params) {
+                cmdString.append(s+" ");
+            }*/
             this.processBuilder.command(params);
             Process p = this.processBuilder.start();
             //set the last exit code
             this.lastExitCode = p.waitFor();
+            //gitTool.getHistory().addCommand(new Command(cmdString.toString()));
 
             //read the output
             return getProcessOutput(p);

@@ -20,25 +20,25 @@ import java.util.Arrays;
 import java.io.File;
 
 public class CommandLine extends JPanel {
-    
+
     private GITTool gitTool;
     private ProcessBuilder processBuilder;
     private CommandExecutor commandExecutor;
-    
+
     //components
     private JTextPane outputPane;
     private StyledDocument outputDoc;
     private JTextField inputField;
-    
+
     public CommandLine (GITTool gitTool){
         this.gitTool = gitTool;
         this.processBuilder = new ProcessBuilder();
         this.processBuilder.redirectErrorStream(true);
         this.processBuilder.directory(gitTool.getProcessBuilder().directory());
-        this.commandExecutor = new CommandExecutor(this.processBuilder);
-        
+        this.commandExecutor = new CommandExecutor(this.gitTool, this.processBuilder);
+
         this.setLayout(new MigLayout("gap 0, insets 0, fillx, filly"));
-        
+
         //initialize the output field for the terminal
         this.outputPane = new JTextPane();
         this.outputPane.setBorder(BorderFactory.createEmptyBorder());
@@ -48,14 +48,14 @@ public class CommandLine extends JPanel {
         this.outputPane.setBackground(Color.BLACK);
         StyleConstants.setForeground(style, Color.GREEN);
         this.outputPane.setEditable(false);
-        
+
         //initialize the input field for the terminal
         this.inputField = new JTextField();
         this.inputField.setBorder(BorderFactory.createEmptyBorder());
         this.inputField.setBackground(Color.BLACK);
         this.inputField.setForeground(Color.GREEN);
         this.inputField.setCaretColor(Color.GREEN);
-        
+
         //initialize the $ sign
         JTextField lineStart = new JTextField("$", 1);
         lineStart.setBorder(BorderFactory.createEmptyBorder());
@@ -63,20 +63,20 @@ public class CommandLine extends JPanel {
         lineStart.setForeground(Color.GREEN);
         lineStart.setCaretColor(Color.GREEN);
         lineStart.setEditable(false);
-        
+
         JScrollPane outPutPaneScroll = new JScrollPane(outputPane);
         outPutPaneScroll.setBorder(BorderFactory.createEmptyBorder());
         this.add(outPutPaneScroll, "width 100%, growy, pushy, spanx 2,  wrap");
         this.add(lineStart, "height pref");
         this.add(inputField, "height pref, growx");
-        
+
         //add an action listener
         this.inputField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
                 String line = CommandLine.this.inputField.getText().trim();
                 CommandLine.this.appendOutput("$ "+line);
-                
+
                 //if the line was not empty
                 if(!line.equals("")){
                     String fragments [] = line.split("\\s+");
@@ -106,15 +106,15 @@ public class CommandLine extends JPanel {
                 CommandLine.this.gitTool.refresh();
             }
         });
-        
+
     }
-    
+
     private void appendOutput(String output) {
         List<String> tmp = new ArrayList<String>(1);
         tmp.add(output);
         this.appendOutput(tmp);
     }
-    
+
     private void appendOutput(List<String> lines) {
         StringBuilder text = new StringBuilder();
         if(!outputPane.getText().equals(""))
@@ -129,8 +129,8 @@ public class CommandLine extends JPanel {
         }
         this.outputPane.setCaretPosition(outputDoc.getLength());
     }
-    
+
     public void refresh () {
-    
+
     }
 }
