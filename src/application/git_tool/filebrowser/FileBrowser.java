@@ -492,18 +492,21 @@ public class FileBrowser extends JPanel {
     private void openPath(File openPath) {
         String[] openPathParts = openPath.getAbsolutePath().substring(1).split(File.separator);
         int currentRow = 0;
-        for(String s: openPathParts) {
-            if(s.equals(".")) {
+        for(int i=0; i<openPathParts.length; i++) {
+            if(openPathParts[i].equals(".") || openPathParts[i].equals("..")) {
+                continue;
+            }
+            if(i+1<openPathParts.length && openPathParts[i+1].equals("..")) {
                 continue;
             }
             TreePath path;
             do {
-                System.out.println("s = " + s);
-                path = this.tree.getNextMatch(s, currentRow, Position.Bias.Forward);
+                path = this.tree.getNextMatch(openPathParts[i], currentRow, Position.Bias.Forward);
+                if(path==null) {
+                    return;
+                }
                 currentRow = this.tree.getRowForPath(path)+1;
-                  System.out.println("currentRow = " + currentRow);
-                  System.out.println("lastcomponent: " + path.getLastPathComponent());
-            } while(!((MyTreeNode) path.getLastPathComponent()).getUserObject().equals(s));
+            } while(!((MyTreeNode) path.getLastPathComponent()).getUserObject().equals(openPathParts[i]));
             this.tree.expandPath(path);
             this.tree.scrollPathToVisible(path);
         }
