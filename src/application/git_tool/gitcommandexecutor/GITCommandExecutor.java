@@ -12,7 +12,7 @@ public class GITCommandExecutor extends CommandExecutor{
     public GITCommandExecutor(GITTool gitTool, ProcessBuilder p){
         super(gitTool, p);
         p.redirectErrorStream(true);
-        p.directory(new File("../TestRepository"));
+        //p.directory(new File("../TestRepository"));
         try {
             StatusContainer res = this.status();
             System.out.println(res);
