@@ -20,9 +20,10 @@ public class InfoMenu extends JPanel {
     private int lastExitCode;
     private JLabel name;
     private JTextArea remote;
-    private JLabel branch;
+    private JTextArea branch;
     private JTextArea commits;
     private JTextArea status;
+    private JTextArea tags;
 
     public InfoMenu (GITTool gitTool){
         this.gitTool = gitTool;
@@ -32,14 +33,19 @@ public class InfoMenu extends JPanel {
         this.remote = new JTextArea();
         this.remote.setBackground(this.getBackground());
         this.remote.setEditable(false);
-        this.branch = new JLabel();
+        this.branch = new JTextArea();
+        this.branch.setBackground(this.getBackground());
+        this.branch.setEditable(false);
         this.commits = new JTextArea();
         this.commits.setBackground(this.getBackground());
         this.commits.setEditable(false);
         this.status = new JTextArea();
         this.status.setBackground(this.getBackground());
         this.status.setEditable(false);
-        this.setLayout(new MigLayout("fillx", "", "[][][][][][][][][][]push[]"));
+        this.tags = new JTextArea();
+        this.tags.setBackground(this.getBackground());
+        this.tags.setEditable(false);
+        this.setLayout(new MigLayout("fillx", "", "[][][][][][][][][][][][]push[]"));
         this.setBorder(BorderFactory.createTitledBorder("Info Menu"));
         JButton toggle = new JButton(new AbstractAction("Toggle Terminal") {
             @Override
@@ -51,53 +57,15 @@ public class InfoMenu extends JPanel {
         this.add(this.name, "growx, wrap");
         this.add(new JLabel("Remote:"), "growx, wrap");
         this.add(new JScrollPane(this.remote), "growx, wrap");
-        this.add(new JLabel("Current Branch:"), "growx, wrap");
-        this.add(this.branch, "growx, wrap");
+        this.add(new JLabel("Branches:"), "growx, wrap");
+        this.add(new JScrollPane(this.branch), "growx, wrap");
         this.add(new JLabel("Last Commits:"), "growx, wrap");
         this.add(new JScrollPane(this.commits), "growx, wrap");
         this.add(new JLabel("Status:"), "growx, wrap");
         this.add(new JScrollPane(this.status), "growx, wrap");
+        this.add(new JLabel("Tags:"), "growx, wrap");
+        this.add(new JScrollPane(this.tags), "growx, wrap");
         this.add(toggle, "dock south");
-    }
-
-    //use this to get the last exit code as it resets it afterwards
-    private int getLastExitCode(){
-        int exitCode = this.lastExitCode;
-        this.lastExitCode = 0;
-        return exitCode;
-    }
-
-    //executes a given command in the local processBuilder
-    private List<String> executeCommand(List<String> params) {
-        try {
-            this.gitTool.getProcessBuilder().command(params);
-            Process p = this.gitTool.getProcessBuilder().start();
-            //set the last exit code
-            this.lastExitCode = p.waitFor();
-
-            //read the output
-            return getProcessOutput(p);
-        } catch (IOException e) {
-            List<String> res = new ArrayList<String>();
-            res.add(e.getMessage());
-            return res;
-        } catch (InterruptedException e){
-            List<String> res = new ArrayList<String>();
-            res.add(e.getMessage());
-            return res;
-        }
-    }
-
-    //returns the lines of the output of a process
-    private List<String> getProcessOutput(Process p) throws IOException{
-        InputStream output = p.getInputStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(output));
-        List<String> res = new ArrayList<String>();
-        String line = "";
-        while ((line=reader.readLine()) != null){
-            res.add(0, line);
-        }
-        return res;
     }
 
     private String getRepoName() {
@@ -105,8 +73,8 @@ public class InfoMenu extends JPanel {
         nameCommand.add("git");
         nameCommand.add("rev-parse");
         nameCommand.add("--show-toplevel");
-        List<String> res = this.executeCommand(nameCommand);
-        if(this.getLastExitCode()!=0) {
+        List<String> res = this.executor.executeCommand(nameCommand);
+        if(this.executor.getLastExitCode()!=0) {
             return "";
         }
         if(res.isEmpty()) {
@@ -121,19 +89,14 @@ public class InfoMenu extends JPanel {
         remoteCommand.add("git");
         remoteCommand.add("remote");
         remoteCommand.add("-v");
-        return this.executeCommand(remoteCommand);
+        return this.executor.executeCommand(remoteCommand);
     }
 
-    private String getCurBranch() {
+    private List<String> getBranches() {
         List<String> branchCommand = new ArrayList<String>(2);
         branchCommand.add("git");
         branchCommand.add("branch");
-        for(String s: this.executeCommand(branchCommand)) {
-            if(s.startsWith("*")) {
-                return s.replace("*", "").trim();
-            }
-        }
-        return "";
+        return this.executor.executeCommand(branchCommand);
     }
 
     private List<Commit> getCommits() throws GitCommandException {
@@ -143,6 +106,10 @@ public class InfoMenu extends JPanel {
     private StatusContainer getStatus() throws GitCommandException {
         return this.executor.status();
     }
+    
+    private List<String> getTags() {
+        return this.executor.listTags();
+    }
 
     public void refresh () {
         this.name.setText("");
@@ -150,17 +117,20 @@ public class InfoMenu extends JPanel {
         this.branch.setText("");
         this.commits.setText("");
         this.status.setText("");
+        this.tags.setText("");
         String repoName = this.getRepoName();
         if(!repoName.equals("")) {
             this.name.setText(repoName);
             for(String s: this.getRemotes()) {
                 this.remote.append(s.trim()+"\n");
             }
-            this.branch.setText(this.getCurBranch());
+            for(String s: this.getBranches()) {
+                this.branch.append(s.trim()+"\n");
+            }
             try {
                 List<Commit> commit = this.getCommits();
                 for(int i=0; i<Math.min(5, commit.size()); i++) {
-                    this.commits.append(commit.get(i).toString().trim()+"\n");
+                    this.commits.append(commit.get(i).toString().trim()+"\n\n");
                 }
             } catch(GitCommandException e) {
             
@@ -170,9 +140,14 @@ public class InfoMenu extends JPanel {
             } catch(GitCommandException e) {
             
             }
+            for(String s: this.getTags()) {
+                this.tags.append(s.trim()+"\n");
+            }
         }
         this.remote.setCaretPosition(0);
+        this.branch.setCaretPosition(0);
         this.commits.setCaretPosition(0);
         this.status.setCaretPosition(0);
+        this.tags.setCaretPosition(0);
     }
 }
