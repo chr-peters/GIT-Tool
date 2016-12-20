@@ -1,19 +1,17 @@
 package application.git_tool.unixcommandexecutor;
 
 import application.git_tool.GITTool;
+import application.git_tool.CommandExecutor;
 import application.git_tool.history.*;
 
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
 
-public class UnixCommandExecutor {
-    private GITTool gitTool;
-    private int lastExitCode;
+public class UnixCommandExecutor extends CommandExecutor {
     
     public UnixCommandExecutor(GITTool gitTool) {
-        this.gitTool = gitTool;
-        this.lastExitCode = 0;
+        super(gitTool, gitTool.getProcessBuilder());
     }
     
     public List<String> chmod(String rights, List<File> files) {
@@ -198,50 +196,5 @@ public class UnixCommandExecutor {
             }
         }
         return components;
-    }
-    
-    //use this to get the last exit code as it resets it afterwards
-    private int getLastExitCode(){
-        int exitCode = this.lastExitCode;
-        this.lastExitCode = 0;
-        return exitCode;
-    }
-
-    //executes a given command in the local processBuilder
-    private List<String> executeCommand(List<String> params) {
-        StringBuilder command = new StringBuilder();
-        for(String s: params) {
-            command.append(s+" ");
-        }
-        this.gitTool.getHistory().addCommand(new Command(command.toString()));
-        try {
-            this.gitTool.getProcessBuilder().command(params);
-            Process p = this.gitTool.getProcessBuilder().start();
-            //set the last exit code
-            this.lastExitCode = p.waitFor();
-
-            //read the output
-            return getProcessOutput(p);
-        } catch (IOException e) {
-            List<String> res = new ArrayList<String>();
-            res.add(e.getMessage());
-            return res;
-        } catch (InterruptedException e){
-            List<String> res = new ArrayList<String>();
-            res.add(e.getMessage());
-            return res;
-        }
-    }
-
-    //returns the lines of the output of a process
-    private List<String> getProcessOutput(Process p) throws IOException{
-        InputStream output = p.getInputStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(output));
-        List<String> res = new ArrayList<String>();
-        String line = "";
-        while ((line=reader.readLine()) != null){
-            res.add(line);
-        }
-        return res;
     }
 }

@@ -9,7 +9,7 @@ import application.git_tool.history.*;
 
 public class CommandExecutor {
 
-    private GITTool gitTool;
+    protected GITTool gitTool;
     //instance of the process-builder
     protected ProcessBuilder processBuilder;
     //a flag for the last exit code of a command
