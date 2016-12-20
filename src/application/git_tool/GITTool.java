@@ -125,15 +125,15 @@ public class GITTool {
         historyScroll.setBorder(BorderFactory.createTitledBorder("Command History"));
         if(this.terminalActive){
             rootContainer.add(commandMenu, "width 25%, height 75%");
-            rootContainer.add(fileBrowser, "width 50%, spany 2, growx, growy, height 100%");
-            rootContainer.add(infoMenu, "width 25%, spany 3, growx, growy, wrap");
-            rootContainer.add(historyScroll, "spany 2, growx, growy, height 25%,wrap");
-            rootContainer.add(commandLine, "growx, growy, skip, skip, skip");
+            rootContainer.add(fileBrowser, "width 50%, spany 2, height 80%");
+            rootContainer.add(infoMenu, "width 25%, height 100%, spany 3, wrap");
+            rootContainer.add(historyScroll, "spany 2, height 25%, width 25%, wrap");
+            rootContainer.add(commandLine, "width 50%, height 20%");
         } else {
             rootContainer.add(commandMenu, "width 25%, height 75%");
             rootContainer.add(fileBrowser, "width 50%, spany 2, growx, growy, height 100%");
             rootContainer.add(infoMenu, "width 25%, spany 2, growx, growy, wrap");
-            rootContainer.add(historyScroll, "growx, growy, height 25%");
+            rootContainer.add(historyScroll, "width 25%, height 25%");
         }
         rootContainer.revalidate();
         rootContainer.repaint();

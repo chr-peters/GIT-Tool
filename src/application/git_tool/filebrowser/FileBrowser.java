@@ -34,7 +34,7 @@ public class FileBrowser extends JPanel {
         this.tree = new JTree(new MyTreeModel(new MyTreeNode(new File("/"))));
         this.list = new JList<File>();
         this.menu = new JPopupMenu();
-        this.setLayout(new MigLayout());
+        this.setLayout(new MigLayout(""));
         this.setBorder(BorderFactory.createTitledBorder("File Browser"));
 
         this.tree.addTreeWillExpandListener(new MyTreeWillExpandListener());
