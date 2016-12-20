@@ -65,7 +65,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
     Parameter[] renameBranchParams = {new Parameter("old name", "*old name*", true), new Parameter("new name", "*old name*", true)};
     Command renameBranch = new Command("branch(rename)", renameBranchParams);
 
-    Parameter[] checkoutParams = {new Parameter("branch/commit", "*name*", true)};
+    Parameter[] checkoutParams = {new Parameter("branch/commit", "*name*"), new Parameter("path", "*path*")};
     Command checkout = new Command("checkout", checkoutParams);
 
     Parameter[] cloneParams = {new Parameter("repository", "*repository*", true),
@@ -231,7 +231,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
         //rename branch
         case 4: errors = gitCmdExec.renameBranch(paramTexts[0].getText(), paramTexts[1].getText()); break;
         //checkout
-        case 5: errors = gitCmdExec.checkout(paramTexts[0].getText()); break;
+        case 5: errors = gitCmdExec.checkout(paramTexts[0].getText(), paramTexts[1].getText()); break;
         //clone
         case 6: errors = gitCmdExec.clone(paramTexts[0].getText(), paramTexts[1].getText()); break;
         //commit

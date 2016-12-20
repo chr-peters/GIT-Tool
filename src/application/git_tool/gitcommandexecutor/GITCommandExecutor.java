@@ -107,15 +107,19 @@ public class GITCommandExecutor extends CommandExecutor {
     * Performs the "git checkout --quiet" command to switch to the given branch or the given commit
     *
     * @param branchOrCommit the branch or commit that is checked out
+    * @param path the paths that are checked out. leave "" at your own risk
     * @return Lines of the process-output. The list is empty, if everything worked well.
     */
-    public List<String> checkout(String branchOrCommit) {
+    public List<String> checkout(String branchOrCommit, String path) {
         //generate the command from the options
-        List<String> command = new ArrayList<String>(4);
+        List<String> command = new ArrayList<String>(5);
         command.add("git");
         command.add("checkout");
         command.add("--quiet");
-        command.add(branchOrCommit);
+        if(!branchOrCommit.equals(""))
+            command.add(branchOrCommit);
+        if(!path.equals(""))
+            command.add(path);
 
         //execute the command
         return executeCommand(command);
