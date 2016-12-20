@@ -115,7 +115,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
       strCommands[i] = commands[i].getName();
     } //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //Dropdown-Menü//////////////////////////////
+    //Dropdown-Men??//////////////////////////////
     cmdList = new JComboBox<String>(strCommands);
     this.add(cmdList, "width 75%,  height 5%");
     /////////////////////////////////////////////
@@ -161,7 +161,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
   }//INITIALISIERUNG ENDE///////////////////////////////////////////////////////////////////////////////////////////
 
 
-  //Anzeige der Parameter, bezogen auf den ausgewählten Befehl
+  //Anzeige der Parameter, bezogen auf den ausgew??hlten Befehl
   private void setParams(){
     int numParams = getSelectedCommand().getParams().length;
     Parameter param;
@@ -191,13 +191,13 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
   }///////////////////////////////////////////////////////////
 
 
-  //Rückgabe des aktuell ausgewählten Kommandos/
+  //R??ckgabe des aktuell ausgew??hlten Kommandos/
   private Command getSelectedCommand(){
     return commands[cmdList.getSelectedIndex()];
   }/////////////////////////////////////////////
 
 
-  //Ausführung des ausgewählten Kommands mit den vom Nutzer angegebenen Parametern///////////////////////////////////////
+  //Ausf??hrung des ausgew??hlten Kommands mit den vom Nutzer angegebenen Parametern///////////////////////////////////////
   private void execute(){
     switch(cmdList.getSelectedIndex()){
       //add
@@ -239,17 +239,22 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
       case 16: errors = gitCmdExec.deleteTag(paramTexts[0].getText()); break;
       //list tags
       case 17: errors = gitCmdExec.listTags(); break;
+      
     }
 
-    if(!errors.isEmpty()){ //TODO dat wird die Rückmeldung, Kolleche
+    if(!errors.isEmpty()){ //TODO dat wird die R??ckmeldung, Kolleche
 
     }
+    
+    //refresh the gittool
+    this.gitTool.refresh();
+    
     System.out.println(errors);
     System.out.println("Gelesen: " + paramTexts[0].getText().trim());
   }//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-  //ActionListener für das Dropdown-Menü/////////////////////////////////////
+  //ActionListener f??r das Dropdown-Men??/////////////////////////////////////
   private void addListenerToMenu(){
     cmdList.addActionListener(new ActionListener(){
       @Override
@@ -260,7 +265,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
   }//////////////////////////////////////////////////////////////////////////
 
 
-  //ActionListener für die CheckBoxen/////////////////////////////////////////
+  //ActionListener f??r die CheckBoxen/////////////////////////////////////////
   private void addListenerToBox(final int index){
     paramBoxes[index].addActionListener(new ActionListener(){
       @Override
