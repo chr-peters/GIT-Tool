@@ -250,7 +250,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
         //reset
         case 13: errors = gitCmdExec.reset(paramTexts[0].getText(), paramTexts[1].getText()); break;
         //rm
-        case 14: errors = gitCmdExec.reset(paramTexts[0].getText(), paramTexts[1].getText()); break;
+        case 14: errors = gitCmdExec.rm(paramBoxes[1].isSelected(), paramBoxes[2].isSelected(), paramBoxes[3].isSelected(), paramTexts[0].getText()); break;
         //create tag
         case 15: errors = gitCmdExec.createTag(paramTexts[1].getText(), paramTexts[0].getText(),
                             paramTexts[2].getText()); break;
