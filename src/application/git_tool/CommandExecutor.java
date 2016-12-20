@@ -5,18 +5,15 @@ import java.util.List;
 import java.util.ArrayList;
 
 import application.git_tool.GITTool;
-import application.git_tool.history.*;
 
 public class CommandExecutor {
 
-    protected GITTool gitTool;
     //instance of the process-builder
     protected ProcessBuilder processBuilder;
     //a flag for the last exit code of a command
     protected int lastExitCode;
 
-    public CommandExecutor(GITTool gitTool, ProcessBuilder p){
-        this.gitTool = gitTool;
+    public CommandExecutor(ProcessBuilder p){
         this.processBuilder = p;
         this.lastExitCode = 0;
     }
@@ -30,11 +27,10 @@ public class CommandExecutor {
 
     //executes a given command in the local processBuilder
     public List<String> executeCommand(List<String> params) {
-      StringBuilder cmdString = new StringBuilder();
-      for(String s: params) {
-          cmdString.append(s+" ");
-      }
-      this.gitTool.getHistory().addCommand(new Command(cmdString.toString()));
+        StringBuilder cmdString = new StringBuilder();
+        for(String s: params) {
+            cmdString.append(s+" ");
+        }
         try {
             this.processBuilder.command(params);
             Process p = this.processBuilder.start();

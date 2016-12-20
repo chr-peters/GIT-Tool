@@ -26,7 +26,7 @@ public class InfoMenu extends JPanel {
 
     public InfoMenu (GITTool gitTool){
         this.gitTool = gitTool;
-        this.executor = new GITCommandExecutor(this.gitTool, this.gitTool.getProcessBuilder());
+        this.executor = new GITCommandExecutor(this.gitTool.getProcessBuilder());
         this.lastExitCode = 0;
         this.name = new JLabel();
         this.remote = new JTextArea();
@@ -161,8 +161,13 @@ public class InfoMenu extends JPanel {
                 for(int i=0; i<Math.min(5, commit.size()); i++) {
                     this.commits.append(commit.get(i).toString().trim()+"\n");
                 }
+            } catch(GitCommandException e) {
+            
+            }
+            try {
                 this.status.append(this.getStatus().toString().trim()+"\n");
             } catch(GitCommandException e) {
+            
             }
         }
         this.remote.setCaretPosition(0);

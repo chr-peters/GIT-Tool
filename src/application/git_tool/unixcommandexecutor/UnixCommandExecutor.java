@@ -2,7 +2,6 @@ package application.git_tool.unixcommandexecutor;
 
 import application.git_tool.GITTool;
 import application.git_tool.CommandExecutor;
-import application.git_tool.history.*;
 
 import java.io.*;
 import java.util.*;
@@ -10,8 +9,8 @@ import java.util.regex.*;
 
 public class UnixCommandExecutor extends CommandExecutor {
     
-    public UnixCommandExecutor(GITTool gitTool) {
-        super(gitTool, gitTool.getProcessBuilder());
+    public UnixCommandExecutor(ProcessBuilder p) {
+        super(p);
     }
     
     public List<String> chmod(String rights, List<File> files) {

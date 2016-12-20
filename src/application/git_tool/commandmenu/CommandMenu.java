@@ -34,7 +34,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
 
   public CommandMenu(GITTool gitTool){ //Konstruktor//////////////////////////////////////////////////////////////////
     this.gitTool = gitTool;
-    this.gitCmdExec = new GITCommandExecutor(this.gitTool, this.gitTool.getProcessBuilder());
+    this.gitCmdExec = new GITCommandExecutor(this.gitTool.getProcessBuilder());
     this.setLayout(new MigLayout());
     this.init();
     addListenerToMenu();
@@ -199,46 +199,64 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
 
   //Ausf??hrung des ausgew??hlten Kommands mit den vom Nutzer angegebenen Parametern///////////////////////////////////////
   private void execute(){
+    
+    //create command string
+    StringBuilder cmdString = new StringBuilder();
+    
     switch(cmdList.getSelectedIndex()){
-      //add
-      case 0: errors = gitCmdExec.add(paramBoxes[1].isSelected(), paramBoxes[2].isSelected(), paramBoxes[3].isSelected(),
-                            paramBoxes[4].isSelected(), paramTexts[0].getText()); break;
-      //create branch
-      case 1: errors = gitCmdExec.createBranch(paramTexts[0].getText()); break;
-      //delete branch
-      case 2: errors = gitCmdExec.deleteBranch(paramTexts[0].getText()); break;
-      //list branches
-      case 3: errors = gitCmdExec.listBranches(); break;
-      //rename branch
-      case 4: errors = gitCmdExec.renameBranch(paramTexts[0].getText(), paramTexts[1].getText()); break;
-      //checkout
-      case 5: errors = gitCmdExec.checkout(paramTexts[0].getText()); break;
-      //clone
-      case 6: errors = gitCmdExec.clone(paramTexts[0].getText(), paramTexts[1].getText()); break;
-      //commit
-      case 7: errors = gitCmdExec.commit(paramBoxes[2].isSelected(), paramBoxes[3].isSelected(),
+        //add
+        case 0: {
+            errors = gitCmdExec.add(paramBoxes[1].isSelected(), paramBoxes[2].isSelected(), paramBoxes[3].isSelected(),
+                            paramBoxes[4].isSelected(), paramTexts[0].getText());
+            cmdString.append("git add");
+            if(paramBoxes[1].isSelected())
+                cmdString.append(" --force");
+            if(paramBoxes[2].isSelected())
+                cmdString.append(" --update");
+            if(paramBoxes[3].isSelected())
+                cmdString.append(" --all");
+            if(paramBoxes[4].isSelected())
+                cmdString.append(" --ignore-errors");
+            cmdString.append(" "+paramTexts[0].getText());
+            break;
+                            
+        }
+        //create branch
+        case 1: errors = gitCmdExec.createBranch(paramTexts[0].getText()); break;
+        //delete branch
+        case 2: errors = gitCmdExec.deleteBranch(paramTexts[0].getText()); break;
+        //list branches
+        case 3: errors = gitCmdExec.listBranches(); break;
+        //rename branch
+        case 4: errors = gitCmdExec.renameBranch(paramTexts[0].getText(), paramTexts[1].getText()); break;
+        //checkout
+        case 5: errors = gitCmdExec.checkout(paramTexts[0].getText()); break;
+        //clone
+        case 6: errors = gitCmdExec.clone(paramTexts[0].getText(), paramTexts[1].getText()); break;
+        //commit
+        case 7: errors = gitCmdExec.commit(paramBoxes[2].isSelected(), paramBoxes[3].isSelected(),
                             paramTexts[0].getText(), paramTexts[1].getText()); break;
-      //fetch
-      case 8: errors = gitCmdExec.fetch(); break;
-      //init
-      case 9: errors = gitCmdExec.init(paramBoxes[0].isSelected()); break;
-      //merge
-      case 10: errors = gitCmdExec.merge(paramTexts[0].getText()).getOutputLines(); break;
-      //pull
-      case 11: errors = gitCmdExec.pull(paramTexts[0].getText(), paramTexts[1].getText()); break;
-      //push
-      case 12: errors = gitCmdExec.push(paramTexts[0].getText(), paramTexts[1].getText()); break;
-      //reset
-      case 13: errors = gitCmdExec.reset(paramTexts[0].getText(), paramTexts[1].getText()); break;
-      //rm
-      case 14: errors = gitCmdExec.reset(paramTexts[0].getText(), paramTexts[1].getText()); break;
-      //create tag
-      case 15: errors = gitCmdExec.createTag(paramTexts[1].getText(), paramTexts[0].getText(),
+        //fetch
+        case 8: errors = gitCmdExec.fetch(); break;
+        //init
+        case 9: errors = gitCmdExec.init(paramBoxes[0].isSelected()); break;
+        //merge
+        case 10: errors = gitCmdExec.merge(paramTexts[0].getText()).getOutputLines(); break;
+        //pull
+        case 11: errors = gitCmdExec.pull(paramTexts[0].getText(), paramTexts[1].getText()); break;
+        //push
+        case 12: errors = gitCmdExec.push(paramTexts[0].getText(), paramTexts[1].getText()); break;
+        //reset
+        case 13: errors = gitCmdExec.reset(paramTexts[0].getText(), paramTexts[1].getText()); break;
+        //rm
+        case 14: errors = gitCmdExec.reset(paramTexts[0].getText(), paramTexts[1].getText()); break;
+        //create tag
+        case 15: errors = gitCmdExec.createTag(paramTexts[1].getText(), paramTexts[0].getText(),
                             paramTexts[2].getText()); break;
-      //delete tag
-      case 16: errors = gitCmdExec.deleteTag(paramTexts[0].getText()); break;
-      //list tags
-      case 17: errors = gitCmdExec.listTags(); break;
+        //delete tag
+        case 16: errors = gitCmdExec.deleteTag(paramTexts[0].getText()); break;
+        //list tags
+        case 17: errors = gitCmdExec.listTags(); break;
       
     }
 
@@ -248,6 +266,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
     
     //refresh the gittool
     this.gitTool.refresh();
+    this.gitTool.getHistory().addCommand(new application.git_tool.history.Command(cmdString.toString()));
     
     System.out.println(errors);
     System.out.println("Gelesen: " + paramTexts[0].getText().trim());

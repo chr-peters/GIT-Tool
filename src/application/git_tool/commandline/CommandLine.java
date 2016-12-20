@@ -35,7 +35,7 @@ public class CommandLine extends JPanel {
         this.processBuilder = new ProcessBuilder();
         this.processBuilder.redirectErrorStream(true);
         this.processBuilder.directory(gitTool.getProcessBuilder().directory());
-        this.commandExecutor = new CommandExecutor(this.gitTool, this.processBuilder);
+        this.commandExecutor = new CommandExecutor(this.processBuilder);
 
         this.setLayout(new MigLayout("gap 0, insets 0, fillx, filly"));
 

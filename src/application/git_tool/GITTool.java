@@ -106,7 +106,7 @@ public class GITTool {
 
     private void checkComponents(){
         //try to execute the git --version command and check the exit code
-        CommandExecutor c = new CommandExecutor(this, this.processBuilder);
+        CommandExecutor c = new CommandExecutor(this.processBuilder);
         List<String> command = new ArrayList<String>(2);
         command.add("git");
         command.add("--version");

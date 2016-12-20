@@ -7,23 +7,19 @@ import java.util.ArrayList;
 import application.git_tool.CommandExecutor;
 import application.git_tool.GITTool;
 
-public class GITCommandExecutor extends CommandExecutor{
+public class GITCommandExecutor extends CommandExecutor {
 
-    public GITCommandExecutor(GITTool gitTool, ProcessBuilder p){
-        super(gitTool, p);
+    public static void main ( String args [] ) throws GitCommandException {
+        ProcessBuilder p = new ProcessBuilder();
+        p.directory(new File("../GitToolTest/repository"));
         p.redirectErrorStream(true);
-        //p.directory(new File("../TestRepository"));
-        try {
-            StatusContainer res = this.status();
-            System.out.println(res);
-        } catch (GitCommandException e) {
-            System.out.println(e.getMessage());
-        }
+        GITCommandExecutor exc = new GITCommandExecutor(p);
+        System.out.println(exc.status().toString());
     }
 
-    /*public static void main(String args []) {
-        ProcessBuilder p = new ProcessBuilder();
-    }*/
+    public GITCommandExecutor(ProcessBuilder p){
+        super(p);
+    }
 
     /**
     * Performs the "git init --quiet" command in the current directory of the processBuilder.
