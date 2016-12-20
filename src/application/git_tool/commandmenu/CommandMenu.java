@@ -36,6 +36,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
     this.gitTool = gitTool;
     this.gitCmdExec = new GITCommandExecutor(this.gitTool.getProcessBuilder());
     this.setLayout(new MigLayout());
+    this.setBorder(BorderFactory.createTitledBorder("Command Menu"));
     this.init();
     addListenerToMenu();
     for(int i = 0; i < maxParams; i++){

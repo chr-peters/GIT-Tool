@@ -40,6 +40,7 @@ public class InfoMenu extends JPanel {
         this.status.setBackground(this.getBackground());
         this.status.setEditable(false);
         this.setLayout(new MigLayout("fillx", "", "[][][][][][][][][][]push[]"));
+        this.setBorder(BorderFactory.createTitledBorder("Info Menu"));
         JButton toggle = new JButton(new AbstractAction("Toggle Terminal") {
             @Override
             public void actionPerformed(ActionEvent e) {

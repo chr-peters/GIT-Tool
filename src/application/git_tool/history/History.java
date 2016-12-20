@@ -37,7 +37,6 @@ public class History extends JPanel {
         
         //init GUI
         this.setLayout(new MigLayout("fillx"));
-        this.setBorder(BorderFactory.createTitledBorder("Command History"));
         
         //parse the commands from the log file and draw them
         this.parseCommands();

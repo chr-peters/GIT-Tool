@@ -35,6 +35,7 @@ public class FileBrowser extends JPanel {
         this.list = new JList<File>();
         this.menu = new JPopupMenu();
         this.setLayout(new MigLayout());
+        this.setBorder(BorderFactory.createTitledBorder("File Browser"));
 
         this.tree.addTreeWillExpandListener(new MyTreeWillExpandListener());
         JScrollPane scrollPane = new JScrollPane();
