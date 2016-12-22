@@ -38,7 +38,11 @@ public class GITCommandExecutor extends CommandExecutor {
         command.add("--quiet");
 
         //execute the command
-        return executeCommand(command);
+        List<String> res = executeCommand(command);
+        if(this.getLastExitCode()!=0) {
+            res.add(0, "ERRORERRORERROR");
+        }
+        return res;
     }
 
     /**
@@ -70,7 +74,11 @@ public class GITCommandExecutor extends CommandExecutor {
             command.add(pathspec);
         }
         //execute the command
-        return executeCommand(command);
+        List<String> res = executeCommand(command);
+        if(this.getLastExitCode()!=0) {
+            res.add(0, "ERRORERRORERROR");
+        }
+        return res;
     }
 
     /**
@@ -100,7 +108,11 @@ public class GITCommandExecutor extends CommandExecutor {
         command.add(file);
 
         //execute the command
-        return executeCommand(command);
+        List<String> res = executeCommand(command);
+        if(this.getLastExitCode()!=0) {
+            res.add(0, "ERRORERRORERROR");
+        }
+        return res;
     }
 
     /**
@@ -122,7 +134,11 @@ public class GITCommandExecutor extends CommandExecutor {
             command.add(path);
 
         //execute the command
-        return executeCommand(command);
+        List<String> res = executeCommand(command);
+        if(this.getLastExitCode()!=0) {
+            res.add(0, "ERRORERRORERROR");
+        }
+        return res;
     }
 
     /**
@@ -145,7 +161,11 @@ public class GITCommandExecutor extends CommandExecutor {
             command.add(directory);
 
         //execute the command
-        return executeCommand(command);
+        List<String> res = executeCommand(command);
+        if(this.getLastExitCode()!=0) {
+            res.add(0, "ERRORERRORERROR");
+        }
+        return res;
     }
 
     /**
@@ -180,7 +200,11 @@ public class GITCommandExecutor extends CommandExecutor {
         }
 
         //execute the command
-        return executeCommand(command);
+        List<String> res = executeCommand(command);
+        if(this.getLastExitCode()!=0) {
+            res.add(0, "ERRORERRORERROR");
+        }
+        return res;
     }
 
     /**
@@ -205,7 +229,9 @@ public class GITCommandExecutor extends CommandExecutor {
         }
 
         //execute the command
-        return executeCommand(command);
+        List<String> res = executeCommand(command);
+        if(this.getLastExitCode()!=0) res.add(0, "ERRORERRORERROR");
+        return res;
     }
 
     /**
@@ -221,7 +247,9 @@ public class GITCommandExecutor extends CommandExecutor {
         command.add("--quiet");
 
         //execute the command
-        return executeCommand(command);
+        List<String> res = executeCommand(command);
+        if(this.getLastExitCode()!=0) res.add(0, "ERRORERRORERROR");
+        return res;
     }
 
     /**
@@ -244,7 +272,9 @@ public class GITCommandExecutor extends CommandExecutor {
             command.add(refspec);
 
         //execute the command
-        return executeCommand(command);
+        List<String> res = executeCommand(command);
+        if(this.getLastExitCode()!=0) res.add(0, "ERRORERRORERROR");
+        return res;
     }
 
     /**
@@ -267,7 +297,9 @@ public class GITCommandExecutor extends CommandExecutor {
             command.add(refspec);
 
         //execute the command
-        return executeCommand(command);
+        List<String> res = executeCommand(command);
+        if(this.getLastExitCode()!=0) res.add(0, "ERRORERRORERROR");
+        return res;
     }
 
     /**
@@ -326,7 +358,9 @@ public class GITCommandExecutor extends CommandExecutor {
         command.add(branchName);
 
         //execute the command
-        return executeCommand(command);
+        List<String> res = executeCommand(command);
+        if(this.getLastExitCode()!=0) res.add(0, "ERRORERRORERROR");
+        return res;
     }
 
     /**
@@ -346,7 +380,9 @@ public class GITCommandExecutor extends CommandExecutor {
         command.add(branchName);
 
         //execute the command
-        return executeCommand(command);
+        List<String> res = executeCommand(command);
+        if(this.getLastExitCode()!=0) res.add(0, "ERRORERRORERROR");
+        return res;
     }
 
     /**
@@ -369,7 +405,9 @@ public class GITCommandExecutor extends CommandExecutor {
         command.add(newBranch);
 
         //execute the command
-        return executeCommand(command);
+        List<String> res = executeCommand(command);
+        if(this.getLastExitCode()!=0) res.add(0, "ERRORERRORERROR");
+        return res;
     }
 
     /**
@@ -407,7 +445,8 @@ public class GITCommandExecutor extends CommandExecutor {
         command.add("--annotate");
         command.add("-m");
         if(message.equals("")){
-            List<String> res = new ArrayList<String>(1);
+            List<String> res = new ArrayList<String>(2);
+            res.add("ERRORERRORERROR");
             res.add("Error: No tag-message specified");
             return res;
         }
@@ -417,7 +456,11 @@ public class GITCommandExecutor extends CommandExecutor {
             command.add(commit);
 
         //execute the command
-        return executeCommand(command);
+        List<String> res = executeCommand(command);
+        if(this.getLastExitCode()!=0) {
+            res.add(0, "ERRORERRORERROR");
+        }
+        return res;
     }
 
     /**
@@ -441,8 +484,10 @@ public class GITCommandExecutor extends CommandExecutor {
         //check if everything went well
         for (String line: res){
             //if a line of this output does not start with "Deleted", something went wrong
-            if(!line.startsWith("Deleted"))
+            if(!line.startsWith("Deleted")){
+                res.add(0, "ERRORERRORERROR");
                 return res;
+            }
         }
 
         //everything went well, so just return an empty list

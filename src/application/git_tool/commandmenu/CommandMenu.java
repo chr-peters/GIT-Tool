@@ -22,11 +22,11 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
   private Command[] commands;
   private GITCommandExecutor gitCmdExec;
   private GITTool gitTool;
-  private List errors;
+  private List res;
   private JButton bHelp, bExec;
   private JCheckBox[] paramBoxes;
   private JComboBox cmdList;
-  private JLabel currCmdText;
+  private JLabel successMessage;
   private JLabel[] paramNames;
   private MyTextField[] paramTexts;
   private final static int maxParams = 5;
@@ -48,7 +48,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
 
   private void init(){ //INITIALISIERUNG/////////////////////////////////////////////////////////////////////////////
 
-    //Erzeugung der einzelnen Befehle////////////////////////////////////////////////////////////////////////
+    //Erzeugung der einzelnen Befehle///////////////////////////////////////////////////////////////////////////////////////////////
     Parameter[] addParams = {new Parameter("pathspec", "*file/directory*"),
                             new Parameter("--force"), new Parameter("--update"),
                             new Parameter("--all"), new Parameter("--ignore-errors")};
@@ -60,16 +60,14 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
     Parameter[] deleteBranchParams = {new Parameter("-d","*branchname*", true)};
     Command deleteBranch = new Command("branch(delete)", deleteBranchParams);
 
-    Command listBranches = new Command("branch(list)", new Parameter[0]);
-
-    Parameter[] renameBranchParams = {new Parameter("old name", "*old name*", true), new Parameter("new name", "*old name*", true)};
+    Parameter[] renameBranchParams = {new Parameter("old name", "*old name*", true), new Parameter("new name", "*new name*", true)};
     Command renameBranch = new Command("branch(rename)", renameBranchParams);
 
     Parameter[] checkoutParams = {new Parameter("branch/commit", "*name*"), new Parameter("path", "*path*")};
     Command checkout = new Command("checkout", checkoutParams);
 
-    Parameter[] cloneParams = {new Parameter("repository", "*repository*", true),
-                              new Parameter("directory", "*directory*", true)};
+    Parameter[] cloneParams = {new Parameter("repository", "*from*", true),
+                              new Parameter("directory", "*into*")};
     Command clone = new Command("clone", cloneParams);
 
     Parameter[] commitParams =  {new Parameter("-m", "*message*", true), new Parameter("file", "*filename*"),
@@ -84,10 +82,10 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
     Parameter[] mergeParams = {new Parameter("branch/commit", "PFLICHTPAREMETER?")};
     Command merge = new Command("merge", mergeParams);
 
-    Parameter[] pullParams = {new Parameter("repository", "*repository*"), new Parameter("refspec", "TODO")};
+    Parameter[] pullParams = {new Parameter("repository", "*from*"), new Parameter("refspec", "*what to pull*")};
     Command pull = new Command("pull", pullParams);
 
-    Parameter[] pushParams = {new Parameter("repository", "*repository*"), new Parameter("refspec", "TODO")};
+    Parameter[] pushParams = {new Parameter("repository", "*into*"), new Parameter("refspec", "*what to push*")};
     Command push = new Command("push", pushParams);
 
     Parameter[] resetParams = {new Parameter("tree-ish", "TODO"), new Parameter("paths", "TODO")};
@@ -97,19 +95,17 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
                            new Parameter("-r"), new Parameter("--cached")};
     Command rm = new Command("rm", rmParams);
 
-    Parameter[] createTagParams = {new Parameter("tagname", "*name*", true), new Parameter("message", "*message*"),
+    Parameter[] createTagParams = {new Parameter("tagname", "*name*", true), new Parameter("message", "*message*", true),
                                   new Parameter("commit", "*commit*")};
     Command createTag = new Command("tag(create)", createTagParams);
 
     Parameter[] deleteTagParams = {new Parameter("name", "*to delete*", true)};
     Command deleteTag = new Command("tag(delete)", deleteTagParams);
-
-    Command listTags = new Command("tag(list)", new Parameter[0]);
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //Liste der GIT-Befehle/////////////////////////////////////////////////////////////////////////////////////////
-    Command[] tmpCommands  = { add, createBranch, deleteBranch, listBranches, renameBranch ,checkout, clone, commit,
-                              fetch, init, merge, pull, push, reset, rm, createTag, deleteTag, listTags};
+    Command[] tmpCommands  = { add, createBranch, deleteBranch, renameBranch ,checkout, clone, commit,
+                              fetch, init, merge, pull, push, reset, rm, createTag, deleteTag};
     commands = tmpCommands;
     String[] strCommands = new String[commands.length];
     for(int i = 0; i < strCommands.length; i++){
@@ -141,11 +137,6 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
     }
     /////////////////////////////////////////////////////////////////////////////////
 
-    //Anzeige des aktuellen Befehls//////
-    currCmdText = new JLabel(); //TODO
-    this.add(currCmdText, "growx, wrap");
-    /////////////////////////////////////
-
     //Button zum Absetzen des Befehls////////////////
     bExec = new JButton("Execute");
     bExec.addActionListener(new ActionListener(){
@@ -155,6 +146,12 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
     });
     this.add(bExec, "growx, spanx, wrap, height 5%");
     /////////////////////////////////////////////////
+
+    //Anzeige des aktuellen Befehls//////
+    successMessage = new JLabel();
+    this.add(successMessage, "growx, wrap");
+    /////////////////////////////////////
+
 
     //Startzustand
     setParams();
@@ -198,79 +195,240 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
   }/////////////////////////////////////////////
 
 
-  //Ausf??hrung des ausgew??hlten Kommands mit den vom Nutzer angegebenen Parametern///////////////////////////////////////
+  //Ausfuehrung des ausgewaehlten Kommands mit den vom Nutzer angegebenen Parametern///////////////////////////////////////
   private void execute(){
-    
     //create command string
     StringBuilder cmdString = new StringBuilder();
-    
+    successMessage.setVisible(false);
+    boolean error = false;
+
     switch(cmdList.getSelectedIndex()){
         //add
-        case 0: {
-            errors = gitCmdExec.add(paramBoxes[1].isSelected(), paramBoxes[2].isSelected(), paramBoxes[3].isSelected(),
+        case 0: res = gitCmdExec.add(paramBoxes[1].isSelected(), paramBoxes[2].isSelected(), paramBoxes[3].isSelected(),
                             paramBoxes[4].isSelected(), paramTexts[0].getText());
-            cmdString.append("git add");
-            if(paramBoxes[1].isSelected())
-                cmdString.append(" --force");
-            if(paramBoxes[2].isSelected())
-                cmdString.append(" --update");
-            if(paramBoxes[3].isSelected())
-                cmdString.append(" --all");
-            if(paramBoxes[4].isSelected())
-                cmdString.append(" --ignore-errors");
-            cmdString.append(" "+paramTexts[0].getText());
+            if(commandSuccessful(res)){
+              cmdString.append("git add");
+              if(paramBoxes[1].isSelected())
+                  cmdString.append(" --force");
+              if(paramBoxes[2].isSelected())
+                  cmdString.append(" --update");
+              if(paramBoxes[3].isSelected())
+                  cmdString.append(" --all");
+              if(paramBoxes[4].isSelected())
+                  cmdString.append(" --ignore-errors");
+              cmdString.append(" "+paramTexts[0].getText());
+                successMessage.setText("Added "+paramTexts[0].getText()+".");
+            }
+            else {
+              gitTool.errorMessage(res, "Error");
+              error = true;
+            }
             break;
-                            
-        }
+
         //create branch
-        case 1: errors = gitCmdExec.createBranch(paramTexts[0].getText()); break;
+        case 1: res = gitCmdExec.createBranch(paramTexts[0].getText());
+            if(commandSuccessful(res)){
+              cmdString.append("git branch");
+              cmdString.append(" "+paramTexts[0].getText());
+              successMessage.setText("Branch "+paramTexts[0].getText()+" has been created.");
+            }
+            else {
+              gitTool.errorMessage(res, "Error");
+              error = true;
+            }
+            break;
+
         //delete branch
-        case 2: errors = gitCmdExec.deleteBranch(paramTexts[0].getText()); break;
-        //list branches
-        case 3: errors = gitCmdExec.listBranches(); break;
+        case 2: res = gitCmdExec.deleteBranch(paramTexts[0].getText());
+            if(commandSuccessful(res)){
+                cmdString.append("git branch -d");
+                cmdString.append(" "+paramTexts[0].getText());
+                successMessage.setText("Branch "+paramTexts[0].getText()+" has been deleted.");
+            }
+            else {
+              gitTool.errorMessage(res, "Error");
+              error = true;
+            }
+            break;
+
         //rename branch
-        case 4: errors = gitCmdExec.renameBranch(paramTexts[0].getText(), paramTexts[1].getText()); break;
+        case 3: res = gitCmdExec.renameBranch(paramTexts[0].getText(), paramTexts[1].getText());
+            if(commandSuccessful(res)){
+              cmdString.append("git branch -r");
+              cmdString.append(" "+paramTexts[0].getText());
+              cmdString.append(" "+paramTexts[1].getText());
+              successMessage.setText("Branch "+paramTexts[0].getText()+" has been renamed to "+paramTexts[0].getText()+".");
+            }
+            else {
+              gitTool.errorMessage(res, "Error");
+              error = true;
+            }
+            break;
+
         //checkout
-        case 5: errors = gitCmdExec.checkout(paramTexts[0].getText(), paramTexts[1].getText()); break;
+        case 4: res = gitCmdExec.checkout(paramTexts[0].getText(), paramTexts[1].getText());
+            cmdString.append("git checkout");
+            if(commandSuccessful(res)){
+              if(!paramTexts[0].getText().isEmpty()) cmdString.append(" "+paramTexts[0].getText());
+              if(!paramTexts[1].getText().isEmpty()){
+                cmdString.append(" "+paramTexts[1].getText());
+                if(!cmdString.equals("git checkout")) successMessage.setText(paramTexts[1].getText()+" from branch "+paramTexts[0].getText()+" has been checked out.");
+                else successMessage.setText(paramTexts[1].getText()+" has been checked out.");
+              }
+              if(cmdString.toString().equals("git checkout")){
+                if(!paramTexts[0].getText().isEmpty()) successMessage.setText("Switched branch to "+paramTexts[0].getText()+".");
+                else successMessage.setText("git checkout wurde ohne Parameter aufgerufen."); //TODO
+              }
+            }
+            else {
+              gitTool.errorMessage(res, "Error");
+              error = true;
+            }
+            break;
+
         //clone
-        case 6: errors = gitCmdExec.clone(paramTexts[0].getText(), paramTexts[1].getText()); break;
+        case 5: res = gitCmdExec.clone(paramTexts[0].getText(), paramTexts[1].getText());
+            if(commandSuccessful(res)){
+              cmdString.append("git clone");
+              if(!paramTexts[0].getText().isEmpty()) cmdString.append(" "+paramTexts[0].getText());
+              if(!paramTexts[1].getText().isEmpty()) {
+                cmdString.append(" "+paramTexts[1].getText());
+                successMessage.setText("The repository "+paramTexts[0].getText()+ " has been cloned into "+paramTexts[1].getText()+".");
+              }
+              else successMessage.setText("The repository "+paramTexts[0].getText()+ " has been cloned into the current directory.");
+            }
+            else {
+              gitTool.errorMessage(res, "Error");
+              error = true;
+            }
+            break;
+
         //commit
-        case 7: errors = gitCmdExec.commit(paramBoxes[2].isSelected(), paramBoxes[3].isSelected(),
-                            paramTexts[0].getText(), paramTexts[1].getText()); break;
+        case 6: res = gitCmdExec.commit(paramBoxes[2].isSelected(), paramBoxes[3].isSelected(),
+                            paramTexts[0].getText(), paramTexts[1].getText());
+            if(commandSuccessful(res)){
+              cmdString.append("git commit");
+              if(paramBoxes[2].isSelected()) cmdString.append(" --all");
+              if(paramBoxes[3].isSelected()) cmdString.append(" --amend");
+              if(paramBoxes[1].isSelected()) cmdString.append(" "+paramTexts[1]);
+              cmdString.append(" -m "+paramTexts[0]);
+              successMessage.setText("Commit successful.");
+            }
+            else {
+              gitTool.errorMessage(res, "Error");
+              error = true;
+            }
+            break;
+
         //fetch
-        case 8: errors = gitCmdExec.fetch(); break;
+        case 7: res = gitCmdExec.fetch();
+            if(commandSuccessful(res)){
+              cmdString.append("git fetch");
+              successMessage.setText("Fetch successful.");
+            }
+            else {
+              gitTool.errorMessage(res, "Error");
+              error = true;
+            }
+            break;
+
         //init
-        case 9: errors = gitCmdExec.init(paramBoxes[0].isSelected()); break;
-        //merge
-        case 10: errors = gitCmdExec.merge(paramTexts[0].getText()).getOutputLines(); break;
+        case 8: res = gitCmdExec.init(paramBoxes[0].isSelected());
+            if(commandSuccessful(res)){
+              cmdString.append("git init");
+              if(paramBoxes[0].isSelected()) cmdString.append("--bare");
+              successMessage.setText("An empty "+( cmdString.toString().equals("git init") ? "" : "base " )+"Git-Repository has been created");
+            }
+            else {
+              gitTool.errorMessage(res, "Error");
+              error = true;
+            }
+            break;
+
+        //merge TODO
+        case 9: res = gitCmdExec.merge(paramTexts[0].getText()).getOutputLines();
+            cmdString.append("git merge");
+            if(!paramTexts[0].getText().isEmpty()) cmdString.append(" "+paramTexts[0].getText());
+            break;
+
         //pull
-        case 11: errors = gitCmdExec.pull(paramTexts[0].getText(), paramTexts[1].getText()); break;
+        case 10: res = gitCmdExec.pull(paramTexts[0].getText(), paramTexts[1].getText());
+            if(commandSuccessful(res)){
+              cmdString.append("git pull");
+              if(!paramTexts[0].getText().isEmpty()) cmdString.append(" "+paramTexts[0].getText());
+              if(!paramTexts[1].getText().isEmpty()) cmdString.append(" "+paramTexts[1].getText());
+            }
+            else {
+              gitTool.errorMessage(res, "Error");
+              error = true;
+            }
+            break;
+
         //push
-        case 12: errors = gitCmdExec.push(paramTexts[0].getText(), paramTexts[1].getText()); break;
+        case 11: res = gitCmdExec.push(paramTexts[0].getText(), paramTexts[1].getText());
+            if(commandSuccessful(res)){
+              cmdString.append("git push");
+              if(!paramTexts[0].getText().isEmpty()) cmdString.append(" "+paramTexts[0].getText());
+              if(!paramTexts[1].getText().isEmpty()) cmdString.append(" "+paramTexts[1].getText());
+            }
+            else {
+              gitTool.errorMessage(res, "Error");
+              error = true;
+            }
+            break;
+
         //reset
-        case 13: errors = gitCmdExec.reset(paramTexts[0].getText(), paramTexts[1].getText()); break;
+        case 12: res = gitCmdExec.reset(paramTexts[0].getText(), paramTexts[1].getText());
+            if(commandSuccessful(res)){
+              cmdString.append("git reset");
+              if(!paramTexts[0].getText().isEmpty()) cmdString.append(" "+paramTexts[0].getText());
+              if(!paramTexts[1].getText().isEmpty()) cmdString.append(" "+paramTexts[1].getText());
+            }
+            else {
+              gitTool.errorMessage(res, "Error");
+              error = true;
+            }
+            break;
+
         //rm
-        case 14: errors = gitCmdExec.rm(paramBoxes[1].isSelected(), paramBoxes[2].isSelected(), paramBoxes[3].isSelected(), paramTexts[0].getText()); break;
+        case 13: res = gitCmdExec.rm(paramBoxes[1].isSelected(), paramBoxes[2].isSelected(),
+                            paramBoxes[3].isSelected(), paramTexts[0].getText());
+            cmdString.append("git rm");
+            if(commandSuccessful(res)){
+              if(paramBoxes[1].isSelected()) cmdString.append(" --force");
+              if(paramBoxes[2].isSelected()) cmdString.append(" -r");
+              if(paramBoxes[3].isSelected()) cmdString.append(" --cached");
+              if(!paramTexts[0].getText().isEmpty()) cmdString.append(" "+paramTexts[0].getText());
+            }
+            else {
+              gitTool.errorMessage(res, "Error");
+              error = true;
+            }
+            break;
+
         //create tag
-        case 15: errors = gitCmdExec.createTag(paramTexts[1].getText(), paramTexts[0].getText(),
-                            paramTexts[2].getText()); break;
-        //delete tag
-        case 16: errors = gitCmdExec.deleteTag(paramTexts[0].getText()); break;
-        //list tags
-        case 17: errors = gitCmdExec.listTags(); break;
-      
+        case 14: res = gitCmdExec.createTag(paramTexts[1].getText(), paramTexts[0].getText(),
+                            paramTexts[2].getText());
+            if(commandSuccessful(res)){
+              cmdString.append("git tag");
+              if(!paramTexts[1].getText().isEmpty()) cmdString.append(" -m "+paramTexts[1].getText());
+              if(!paramTexts[0].getText().isEmpty()) cmdString.append(" "+paramTexts[0].getText());
+              if(!paramTexts[2].getText().isEmpty()) cmdString.append(" "+paramTexts[2].getText());
+              successMessage.setText("Tag "+paramTexts[0].getText()+ " has been created.");
+            }
+            else {
+              gitTool.errorMessage(res, "Error");
+              error = true;
+            }
+            break;
     }
-
-    if(!errors.isEmpty()){ //TODO dat wird die R??ckmeldung, Kolleche
-
+    if(!error){
+      successMessage.setVisible(true);
+      this.gitTool.getHistory().addCommand(new application.git_tool.history.Command(cmdString.toString()));
+      //refresh the gittool
+      this.gitTool.refresh();
+      if(!res.isEmpty()) gitTool.infoMessage(res, "Info");
     }
-    
-    //refresh the gittool
-    this.gitTool.refresh();
-    this.gitTool.getHistory().addCommand(new application.git_tool.history.Command(cmdString.toString()));
-    
-    System.out.println(errors);
-    System.out.println("Gelesen: " + paramTexts[0].getText().trim());
   }//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -291,9 +449,20 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
       @Override
       public void actionPerformed(ActionEvent e){
         if(paramBoxes[index].isSelected()) paramTexts[index].setEnabled(true);
-        else paramTexts[index].setEnabled(false);
+        else {
+          paramTexts[index].setEnabled(false);
+          paramTexts[index].setText("");
+        }
       }
     });
   }///////////////////////////////////////////////////////////////////////////
+
+  public boolean commandSuccessful(List <String> output){
+    if(!output.isEmpty() && output.get(0).equals("ERRORERRORERROR")){
+      output.remove(0);
+      return false;
+    }
+    return true;
+  }
 
 }//Class CommandMenu/////////////////////////////////////////////////////////////////////////////////////////////////////
