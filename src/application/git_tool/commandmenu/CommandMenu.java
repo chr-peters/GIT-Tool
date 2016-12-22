@@ -3,6 +3,10 @@ package application.git_tool.commandmenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Dimension;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import javax.swing.*;
@@ -29,8 +33,8 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
   private JLabel successMessage;
   private JLabel[] paramNames;
   private MyTextField[] paramTexts;
+  private static String[] helpTexts;
   private final static int maxParams = 5;
-
 
   public CommandMenu(GITTool gitTool){ //Konstruktor//////////////////////////////////////////////////////////////////
     this.gitTool = gitTool;
@@ -38,11 +42,6 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
     this.setLayout(new MigLayout());
     this.setBorder(BorderFactory.createTitledBorder("Command Menu"));
     this.init();
-    addListenerToMenu();
-    for(int i = 0; i < maxParams; i++){
-      final int j = i; //In der Implementierung eines ActionListeners darf nur mit final Parametern gearbeitet werden.
-      addListenerToBox(j);
-    }
   }///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -74,7 +73,8 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
                                 new Parameter("--all"), new Parameter("--amend")};
     Command commit = new Command("commit", commitParams);
 
-    Command fetch = new Command("fetch", new Parameter[0]);
+    Parameter[] fetchParams = {new Parameter("remote", "*url*")};
+    Command fetch = new Command("fetch", fetchParams);
 
     Parameter[] initParams = {new Parameter("--bare")};
     Command init = new Command("init", initParams);
@@ -112,7 +112,32 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
       strCommands[i] = commands[i].getName();
     } //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //Dropdown-Men??//////////////////////////////
+    //Erzeugung der Hilfe
+    helpTexts = new String[commands.length];
+    String tmpLine = "";
+    try{
+      FileReader fr = new FileReader("./src/data/help.txt");
+      BufferedReader br = new BufferedReader(fr);
+      for(int i = 0; i < commands.length; i++){
+        helpTexts[i] = "";
+        while(tmpLine != null){
+          tmpLine = br.readLine();
+          if (tmpLine == null || tmpLine.equals("##")) break;
+          else helpTexts[i] += tmpLine + "\n";
+        }
+      }
+    }
+    catch(FileNotFoundException e){
+      System.err.println("help.txt could not be found.");
+      System.exit(1);
+    }
+    catch(IOException e){
+      System.err.println("An IOException occured. Check help.txt.");
+      System.exit(1);
+    }
+    /////////////////////
+
+    //Dropdown-Menue//////////////////////////////
     cmdList = new JComboBox<String>(strCommands);
     this.add(cmdList, "width 75%,  height 5%");
     /////////////////////////////////////////////
@@ -155,6 +180,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
 
     //Startzustand
     setParams();
+    addActionListeners();
 
   }//INITIALISIERUNG ENDE///////////////////////////////////////////////////////////////////////////////////////////
 
@@ -230,7 +256,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
             if(commandSuccessful(res)){
               cmdString.append("git branch");
               cmdString.append(" "+paramTexts[0].getText());
-              successMessage.setText("Branch "+paramTexts[0].getText()+" has been created.");
+              successMessage.setText("Branch "+paramTexts[0].getText()+"\nhas been created.");
             }
             else {
               gitTool.errorMessage(res, "Error");
@@ -243,7 +269,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
             if(commandSuccessful(res)){
                 cmdString.append("git branch -d");
                 cmdString.append(" "+paramTexts[0].getText());
-                successMessage.setText("Branch "+paramTexts[0].getText()+" has been deleted.");
+                successMessage.setText("Branch "+paramTexts[0].getText()+"\nhas been deleted.");
             }
             else {
               gitTool.errorMessage(res, "Error");
@@ -254,10 +280,10 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
         //rename branch
         case 3: res = gitCmdExec.renameBranch(paramTexts[0].getText(), paramTexts[1].getText());
             if(commandSuccessful(res)){
-              cmdString.append("git branch -r");
+              cmdString.append("git branch -m");
               cmdString.append(" "+paramTexts[0].getText());
               cmdString.append(" "+paramTexts[1].getText());
-              successMessage.setText("Branch "+paramTexts[0].getText()+" has been renamed to "+paramTexts[0].getText()+".");
+              successMessage.setText("Branch "+paramTexts[0].getText()+"\n has been renamed to\n"+paramTexts[0].getText()+".");
             }
             else {
               gitTool.errorMessage(res, "Error");
@@ -272,12 +298,12 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
               if(!paramTexts[0].getText().isEmpty()) cmdString.append(" "+paramTexts[0].getText());
               if(!paramTexts[1].getText().isEmpty()){
                 cmdString.append(" "+paramTexts[1].getText());
-                if(!cmdString.equals("git checkout")) successMessage.setText(paramTexts[1].getText()+" from branch "+paramTexts[0].getText()+" has been checked out.");
+                if(!cmdString.equals("git checkout")) successMessage.setText(paramTexts[1].getText()+"\nfrom branch "+paramTexts[0].getText()+"\nhas been checked out.");
                 else successMessage.setText(paramTexts[1].getText()+" has been checked out.");
               }
               if(cmdString.toString().equals("git checkout")){
                 if(!paramTexts[0].getText().isEmpty()) successMessage.setText("Switched branch to "+paramTexts[0].getText()+".");
-                else successMessage.setText("git checkout wurde ohne Parameter aufgerufen."); //TODO
+                else successMessage.setText("Nothing happened."); //TODO
               }
             }
             else {
@@ -295,7 +321,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
                 cmdString.append(" "+paramTexts[1].getText());
                 successMessage.setText("The repository "+paramTexts[0].getText()+ " has been cloned into "+paramTexts[1].getText()+".");
               }
-              else successMessage.setText("The repository "+paramTexts[0].getText()+ " has been cloned into the current directory.");
+              else successMessage.setText("The repository "+paramTexts[0].getText()+ "\nhas been cloned into the current directory.");
             }
             else {
               gitTool.errorMessage(res, "Error");
@@ -321,9 +347,10 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
             break;
 
         //fetch
-        case 7: res = gitCmdExec.fetch();
+        case 7: res = gitCmdExec.fetch(paramTexts[0].getText());
             if(commandSuccessful(res)){
               cmdString.append("git fetch");
+              if(!paramTexts[0].getText().isEmpty()) cmdString.append(" "+paramTexts[0].getText());
               successMessage.setText("Fetch successful.");
             }
             else {
@@ -345,18 +372,19 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
             }
             break;
 
-        //merge TODO
+        //merge TODO successMeldung + mergeResponse
         case 9: res = gitCmdExec.merge(paramTexts[0].getText()).getOutputLines();
             cmdString.append("git merge");
             if(!paramTexts[0].getText().isEmpty()) cmdString.append(" "+paramTexts[0].getText());
             break;
 
-        //pull
+        //pull TODO successMeldung
         case 10: res = gitCmdExec.pull(paramTexts[0].getText(), paramTexts[1].getText());
             if(commandSuccessful(res)){
               cmdString.append("git pull");
               if(!paramTexts[0].getText().isEmpty()) cmdString.append(" "+paramTexts[0].getText());
               if(!paramTexts[1].getText().isEmpty()) cmdString.append(" "+paramTexts[1].getText());
+              successMessage.setText("Pull successful.");
             }
             else {
               gitTool.errorMessage(res, "Error");
@@ -364,12 +392,13 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
             }
             break;
 
-        //push
+        //push TODO successMeldung
         case 11: res = gitCmdExec.push(paramTexts[0].getText(), paramTexts[1].getText());
             if(commandSuccessful(res)){
               cmdString.append("git push");
               if(!paramTexts[0].getText().isEmpty()) cmdString.append(" "+paramTexts[0].getText());
               if(!paramTexts[1].getText().isEmpty()) cmdString.append(" "+paramTexts[1].getText());
+              successMessage.setText("Push successful.");
             }
             else {
               gitTool.errorMessage(res, "Error");
@@ -377,12 +406,12 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
             }
             break;
 
-        //reset
         case 12: res = gitCmdExec.reset(paramTexts[0].getText(), paramTexts[1].getText());
             if(commandSuccessful(res)){
               cmdString.append("git reset");
               if(!paramTexts[0].getText().isEmpty()) cmdString.append(" "+paramTexts[0].getText());
               if(!paramTexts[1].getText().isEmpty()) cmdString.append(" "+paramTexts[1].getText());
+              successMessage.setText(""); //TODO successMeldung + Hilfe sollte noch angepasst/verstanden werden
             }
             else {
               gitTool.errorMessage(res, "Error");
@@ -390,7 +419,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
             }
             break;
 
-        //rm
+        //rm TODO successMeldung
         case 13: res = gitCmdExec.rm(paramBoxes[1].isSelected(), paramBoxes[2].isSelected(),
                             paramBoxes[3].isSelected(), paramTexts[0].getText());
             cmdString.append("git rm");
@@ -432,18 +461,45 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
   }//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-  //ActionListener f??r das Dropdown-Men??/////////////////////////////////////
+  public boolean commandSuccessful(List <String> output){
+    if(!output.isEmpty() && output.get(0).equals("ERRORERRORERROR")){
+      output.remove(0);
+      return false;
+    }
+    return true;
+  }
+
+
+  private void addActionListeners(){
+    addListenerToMenu();
+    addListenerToHelp();
+    for(int i = 0; i < maxParams; i++){
+      final int j = i; //In der Implementierung eines ActionListeners darf nur mit final Parametern gearbeitet werden.
+      addListenerToBox(j);
+    }
+  }
+
+
+  //ActionListener fuer das Dropdown-Menue/////////////////////////////////////
   private void addListenerToMenu(){
     cmdList.addActionListener(new ActionListener(){
       @Override
-       public void actionPerformed(ActionEvent e){
-         CommandMenu.this.setParams();
-       }
+        public void actionPerformed(ActionEvent e){
+          CommandMenu.this.setParams();
+        }
     });
   }//////////////////////////////////////////////////////////////////////////
 
+  private void addListenerToHelp(){
+    bHelp.addActionListener(new ActionListener(){
+      @Override
+        public void actionPerformed(ActionEvent e){
+          gitTool.infoMessage(helpTexts[cmdList.getSelectedIndex()], getSelectedCommand().getName());
+        }
+    });
+  }
 
-  //ActionListener f??r die CheckBoxen/////////////////////////////////////////
+  //ActionListener fuer die CheckBoxen/////////////////////////////////////////
   private void addListenerToBox(final int index){
     paramBoxes[index].addActionListener(new ActionListener(){
       @Override
@@ -456,13 +512,5 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
       }
     });
   }///////////////////////////////////////////////////////////////////////////
-
-  public boolean commandSuccessful(List <String> output){
-    if(!output.isEmpty() && output.get(0).equals("ERRORERRORERROR")){
-      output.remove(0);
-      return false;
-    }
-    return true;
-  }
 
 }//Class CommandMenu/////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,278 @@
+<<Documentation of git add>>
+    Updates the index using the current content found in the working tree, to prepare the content staged for the next
+    commit. It typically adds the current content of existing paths as a whole, but with some options it can also be used to add
+    content with only part of the changes made to the working tree files applied, or remove paths that do not exist in the working
+    tree anymore.
+
+    The "index" holds a snapshot of the content of the working tree, and it is this snapshot that is taken as the contents of the
+    next commit. Thus after making any changes to the working directory, and before running the commit command, you must use the add
+    command to add any new or modified files to the index.
+
+    This command can be performed multiple times before a commit. It only adds the content of the specified file(s) at the time the
+    add command is run; if you want subsequent changes included in the next commit, then you must run git add again to add the new
+    content to the index.
+
+    <pathspec>...
+           Files to add content from. Fileglobs (e.g.  *.c) can be given to add all matching files. Also a leading directory name (e.g.
+           dir to add dir/file1 and dir/file2) can be given to update the index to match the current state of the directory as a whole
+           (e.g. specifying dir will record not just a file dir/file1 modified in the working tree, a file dir/file2 added to the
+           working tree, but also a file dir/file3 removed from the working tree. Note that older versions of Git used to ignore removed
+           files; use --no-all option if you want to add modified or new files but ignore removed ones.
+
+    --force
+          Allow adding otherwise ignored files.
+
+    --update
+          Update the index just where it already has an entry matching <pathspec>. This removes as well as modifies index entries to
+          match the working tree, but adds no new files.
+
+          If no <pathspec> is given when -u option is used, all tracked files in the entire working tree are updated (old versions of
+          Git used to limit the update to the current directory and its subdirectories).
+
+    --all
+          Update the index not only where the working tree has a file matching <pathspec> but also where the index already has an
+          entry. This adds, modifies, and removes index entries to match the working tree.
+
+          If no <pathspec> is given when -A option is used, all files in the entire working tree are updated (old versions of Git used
+          to limit the update to the current directory and its subdirectories).
+
+    --ignore-errors
+          If some files could not be added because of errors indexing them, do not abort the operation, but continue adding the others.
+          The command shall still exit with non-zero status. The configuration variable add.ignoreErrors can be set to true to make
+          this the default behaviour.
+##
+
+<<Documentation of git branch(create)>>
+    Creates a new branch head named <branchname> which points to the current HEAD, or <start-point> if given.
+
+    Note that this will create the new branch, but it will not switch the working tree to it; use "git checkout <newbranch>" to
+    switch to the new branch.
+
+    When a local branch is started off a remote-tracking branch, Git sets up the branch (specifically the branch.<name>.remote and
+    \branch.<name>.merge configuration entries) so that git pull will appropriately merge from the remote-tracking branch.
+##
+
+<<Documentation of git branch(delete)>>
+   With a -d or -D option, <branchname> will be deleted. You may specify more than one branch for
+   deletion.
+##
+
+<<Documentation of git branch(rename)>>
+  With a -m or -M option, <oldbranch> will be renamed to <newbranch>.
+##
+
+<<Documentation of git checkout>>
+  Updates files in the working tree to match the version in the index or the specified tree. If
+  no paths are given, git checkout will also update HEAD to set the specified branch as the
+  current branch.
+
+  git checkout <branch>
+    To prepare for working on <branch>, switch to it by updating the index and the files in
+    the working tree, and by pointing HEAD at the branch. Local modifications to the files in
+    the working tree are kept, so that they can be committed to the <branch>.
+
+  git checkout [-p|--patch] [<tree-ish>] [--] <pathspec>...
+    When <paths> or --patch are given, git checkout does not switch branches. It updates the
+    named paths in the working tree from the index file or from a named <tree-ish> (most often
+    a commit).
+##
+
+<<Documentation of git clone>>
+  Clones a repository into a newly created directory, creates remote-tracking branches for each
+  branch in the cloned repository (visible using git branch -r), and creates and checks out an
+  initial branch that is forked from the cloned repository’s currently active branch.
+
+  After the clone, a plain git fetch without arguments will update all the remote-tracking
+  branches, and a git pull without arguments will in addition merge the remote master branch
+  into the current master branch
+
+  <repository>
+           The (possibly remote) repository to clone from. See the URLS section below for more
+           information on specifying repositories.
+
+  <directory>
+           The name of a new directory to clone into. The "humanish" part of the source repository is
+           used if no directory is explicitly given (repo for /path/to/repo.git and foo for
+           host.xz:foo/.git). Cloning into an existing directory is only allowed if the directory is
+           empty.
+##
+
+<<Documentation of git commit>>
+  Stores the current contents of the index in a new commit along with a log message from the
+  user describing the changes.
+
+  -m <msg>, --message=<msg>
+           Use the given <msg> as the commit message.
+
+  <file>...
+          When files are given on the command line, the command commits the contents of the named
+          files, without recording the changes already staged. The contents of these files are also
+          staged for the next commit on top of what have been staged before.
+
+  -a, --all
+          Tell the command to automatically stage files that have been modified and deleted, but new
+          files you have not told Git about are not affected.
+  --amend
+          Replace the tip of the current branch by creating a new commit. The recorded tree is
+          prepared as usual, and the message from the original commit is used as the starting point,
+          instead of an empty message, when no other message is specified from the command line. The
+          new commit has the same parents and author as the current one
+##
+
+<<Documentation of fetch>>
+  Fetch branches and/or tags (collectively, "refs") from one or more other repositories, along
+  with the objects necessary to complete their histories. Remote-tracking branches are updated.
+
+  When no remote is specified, by default the origin remote will be used, unless there’s an
+  upstream branch configured for the current branch.
+
+  The name of one of the following can be used instead of a URL as <repository> argument:
+
+      ·   a remote in the Git configuration file: $GIT_DIR/config,
+
+      ·   a file in the $GIT_DIR/remotes directory, or
+
+      ·   a file in the $GIT_DIR/branches directory.
+
+      All of these also allow you to omit the refspec from the command line because they each
+      contain a refspec which git will use by default.
+##
+
+<<Documentation of init>>
+  This command creates an empty Git repository - basically a .git directory with subdirectories
+  for objects, refs/heads, refs/tags, and template files. An initial HEAD file that references
+  the HEAD of the master branch is also created.
+
+  Running git init in an existing repository is safe. It will not overwrite things that are
+  already there.
+
+  --bare
+           Create a bare repository. If GIT_DIR environment is not set, it is set to the current
+           working directory.
+##
+
+<<Documentation of merge>>
+      Incorporates changes from the named commits (since the time their histories diverged from the
+      current branch) into the current branch. This command is used by git pull to incorporate
+      changes from another repository and can be used by hand to merge changes from one branch into
+      another.
+
+      Assume the following history exists and the current branch is "master":
+
+                    A---B---C topic
+                   /
+              D---E---F---G master
+
+      Then "git merge topic" will replay the changes made on the topic branch since it diverged from
+      master (i.e., E) until its current commit (C) on top of master, and record the result in a new
+      commit along with the names of the two parent commits and a log message from the user
+      describing the changes.
+
+                    A---B---C topic
+                   /         \
+              D---E---F---G---H master
+
+      <branch>...
+        Branch to merge into our branch.
+
+      <commit>...
+          Commits, usually other branch heads, to merge into our branch. Specifying more than one
+          commit will create a merge with more than two parents (affectionately called an Octopus
+          merge).
+
+          If no commit is given from the command line, merge the remote-tracking branches that the
+          current branch is configured to use as its upstream.
+##
+
+<<Documentation of pull>>
+       Incorporates changes from a remote repository into the current branch. In its default mode,
+       git pull is shorthand for git fetch followed by git merge FETCH_HEAD.
+
+       More precisely, git pull runs git fetch with the given parameters and calls git merge to merge
+       the retrieved branch heads into the current branch.
+
+       <repository>
+           The "remote" repository that is the source of a fetch or pull operation. This parameter
+           can be either a URL or the name of a remote.
+
+      <refspec>
+          Specifies which refs to fetch and which local refs to update. When no <refspec>s appear on
+          the command line, the refs to fetch are read from remote.<repository>.fetch variables
+          instead.
+
+          The format of a <refspec> parameter is an optional plus +, followed by the source ref
+          <src>, followed by a colon :, followed by the destination ref <dst>. The colon can be
+          omitted when <dst> is empty.
+##
+
+<<Documentation of push>>
+       Updates remote refs using local refs, while sending objects necessary to complete the given
+       refs.
+
+       When the command line does not specify where to push with the <repository> argument,
+       branch.*.remote configuration for the current branch is consulted to determine where to push.
+       If the configuration is missing, it defaults to origin.
+
+       <repository>
+          The "remote" repository that is destination of a push operation. This parameter can be
+          either a URL or the name of a remote.
+
+      <refspec>...
+          Specify what destination ref to update with what source object. The format of a <refspec>
+          parameter is an optional plus +, followed by the source object <src>, followed by a colon
+          :, followed by the destination ref <dst>.
+
+          The <src> is often the name of the branch you would want to push.
+##
+
+<<Documentation of reset>>
+     In the first and second form, copy entries from <tree-ish> to the index. In the third form,
+     set the current branch head (HEAD) to <commit>, optionally modifying index and working tree to
+     match. The <tree-ish>/<commit> defaults to HEAD in all forms.
+
+     git reset [-q] [<tree-ish>] [--] <paths>...
+           This form resets the index entries for all <paths> to their state at <tree-ish>. (It does
+           not affect the working tree or the current branch.)
+
+           This means that git reset <paths> is the opposite of git add <paths>.
+
+           After running git reset <paths> to update the index entry, you can use git-checkout(1) to
+           check the contents out of the index to the working tree. Alternatively, using git-
+           checkout(1) and specifying a commit, you can copy the contents of a path out of a commit
+           to the index and to the working tree in one go.
+
+    git reset (--patch | -p) [<tree-ish>] [--] [<paths>...]
+                Interactively select hunks in the difference between the index and <tree-ish> (defaults to
+                HEAD). The chosen hunks are applied in reverse to the index.
+
+                This means that git reset -p is the opposite of git add -p, i.e. you can use it to
+                selectively reset hunks. See the “Interactive Mode” section of git-add(1) to learn how to
+                operate the --patch mode.
+
+    git reset [<mode>] [<commit>]
+                This form resets the current branch head to <commit> and possibly updates the index
+                (resetting it to the tree of <commit>) and the working tree depending on <mode>. If <mode>
+                is omitted, defaults to "--mixed". The <mode> must be one of the following:
+##
+
+<<Documentation of git rm>>
+     Remove files from the index, or from the working tree and the index. git rm will not remove a
+     file from just your working directory.
+
+     <file>...
+          Files to remove. Fileglobs (e.g.  *.c) can be given to remove all matching files. If you
+          want Git to expand file glob characters, you may need to shell-escape them. A leading
+          directory name (e.g.  dir to remove dir/file1 and dir/file2) can be given to remove all
+          files in the directory, and recursively all sub-directories, but this requires the -r
+          option to be explicitly given.
+
+      -f, --force
+          Override the up-to-date check.
+
+      -r
+          Allow recursive removal when a leading directory name is given.
+
+      --cached
+          Use this option to unstage and remove paths only from the index. Working tree files,
+          whether modified or not, will be left alone.
+##

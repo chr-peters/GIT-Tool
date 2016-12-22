@@ -30,7 +30,7 @@ public class GITCommandExecutor extends CommandExecutor {
     */
     public List<String> init(boolean bare){
         //generate the command from the options
-        List<String> command = new ArrayList<String>(8);
+        List<String> command = new ArrayList<String>(4);
         command.add("git");
         command.add("init");
         if(bare)
@@ -39,9 +39,7 @@ public class GITCommandExecutor extends CommandExecutor {
 
         //execute the command
         List<String> res = executeCommand(command);
-        if(this.getLastExitCode()!=0) {
-            res.add(0, "ERRORERRORERROR");
-        }
+        if(this.getLastExitCode()!=0) res.add(0, "ERRORERRORERROR");
         return res;
     }
 
@@ -75,9 +73,7 @@ public class GITCommandExecutor extends CommandExecutor {
         }
         //execute the command
         List<String> res = executeCommand(command);
-        if(this.getLastExitCode()!=0) {
-            res.add(0, "ERRORERRORERROR");
-        }
+        if(this.getLastExitCode()!=0) res.add(0, "ERRORERRORERROR");
         return res;
     }
 
@@ -109,9 +105,7 @@ public class GITCommandExecutor extends CommandExecutor {
 
         //execute the command
         List<String> res = executeCommand(command);
-        if(this.getLastExitCode()!=0) {
-            res.add(0, "ERRORERRORERROR");
-        }
+        if(this.getLastExitCode()!=0) res.add(0, "ERRORERRORERROR");
         return res;
     }
 
@@ -135,9 +129,7 @@ public class GITCommandExecutor extends CommandExecutor {
 
         //execute the command
         List<String> res = executeCommand(command);
-        if(this.getLastExitCode()!=0) {
-            res.add(0, "ERRORERRORERROR");
-        }
+        if(this.getLastExitCode()!=0) res.add(0, "ERRORERRORERROR");
         return res;
     }
 
@@ -162,9 +154,7 @@ public class GITCommandExecutor extends CommandExecutor {
 
         //execute the command
         List<String> res = executeCommand(command);
-        if(this.getLastExitCode()!=0) {
-            res.add(0, "ERRORERRORERROR");
-        }
+        if(this.getLastExitCode()!=0) res.add(0, "ERRORERRORERROR");
         return res;
     }
 
@@ -201,9 +191,7 @@ public class GITCommandExecutor extends CommandExecutor {
 
         //execute the command
         List<String> res = executeCommand(command);
-        if(this.getLastExitCode()!=0) {
-            res.add(0, "ERRORERRORERROR");
-        }
+        if(this.getLastExitCode()!=0) res.add(0, "ERRORERRORERROR");
         return res;
     }
 
@@ -236,15 +224,16 @@ public class GITCommandExecutor extends CommandExecutor {
 
     /**
     * Performs the "git fetch --quiet" command to download objects and refs from another repository
-    *
+    * @param url remote to fetch from. Default: origin
     * @return Lines of the process-output. The list is empty, if everything worked well.
     */
-    public List<String> fetch() {
+    public List<String> fetch(String url) {
         //generate the command from the options
         List<String> command = new ArrayList<String>(3);
         command.add("git");
         command.add("fetch");
         command.add("--quiet");
+        command.add(url);
 
         //execute the command
         List<String> res = executeCommand(command);
