@@ -3,6 +3,7 @@ package application.git_tool.filebrowser;
 
 import application.git_tool.GITTool;
 import application.git_tool.unixcommandexecutor.UnixCommandExecutor;
+import application.git_tool.history.Command;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -242,12 +243,20 @@ public class FileBrowser extends JPanel {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
                         ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
+                        StringBuilder command = new StringBuilder("chmod ");
+                        command.append(text.trim()+" ");
+                        for(File f: FileBrowser.this.list.getSelectedValuesList()) {
+                            command.append(f.getName()+" ");
+                        }
                         java.util.List<String> res = FileBrowser.this.unixCommandExecutor.chmod(text, FileBrowser.this.list.getSelectedValuesList());
                         if(!res.isEmpty() && res.get(0).equals("ERRORERRORERROR")) {
                             res.remove(0);
                             FileBrowser.this.gitTool.errorMessage(res, "Error");
                         } else if(!res.isEmpty()) {
                             FileBrowser.this.gitTool.infoMessage(res, "Info");
+                            FileBrowser.this.gitTool.getHistory().addCommand(new Command(command.toString().trim()));
+                        } else {
+                            FileBrowser.this.gitTool.getHistory().addCommand(new Command(command.toString().trim()));
                         }
                         FileBrowser.this.refresh();
                     }
@@ -266,12 +275,20 @@ public class FileBrowser extends JPanel {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
                         ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
+                        StringBuilder command = new StringBuilder("cp ");
+                        command.append(text.trim()+" ");
+                        for(File f: FileBrowser.this.list.getSelectedValuesList()) {
+                            command.append(f.getName()+" ");
+                        }
                         java.util.List<String> res = FileBrowser.this.unixCommandExecutor.cp(text, FileBrowser.this.list.getSelectedValuesList());
                         if(!res.isEmpty() && res.get(0).equals("ERRORERRORERROR")) {
                             res.remove(0);
                             FileBrowser.this.gitTool.errorMessage(res, "Error");
                         } else if(!res.isEmpty()) {
                             FileBrowser.this.gitTool.infoMessage(res, "Info");
+                            FileBrowser.this.gitTool.getHistory().addCommand(new Command(command.toString().trim()));
+                        } else {
+                            FileBrowser.this.gitTool.getHistory().addCommand(new Command(command.toString().trim()));
                         }
                         FileBrowser.this.refresh();
                     }
@@ -290,12 +307,17 @@ public class FileBrowser extends JPanel {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
                         ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
+                        StringBuilder command = new StringBuilder("find ");
+                        command.append(text.trim()+" ");
                         java.util.List<String> res = FileBrowser.this.unixCommandExecutor.find(text);
                         if(!res.isEmpty() && res.get(0).equals("ERRORERRORERROR")) {
                             res.remove(0);
                             FileBrowser.this.gitTool.errorMessage(res, "Error");
                         } else if(!res.isEmpty()) {
                             FileBrowser.this.gitTool.infoMessage(res, "Info");
+                            FileBrowser.this.gitTool.getHistory().addCommand(new Command(command.toString().trim()));
+                        } else {
+                            FileBrowser.this.gitTool.getHistory().addCommand(new Command(command.toString().trim()));
                         }
                         FileBrowser.this.refresh();
                     }
@@ -314,12 +336,17 @@ public class FileBrowser extends JPanel {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
                         ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
+                        StringBuilder command = new StringBuilder("mkdir ");
+                        command.append(text.trim()+" ");
                         java.util.List<String> res = FileBrowser.this.unixCommandExecutor.mkdir(text);
                         if(!res.isEmpty() && res.get(0).equals("ERRORERRORERROR")) {
                             res.remove(0);
                             FileBrowser.this.gitTool.errorMessage(res, "Error");
                         } else if(!res.isEmpty()) {
                             FileBrowser.this.gitTool.infoMessage(res, "Info");
+                            FileBrowser.this.gitTool.getHistory().addCommand(new Command(command.toString().trim()));
+                        } else {
+                            FileBrowser.this.gitTool.getHistory().addCommand(new Command(command.toString().trim()));
                         }
                         FileBrowser.this.refresh();
                     }
@@ -338,12 +365,20 @@ public class FileBrowser extends JPanel {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
                         ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
+                        StringBuilder command = new StringBuilder("mv ");
+                        command.append(text.trim()+" ");
+                        for(File f: FileBrowser.this.list.getSelectedValuesList()) {
+                            command.append(f.getName()+" ");
+                        }
                         java.util.List<String> res = FileBrowser.this.unixCommandExecutor.mv(text, FileBrowser.this.list.getSelectedValuesList());
                         if(!res.isEmpty() && res.get(0).equals("ERRORERRORERROR")) {
                             res.remove(0);
                             FileBrowser.this.gitTool.errorMessage(res, "Error");
                         } else if(!res.isEmpty()) {
                             FileBrowser.this.gitTool.infoMessage(res, "Info");
+                            FileBrowser.this.gitTool.getHistory().addCommand(new Command(command.toString().trim()));
+                        } else {
+                            FileBrowser.this.gitTool.getHistory().addCommand(new Command(command.toString().trim()));
                         }
                         FileBrowser.this.refresh();
                     }
@@ -357,24 +392,38 @@ public class FileBrowser extends JPanel {
         });
         this.menu.add(new AbstractAction("rm") {
             public void actionPerformed(ActionEvent e) {
+                StringBuilder command = new StringBuilder("rm ");
+                for(File f: FileBrowser.this.list.getSelectedValuesList()) {
+                    command.append(f.getName()+" ");
+                }
                 java.util.List<String> res = FileBrowser.this.unixCommandExecutor.rm(FileBrowser.this.list.getSelectedValuesList());
                 if(!res.isEmpty() && res.get(0).equals("ERRORERRORERROR")) {
                     res.remove(0);
                     FileBrowser.this.gitTool.errorMessage(res, "Error");
                 } else if(!res.isEmpty()) {
                     FileBrowser.this.gitTool.infoMessage(res, "Info");
+                    FileBrowser.this.gitTool.getHistory().addCommand(new Command(command.toString().trim()));
+                } else {
+                    FileBrowser.this.gitTool.getHistory().addCommand(new Command(command.toString().trim()));
                 }
                 FileBrowser.this.refresh();
             }
         });
         this.menu.add(new AbstractAction("rmdir") {
             public void actionPerformed(ActionEvent e) {
+                StringBuilder command = new StringBuilder("rmdir ");
+                for(File f: FileBrowser.this.list.getSelectedValuesList()) {
+                    command.append(f.getName()+" ");
+                }
                 java.util.List<String> res = FileBrowser.this.unixCommandExecutor.rmdir(FileBrowser.this.list.getSelectedValuesList());
                 if(!res.isEmpty() && res.get(0).equals("ERRORERRORERROR")) {
                     res.remove(0);
                     FileBrowser.this.gitTool.errorMessage(res, "Error");
                 } else if(!res.isEmpty()) {
                     FileBrowser.this.gitTool.infoMessage(res, "Info");
+                    FileBrowser.this.gitTool.getHistory().addCommand(new Command(command.toString().trim()));
+                } else {
+                    FileBrowser.this.gitTool.getHistory().addCommand(new Command(command.toString().trim()));
                 }
                 FileBrowser.this.refresh();
             }
@@ -386,12 +435,20 @@ public class FileBrowser extends JPanel {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
                         ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
+                        StringBuilder command = new StringBuilder("tar ");
+                        command.append(text.trim()+" ");
+                        for(File f: FileBrowser.this.list.getSelectedValuesList()) {
+                            command.append(f.getName()+" ");
+                        }
                         java.util.List<String> res = FileBrowser.this.unixCommandExecutor.tar(text, FileBrowser.this.list.getSelectedValuesList());
                         if(!res.isEmpty() && res.get(0).equals("ERRORERRORERROR")) {
                             res.remove(0);
                             FileBrowser.this.gitTool.errorMessage(res, "Error");
                         } else if(!res.isEmpty()) {
                             FileBrowser.this.gitTool.infoMessage(res, "Info");
+                            FileBrowser.this.gitTool.getHistory().addCommand(new Command(command.toString().trim()));
+                        } else {
+                            FileBrowser.this.gitTool.getHistory().addCommand(new Command(command.toString().trim()));
                         }
                         FileBrowser.this.refresh();
                     }
@@ -406,12 +463,19 @@ public class FileBrowser extends JPanel {
         this.menu.add(new AbstractAction("touch") {
             public void actionPerformed(ActionEvent e) {
                 if(!FileBrowser.this.list.getSelectedValuesList().isEmpty()) {
+                    StringBuilder command = new StringBuilder("touch ");
+                    for(File f: FileBrowser.this.list.getSelectedValuesList()) {
+                        command.append(f.getName()+" ");
+                    }
                     java.util.List<String> res = FileBrowser.this.unixCommandExecutor.touch("", FileBrowser.this.list.getSelectedValuesList());
                     if(!res.isEmpty() && res.get(0).equals("ERRORERRORERROR")) {
                         res.remove(0);
                         FileBrowser.this.gitTool.errorMessage(res, "Error");
                     } else if(!res.isEmpty()) {
                         FileBrowser.this.gitTool.infoMessage(res, "Info");
+                        FileBrowser.this.gitTool.getHistory().addCommand(new Command(command.toString().trim()));
+                    } else {
+                        FileBrowser.this.gitTool.getHistory().addCommand(new Command(command.toString().trim()));
                     }
                     FileBrowser.this.refresh();
                 } else {
@@ -420,12 +484,20 @@ public class FileBrowser extends JPanel {
                         public void actionPerformed(ActionEvent e) {
                             String text = textField.getText();
                             ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
+                            StringBuilder command = new StringBuilder("touch ");
+                            command.append(text.trim()+" ");
+                            for(File f: FileBrowser.this.list.getSelectedValuesList()) {
+                                command.append(f.getName()+" ");
+                            }
                             java.util.List<String> res = FileBrowser.this.unixCommandExecutor.touch(text, FileBrowser.this.list.getSelectedValuesList());
                             if(!res.isEmpty() && res.get(0).equals("ERRORERRORERROR")) {
                                 res.remove(0);
                                 FileBrowser.this.gitTool.errorMessage(res, "Error");
                             } else if(!res.isEmpty()) {
                                 FileBrowser.this.gitTool.infoMessage(res, "Info");
+                                FileBrowser.this.gitTool.getHistory().addCommand(new Command(command.toString().trim()));
+                            } else {
+                                FileBrowser.this.gitTool.getHistory().addCommand(new Command(command.toString().trim()));
                             }
                             FileBrowser.this.refresh();
                         }
@@ -445,12 +517,17 @@ public class FileBrowser extends JPanel {
                     public void actionPerformed(ActionEvent e) {
                         String text = textField.getText();
                         ((JPopupMenu) ((JTextField) e.getSource()).getParent()).setVisible(false);
+                        StringBuilder command = new StringBuilder("wget ");
+                        command.append(text.trim()+" ");
                         java.util.List<String> res = FileBrowser.this.unixCommandExecutor.wget(text);
                         if(!res.isEmpty() && res.get(0).equals("ERRORERRORERROR")) {
                             res.remove(0);
                             FileBrowser.this.gitTool.errorMessage(res, "Error");
                         } else if(!res.isEmpty()) {
                             FileBrowser.this.gitTool.infoMessage(res, "Info");
+                            FileBrowser.this.gitTool.getHistory().addCommand(new Command(command.toString().trim()));
+                        } else {
+                            FileBrowser.this.gitTool.getHistory().addCommand(new Command(command.toString().trim()));
                         }
                         FileBrowser.this.refresh();
                     }
