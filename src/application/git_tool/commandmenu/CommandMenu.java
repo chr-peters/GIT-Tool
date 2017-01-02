@@ -88,7 +88,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
     Parameter[] pushParams = {new Parameter("repository", "*into*"), new Parameter("refspec", "*what to push*")};
     Command push = new Command("push", pushParams);
 
-    Parameter[] resetParams = {new Parameter("tree-ish", "TODO"), new Parameter("paths", "TODO")};
+    Parameter[] resetParams = {new Parameter("tree-ish", "*TODO"), new Parameter("paths", "*what to reset*")};
     Command reset = new Command("reset", resetParams);
 
     Parameter[] rmParams = {new Parameter("file", "*filename*", true), new Parameter("--force"),
@@ -303,7 +303,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
               }
               if(cmdString.toString().equals("git checkout")){
                 if(!paramTexts[0].getText().isEmpty()) successMessage.setText("Switched branch to "+paramTexts[0].getText()+".");
-                else successMessage.setText("Nothing happened."); //TODO
+                else successMessage.setText("Nothing happened.");
               }
             }
             else {
@@ -378,7 +378,6 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
             if(!paramTexts[0].getText().isEmpty()) cmdString.append(" "+paramTexts[0].getText());
             break;
 
-        //pull TODO successMeldung
         case 10: res = gitCmdExec.pull(paramTexts[0].getText(), paramTexts[1].getText());
             if(commandSuccessful(res)){
               cmdString.append("git pull");
@@ -392,7 +391,6 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
             }
             break;
 
-        //push TODO successMeldung
         case 11: res = gitCmdExec.push(paramTexts[0].getText(), paramTexts[1].getText());
             if(commandSuccessful(res)){
               cmdString.append("git push");
@@ -411,7 +409,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
               cmdString.append("git reset");
               if(!paramTexts[0].getText().isEmpty()) cmdString.append(" "+paramTexts[0].getText());
               if(!paramTexts[1].getText().isEmpty()) cmdString.append(" "+paramTexts[1].getText());
-              successMessage.setText(""); //TODO successMeldung + Hilfe sollte noch angepasst/verstanden werden
+              successMessage.setText("Reset successful.");
             }
             else {
               gitTool.errorMessage(res, "Error");
@@ -419,7 +417,6 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
             }
             break;
 
-        //rm TODO successMeldung
         case 13: res = gitCmdExec.rm(paramBoxes[1].isSelected(), paramBoxes[2].isSelected(),
                             paramBoxes[3].isSelected(), paramTexts[0].getText());
             cmdString.append("git rm");
@@ -428,6 +425,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
               if(paramBoxes[2].isSelected()) cmdString.append(" -r");
               if(paramBoxes[3].isSelected()) cmdString.append(" --cached");
               if(!paramTexts[0].getText().isEmpty()) cmdString.append(" "+paramTexts[0].getText());
+              successMessage.setText("RM successful.");
             }
             else {
               gitTool.errorMessage(res, "Error");
@@ -507,7 +505,6 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
         if(paramBoxes[index].isSelected()) paramTexts[index].setEnabled(true);
         else {
           paramTexts[index].setEnabled(false);
-          paramTexts[index].setText("");
         }
       }
     });

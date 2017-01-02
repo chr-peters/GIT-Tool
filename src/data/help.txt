@@ -226,9 +226,7 @@
 ##
 
 <<Documentation of reset>>
-     In the first and second form, copy entries from <tree-ish> to the index. In the third form,
-     set the current branch head (HEAD) to <commit>, optionally modifying index and working tree to
-     match. The <tree-ish>/<commit> defaults to HEAD in all forms.
+     Copy entries from <tree-ish> to the index.
 
      git reset [-q] [<tree-ish>] [--] <paths>...
            This form resets the index entries for all <paths> to their state at <tree-ish>. (It does
@@ -240,19 +238,6 @@
            check the contents out of the index to the working tree. Alternatively, using git-
            checkout(1) and specifying a commit, you can copy the contents of a path out of a commit
            to the index and to the working tree in one go.
-
-    git reset (--patch | -p) [<tree-ish>] [--] [<paths>...]
-                Interactively select hunks in the difference between the index and <tree-ish> (defaults to
-                HEAD). The chosen hunks are applied in reverse to the index.
-
-                This means that git reset -p is the opposite of git add -p, i.e. you can use it to
-                selectively reset hunks. See the “Interactive Mode” section of git-add(1) to learn how to
-                operate the --patch mode.
-
-    git reset [<mode>] [<commit>]
-                This form resets the current branch head to <commit> and possibly updates the index
-                (resetting it to the tree of <commit>) and the working tree depending on <mode>. If <mode>
-                is omitted, defaults to "--mixed". The <mode> must be one of the following:
 ##
 
 <<Documentation of git rm>>
@@ -275,4 +260,19 @@
       --cached
           Use this option to unstage and remove paths only from the index. Working tree files,
           whether modified or not, will be left alone.
+##
+
+<<Documentation of git tag(create)>>
+      The command create a tag object and requires a tag message.
+
+      -m <msg>, --message=<msg>
+          Use the given tag message (instead of prompting). If multiple -m options are given, their values are concatenated as separate
+          paragraphs.
+
+      <commit>, <object>
+          The object that the new tag will refer to, usually a commit. Defaults to HEAD.
+##
+
+<<Documentation of git tag(delete)>>
+      Delete existing tags with the given names.
 ##
