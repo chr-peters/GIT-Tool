@@ -17,7 +17,6 @@ public class InfoMenu extends JPanel {
 
     private GITTool gitTool;
     private GITCommandExecutor executor;
-    private int lastExitCode;
     private JLabel name;
     private JTextArea remote;
     private JTextArea branch;
@@ -28,7 +27,6 @@ public class InfoMenu extends JPanel {
     public InfoMenu (GITTool gitTool){
         this.gitTool = gitTool;
         this.executor = new GITCommandExecutor(this.gitTool.getProcessBuilder());
-        this.lastExitCode = 0;
         this.name = new JLabel();
         this.remote = new JTextArea();
         this.remote.setBackground(this.getBackground());
