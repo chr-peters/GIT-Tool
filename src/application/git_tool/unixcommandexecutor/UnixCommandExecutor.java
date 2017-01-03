@@ -186,7 +186,7 @@ public class UnixCommandExecutor extends CommandExecutor {
     }
     
     //splits the given string into its components
-    private List<String> splitIntoComponents(String inputString) {
+    public List<String> splitIntoComponents(String inputString) {
         List<String> components = new ArrayList<String>();
         Matcher m = Pattern.compile("(\"(\\\\\"|.)*?\"|'(\\\\\'|.)*?'|(\\\\ |\\S)*)").matcher(inputString);
         while(m.find()) {

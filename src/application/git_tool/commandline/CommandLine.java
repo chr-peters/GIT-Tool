@@ -2,6 +2,7 @@
 package application.git_tool.commandline;
 
 import application.git_tool.*;
+import application.git_tool.unixcommandexecutor.*;
 
 import net.miginfocom.layout.*;
 import net.miginfocom.swing.*;
@@ -23,7 +24,7 @@ public class CommandLine extends JPanel {
 
     private GITTool gitTool;
     private ProcessBuilder processBuilder;
-    private CommandExecutor commandExecutor;
+    private UnixCommandExecutor commandExecutor;
 
     //components
     private JTextPane outputPane;
@@ -35,7 +36,7 @@ public class CommandLine extends JPanel {
         this.processBuilder = new ProcessBuilder();
         this.processBuilder.redirectErrorStream(true);
         this.processBuilder.directory(gitTool.getProcessBuilder().directory());
-        this.commandExecutor = new CommandExecutor(this.processBuilder);
+        this.commandExecutor = new UnixCommandExecutor(this.processBuilder);
 
         this.setLayout(new MigLayout("gap 0, insets 0, fillx, filly"));
 
@@ -97,7 +98,7 @@ public class CommandLine extends JPanel {
                             }
                         }
                     } else {
-                        List<String> command = new ArrayList<String>(Arrays.asList(fragments));
+                        List<String> command = CommandLine.this.commandExecutor.splitIntoComponents(line);
                         List<String> commandOutput = CommandLine.this.commandExecutor.executeCommand(command);
                         CommandLine.this.appendOutput(commandOutput);
                     }
