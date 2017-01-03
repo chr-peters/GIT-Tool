@@ -79,7 +79,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
     Parameter[] initParams = {new Parameter("--bare")};
     Command init = new Command("init", initParams);
 
-    Parameter[] mergeParams = {new Parameter("branch/commit", "PFLICHTPAREMETER?")};
+    Parameter[] mergeParams = {new Parameter("branch/commit", "*branch or commit*")};
     Command merge = new Command("merge", mergeParams);
 
     Parameter[] pullParams = {new Parameter("repository", "*from*"), new Parameter("refspec", "*what to pull*")};
@@ -88,7 +88,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
     Parameter[] pushParams = {new Parameter("repository", "*into*"), new Parameter("refspec", "*what to push*")};
     Command push = new Command("push", pushParams);
 
-    Parameter[] resetParams = {new Parameter("tree-ish", "*TODO"), new Parameter("paths", "*what to reset*")};
+    Parameter[] resetParams = {new Parameter("tree-ish", "TODO"), new Parameter("paths", "*what to reset*")};
     Command reset = new Command("reset", resetParams);
 
     Parameter[] rmParams = {new Parameter("file", "*filename*", true), new Parameter("--force"),
@@ -227,6 +227,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
     StringBuilder cmdString = new StringBuilder();
     successMessage.setVisible(false);
     boolean error = false;
+    MergeResponse mergeResponse = null;
 
     switch(cmdList.getSelectedIndex()){
         //add
@@ -372,12 +373,20 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
             }
             break;
 
-        //merge TODO successMeldung + mergeResponse
-        case 9: res = gitCmdExec.merge(paramTexts[0].getText()).getOutputLines();
-            cmdString.append("git merge");
-            if(!paramTexts[0].getText().isEmpty()) cmdString.append(" "+paramTexts[0].getText());
+        //merge
+        case 9: mergeResponse = gitCmdExec.merge(paramTexts[0].getText());
+            if(commandSuccessful( res = mergeResponse.getOutputLines() )){
+              cmdString.append("git merge");
+              if(!paramTexts[0].getText().isEmpty()) cmdString.append(" "+paramTexts[0].getText());
+              successMessage.setText("Merge successful.");
+            }
+            else{
+              gitTool.errorMessage(res, "Error");
+              error = true;
+            }
             break;
 
+        //pull
         case 10: res = gitCmdExec.pull(paramTexts[0].getText(), paramTexts[1].getText());
             if(commandSuccessful(res)){
               cmdString.append("git pull");
@@ -391,6 +400,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
             }
             break;
 
+        //push
         case 11: res = gitCmdExec.push(paramTexts[0].getText(), paramTexts[1].getText());
             if(commandSuccessful(res)){
               cmdString.append("git push");
@@ -404,6 +414,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
             }
             break;
 
+        //reset
         case 12: res = gitCmdExec.reset(paramTexts[0].getText(), paramTexts[1].getText());
             if(commandSuccessful(res)){
               cmdString.append("git reset");
@@ -417,6 +428,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
             }
             break;
 
+        //rm
         case 13: res = gitCmdExec.rm(paramBoxes[1].isSelected(), paramBoxes[2].isSelected(),
                             paramBoxes[3].isSelected(), paramTexts[0].getText());
             cmdString.append("git rm");
@@ -450,11 +462,11 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
             break;
     }
     if(!error){
-      successMessage.setVisible(true);
       this.gitTool.getHistory().addCommand(new application.git_tool.history.Command(cmdString.toString()));
-      //refresh the gittool
-      this.gitTool.refresh();
+      if(mergeResponse != null) successMessage.setText("Merge successful. State: "+mergeResponse.getState());
       if(!res.isEmpty()) gitTool.infoMessage(res, "Info");
+      successMessage.setVisible(true);
+      this.gitTool.refresh();
     }
   }//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
