@@ -38,7 +38,7 @@
     </target>
 
     <!-- dummy target to initialize the project structure -->
-    <target name="init" depends="link-libraries" />
+    <target name="init" depends="init-dirs, link-libraries, link-help" />
 
     <!-- initializes folders for class files -->
     <target name="init-dirs">
@@ -47,7 +47,7 @@
     </target>
 
     <!-- tests if links to libraries are set -->
-    <target name="test-link-libraries" depends="init-dirs">
+    <target name="test-link-libraries">
         <condition property="libraryLinksNotExist">
             <not>
                 <available file="./build/classes/net" type="dir" />
@@ -61,6 +61,24 @@
             <arg line="-sn" />
             <arg file="./src/net" />
             <arg file="./build/classes/net" />
+        </exec>
+    </target>
+    
+    <!-- test if help is already linked -->
+    <target name="test-link-help">
+        <condition property="helpLinkNotExists">
+            <not>
+                <available file="./dist/src" type="dir" />
+            </not>
+        </condition>
+    </target>
+    
+    <!-- link the help file -->
+    <target name="link-help" depends="test-link-help" if="helpLinkNotExists">
+        <exec executable="ln" error="/dev/null" os="Linux">
+            <arg line="-sn" />
+            <arg file="./src" />
+            <arg file="./dist/src" />
         </exec>
     </target>
 
@@ -95,9 +113,23 @@
             <arg file="./build/classes/net" />
         </exec>
     </target>
+    
+    <!-- test if link to help exists for deletion purposes -->
+    <target name="test-link-help-deletion">
+        <condition property="helpLinkExists">
+            <available file="./dist/src" type="dir" />
+        </condition>
+    </target>
+    
+    <!-- carefully remove the help link -->
+    <target name="delete-help-link" depends="test-link-help-deletion" if="helpLinkExists">
+        <exec executable="rm" error="/dev/null" os="Linux">
+            <arg file="./dist/src" />
+        </exec>
+    </target>
 
     <!-- deletes all binary files -->
-    <target name="clean" depends="delete-library-links">
+    <target name="clean" depends="delete-library-links, delete-help-link">
         <delete dir="build" />
         <delete dir="dist" />
     </target>
