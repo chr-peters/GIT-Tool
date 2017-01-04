@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Dimension;
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
@@ -116,7 +116,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
     helpTexts = new String[commands.length];
     String tmpLine = "";
     try{
-      FileReader fr = new FileReader("./src/data/help.txt");
+      InputStreamReader fr = new InputStreamReader(this.getClass().getResourceAsStream("/help/help.txt"));
       BufferedReader br = new BufferedReader(fr);
       for(int i = 0; i < commands.length; i++){
         helpTexts[i] = "";
