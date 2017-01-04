@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Dimension;
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
@@ -116,7 +116,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
     helpTexts = new String[commands.length];
     String tmpLine = "";
     try{
-      FileReader fr = new FileReader("./src/data/help/help.txt");
+      InputStreamReader fr = new InputStreamReader(this.getClass().getResourceAsStream("/help/help.txt"));
       BufferedReader br = new BufferedReader(fr);
       for(int i = 0; i < commands.length; i++){
         helpTexts[i] = "";
@@ -174,7 +174,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
 
     //Anzeige des aktuellen Befehls//////
     successMessage = new JLabel();
-    this.add(successMessage, "growx, wrap");
+    this.add(successMessage, "growx, spanx, wrap");
     /////////////////////////////////////
 
 
@@ -244,7 +244,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
               if(paramBoxes[4].isSelected())
                   cmdString.append(" --ignore-errors");
               cmdString.append(" "+paramTexts[0].getText());
-                successMessage.setText("Added "+paramTexts[0].getText()+".");
+                successMessage.setText("Added "+paramTexts[0].getText());
             }
             else {
               gitTool.errorMessage(res, "Error");
@@ -284,7 +284,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
               cmdString.append("git branch -m");
               cmdString.append(" "+paramTexts[0].getText());
               cmdString.append(" "+paramTexts[1].getText());
-              successMessage.setText("Branch "+paramTexts[0].getText()+"\n has been renamed to\n"+paramTexts[0].getText()+".");
+              successMessage.setText("Branch "+paramTexts[0].getText()+"\n has been renamed to\n"+paramTexts[0].getText());
             }
             else {
               gitTool.errorMessage(res, "Error");
@@ -303,7 +303,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
                 else successMessage.setText(paramTexts[1].getText()+" has been checked out.");
               }
               if(cmdString.toString().equals("git checkout")){
-                if(!paramTexts[0].getText().isEmpty()) successMessage.setText("Switched branch to "+paramTexts[0].getText()+".");
+                if(!paramTexts[0].getText().isEmpty()) successMessage.setText("Switched branch to "+paramTexts[0].getText());
                 else successMessage.setText("Nothing happened.");
               }
             }
@@ -320,7 +320,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
               if(!paramTexts[0].getText().isEmpty()) cmdString.append(" "+paramTexts[0].getText());
               if(!paramTexts[1].getText().isEmpty()) {
                 cmdString.append(" "+paramTexts[1].getText());
-                successMessage.setText("The repository "+paramTexts[0].getText()+ " has been cloned into "+paramTexts[1].getText()+".");
+                successMessage.setText("The repository "+paramTexts[0].getText()+ "\nhas been cloned into "+paramTexts[1].getText());
               }
               else successMessage.setText("The repository "+paramTexts[0].getText()+ "\nhas been cloned into the current directory.");
             }
@@ -337,8 +337,8 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
               cmdString.append("git commit");
               if(paramBoxes[2].isSelected()) cmdString.append(" --all");
               if(paramBoxes[3].isSelected()) cmdString.append(" --amend");
-              if(paramBoxes[1].isSelected()) cmdString.append(" "+paramTexts[1]);
-              cmdString.append(" -m "+paramTexts[0]);
+              if(paramBoxes[1].isSelected()) cmdString.append(" "+paramTexts[1].getText());
+              cmdString.append(" -m "+paramTexts[0].getText());
               successMessage.setText("Commit successful.");
             }
             else {
