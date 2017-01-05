@@ -244,7 +244,8 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
               if(paramBoxes[4].isSelected())
                   cmdString.append(" --ignore-errors");
               cmdString.append(" "+paramTexts[0].getText());
-                successMessage.setText("Added "+paramTexts[0].getText());
+              if(paramBoxes[3].isSelected()) successMessage.setText("Add successful.");
+              else successMessage.setText("Added "+paramTexts[0].getText());
             }
             else {
               gitTool.errorMessage(res, "Error");
@@ -257,7 +258,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
             if(commandSuccessful(res)){
               cmdString.append("git branch");
               cmdString.append(" "+paramTexts[0].getText());
-              successMessage.setText("Branch "+paramTexts[0].getText()+"\nhas been created.");
+              successMessage.setText("Branch "+paramTexts[0].getText()+" has been created.");
             }
             else {
               gitTool.errorMessage(res, "Error");
@@ -270,7 +271,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
             if(commandSuccessful(res)){
                 cmdString.append("git branch -d");
                 cmdString.append(" "+paramTexts[0].getText());
-                successMessage.setText("Branch "+paramTexts[0].getText()+"\nhas been deleted.");
+                successMessage.setText("Branch "+paramTexts[0].getText()+" has been deleted.");
             }
             else {
               gitTool.errorMessage(res, "Error");
@@ -284,7 +285,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
               cmdString.append("git branch -m");
               cmdString.append(" "+paramTexts[0].getText());
               cmdString.append(" "+paramTexts[1].getText());
-              successMessage.setText("Branch "+paramTexts[0].getText()+"\n has been renamed to\n"+paramTexts[0].getText());
+              successMessage.setText("Branch "+paramTexts[0].getText()+" \nhas been renamed to \n"+paramTexts[0].getText());
             }
             else {
               gitTool.errorMessage(res, "Error");
@@ -338,7 +339,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
               if(paramBoxes[2].isSelected()) cmdString.append(" --all");
               if(paramBoxes[3].isSelected()) cmdString.append(" --amend");
               if(paramBoxes[1].isSelected()) cmdString.append(" "+paramTexts[1].getText());
-              cmdString.append(" -m "+paramTexts[0].getText());
+              cmdString.append(" -m \""+ paramTexts[0].getText() + "\"" );
               successMessage.setText("Commit successful.");
             }
             else {
@@ -365,7 +366,7 @@ public class CommandMenu extends JPanel {//Class CommandMenu////////////////////
             if(commandSuccessful(res)){
               cmdString.append("git init");
               if(paramBoxes[0].isSelected()) cmdString.append("--bare");
-              successMessage.setText("An empty "+( cmdString.toString().equals("git init") ? "" : "base " )+"Git-Repository has been created");
+              successMessage.setText(( cmdString.toString().equals("git init") ? "A " : "An empty " )+"Git-Repository has been created");
             }
             else {
               gitTool.errorMessage(res, "Error");
