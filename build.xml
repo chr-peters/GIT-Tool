@@ -36,6 +36,11 @@
         <javadoc sourcepath="./src" packagenames="application.git_tool.*" destdir="./src/doc"
                  encoding="UTF-8" docencoding="UTF-8" charset="UTF-8" />
     </target>
+    
+    <!-- run junit testclasses -->
+    <target name="test-application" depends="compile">
+        <java classpath="build/classes" classname="testcases.UnixCommandExecutorTest" />
+    </target>
 
     <!-- dummy target to initialize the project structure -->
     <target name="init" depends="init-dirs, link-libraries, link-help" />
@@ -61,6 +66,16 @@
             <arg line="-sn" />
             <arg file="./src/net" />
             <arg file="./build/classes/net" />
+        </exec>
+        <exec executable="ln" error="/dev/null" os="Linux">
+            <arg line="-sn" />
+            <arg file="./src/org" />
+            <arg file="./build/classes/org" />
+        </exec>
+        <exec executable="ln" error="/dev/null" os="Linux">
+            <arg line="-sn" />
+            <arg file="./src/junit" />
+            <arg file="./build/classes/junit" />
         </exec>
     </target>
     
@@ -111,6 +126,8 @@
     <target name="delete-library-links" depends="test-link-libraries-deletion" if="libraryLinksExist">
         <exec executable="rm" error="/dev/null" os="Linux">
             <arg file="./build/classes/net" />
+            <arg file="./build/classes/org" />
+            <arg file="./build/classes/junit" />
         </exec>
     </target>
     
